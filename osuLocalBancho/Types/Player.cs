@@ -1,8 +1,12 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+using osuLocalBancho.Types.Enums;
+
 namespace osuLocalBancho.Types
 {
     public class Player
     {
+        [Key]
         public int Id { get; set; }
         public string Username { get; set; }
         public float Accuracy { get; set; }
@@ -10,6 +14,7 @@ namespace osuLocalBancho.Types
         public ulong TotalScore { get; set; }
         public uint Rank { get; set; }
         public ushort Pp { get; set; }
+        public UserRanks UserRank { get; set; }
 
         public static Player DummyPlayer => new Player
         {
@@ -19,7 +24,8 @@ namespace osuLocalBancho.Types
             Playcount = 123456789,
             TotalScore = 999999999,
             Rank = 1,
-            Pp = 11727
+            Pp = 11727,
+            UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff | UserRanks.Peppy
         };
     }
 }

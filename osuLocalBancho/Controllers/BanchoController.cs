@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Buffers;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using osuLocalBancho.Bancho;
+using Microsoft.Extensions.Configuration;
+using osuLocalBancho.Bancho.Packets;
 using osuLocalBancho.Services;
 using osuLocalBancho.Types;
 using osuLocalBancho.Types.Enums;
@@ -15,132 +16,155 @@ namespace osuLocalBancho.Controllers
     public class BanchoController : ControllerBase
     {
         private readonly BanchoService _banchoService;
+        private readonly TokenService _tokenService;
+        private readonly IConfiguration _configuration;
 
-        public BanchoController(BanchoService banchoService)
+        private const uint protocol_version = 19;
+
+        public BanchoController(BanchoService banchoService, TokenService tokenService, IConfiguration configuration)
         {
             _banchoService = banchoService;
+            _tokenService = tokenService;
+            _configuration = configuration;
         }
 
         [HttpPost]
-        public IActionResult MainEndpoint()
+        public async Task<IActionResult> MainEndpoint()
         {
             HttpContext.Response.Headers.Add("Connection", "keep-alive");
             HttpContext.Response.Headers.Add("Keep-Alive", "timeout=5, max=100");
-            HttpContext.Response.Headers.Add("cho-protocol", "19");
-            HttpContext.Response.Headers.Add("cho-token", "token");
+            HttpContext.Response.Headers.Add("cho-protocol", protocol_version.ToString());
 
             if (!HttpContext.Request.Headers.ContainsKey("osu-token"))
             {
-                HandleLogin();
+                await HandleLogin();
             }
-
-            HandleIncomingPackets();
+            else
+            {
+                await HandleIncomingPackets();
+            }
 
             return new FileContentResult(_banchoService.GetDataToSend(), "text/html; charset=UTF-8");
         }
 
-        private void HandleLogin()
+        private async Task HandleLogin()
         {
-            var rank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff;
+            var loginData = (await new StreamReader(Request.Body).ReadToEndAsync()).Split('\n');
+            
+            var token = await _tokenService.AddToken(loginData[0].Trim());
+            if (token == null)
+                return;
 
-            _banchoService.EnqueuePacket(DataPacket.PackData("Hurrep"), ServerPacketType.Notification);
+            var player = await _tokenService.GetPlayer(token.Token);
+            if (player == null)
+                return;
 
-            _banchoService.EnqueuePacket(DataPacket.PackData((uint)0), ServerPacketType.SilenceEnd);
+            HttpContext.Response.Headers.Add("cho-token", token.Token);
+            
+            if (!string.IsNullOrEmpty(_configuration["LoginMessage"]))
+                _banchoService.EnqueuePacket(new Notification(_configuration["LoginMessage"]));
 
-            _banchoService.EnqueuePacket(DataPacket.PackData(Player.DummyPlayer.Rank), ServerPacketType.UserId);
-            _banchoService.EnqueuePacket(DataPacket.PackData((uint)19), ServerPacketType.ProtocolVersion);
+            _banchoService.EnqueuePacket(new SilenceEnd(0));
 
-            _banchoService.EnqueuePacket(DataPacket.PackData((uint)rank), ServerPacketType.Supporter);
+            _banchoService.EnqueuePacket(new UserId(token.PlayerId));
+            _banchoService.EnqueuePacket(new ProtocolVersion(protocol_version));
 
-            _banchoService.EnqueuePacket(HandlePanel(), ServerPacketType.UserPanel);
-            _banchoService.EnqueuePacket(HandleStats(), ServerPacketType.UserStats);
+            _banchoService.EnqueuePacket(new Supporter(player.UserRank));
 
-            _banchoService.EnqueuePacket(DataPacket.PackData((uint)0), ServerPacketType.ChannelInfoEnd);
+            _banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+            _banchoService.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
 
-            _banchoService.EnqueuePacket(DataPacket.PackData(new int[] { 2 }), ServerPacketType.FriendsList);
+            _banchoService.EnqueuePacket(new ChannelInfoEnd());
 
-            _banchoService.EnqueuePacket(DataPacket.PackData("https://assets.ppy.sh/beatmaps/637386/covers/card.jpg?1499585149"), ServerPacketType.MainMenuIcon);
+            _banchoService.EnqueuePacket(new FriendsList(new int[] { 2 }));
 
-            _banchoService.EnqueuePacket(HandlePanel(), ServerPacketType.UserPanel);
+            if (!string.IsNullOrEmpty(_configuration["MainMenuBanner"]))
+                _banchoService.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
+
+            _banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
         }
 
-        private void HandleIncomingPackets()
+        private async Task HandleIncomingPackets()
         {
-            using var inStream = new MemoryStream();
-
-            while (true)
+            var token = _tokenService.GetToken(HttpContext.Request.Headers["osu-token"][0]);
+            if (token == null)
             {
-                var readResult = HttpContext.Request.BodyReader.ReadAsync().Result;
-                var buffer = readResult.Buffer;
-                inStream.Write(buffer.ToArray());
-
-                HttpContext.Request.BodyReader.AdvanceTo(buffer.Start, buffer.End);
-                if (readResult.IsCompleted)
-                    break;
+                // force update login
+                _banchoService.EnqueuePacket(new UserId(-1));
+                return;
             }
 
+            await using var inStream = new MemoryStream();
+            await Request.Body.CopyToAsync(inStream);
             var data = inStream.ToArray();
-            data[0] = 0x0; // uhh??? first byte seem to be a copy of second (which is supposed to be first)
 
-            var packetType = (ClientPacketType)BitConverter.ToUInt16(data[1..3].ToArray());
+            var packetType = (ClientPacketType)BitConverter.ToUInt16(data[..2].ToArray());
             switch (packetType)
             {
                 case ClientPacketType.ChangeAction:
                 {
-                    _banchoService.EnqueuePacket(HandlePanel(), ServerPacketType.UserPanel);
-                    _banchoService.EnqueuePacket(HandleStats(), ServerPacketType.UserStats);
+                    _banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+                    _banchoService.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
                     break;
                 }
                 case ClientPacketType.RequestStatusUpdate:
                 {
-                    _banchoService.EnqueuePacket(HandleStats(), ServerPacketType.UserStats);
+                    _banchoService.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
                     break;
                 }
                 case ClientPacketType.UserPanelRequest:
                 {
-                    _banchoService.EnqueuePacket(HandlePanel(), ServerPacketType.UserPanel);
+                    _banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
                     break;
                 }
                 /*case ClientPacketType.UserStatsRequest:
                 {
-                    _banchoService.EnqueuePacket(HandleStats(), ServerPacketType.UserStats);
+                    _banchoService.EnqueuePacket(new UserStats(HandleStats()), ServerPacketType.UserStats);
                 }*/
             }
         }
 
-        private byte[] HandleStats()
+        private async Task<Stats> HandleStats(string token)
         {
+            var player = await _tokenService.GetPlayer(token);
+            if (player == null)
+                return null;
+
             return new Stats
             {
-                UserId = (uint) Player.DummyPlayer.Id,
+                UserId = (uint)player.Id,
                 ActionId = 0,
                 ActionText = "",
                 ActionMd5 = "",
                 ActionMods = 0,
                 GameMode = 0,
                 BeatmapId = 0,
-                RankedScore = Player.DummyPlayer.TotalScore,
-                Accuracy = Player.DummyPlayer.Accuracy,
-                Playcount = Player.DummyPlayer.Playcount,
-                TotalScore = Player.DummyPlayer.TotalScore,
-                GameRank = Player.DummyPlayer.Rank,
-                Pp = Player.DummyPlayer.Pp
-            }.Pack();
+                RankedScore = player.TotalScore,
+                Accuracy = player.Accuracy,
+                Playcount = player.Playcount,
+                TotalScore = player.TotalScore,
+                GameRank = player.Rank,
+                Pp = player.Pp
+            };
         }
 
-        private byte[] HandlePanel()
+        private async Task<Panel> HandlePanel(string token)
         {
+            var player = await _tokenService.GetPlayer(token);
+            if (player == null)
+                return null;
+
             return new Panel
             {
-                UserId = Player.DummyPlayer.Id,
-                Username = Player.DummyPlayer.Username,
+                UserId = player.Id,
+                Username = player.Username,
                 Timezone = 24,
                 Country = 0,
-                UserRank = UserRanks.Peppy,
+                UserRank = player.UserRank,
                 Longitude = 0.0f,
                 Latitude = 0.0f,
-                GameRank = Player.DummyPlayer.Rank
-            }.Pack();
+                GameRank = player.Rank
+            };
         }
     }
 }

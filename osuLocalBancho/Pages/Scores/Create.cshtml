@@ -1,0 +1,129 @@
+﻿@page
+@model osuLocalBancho.Pages.Scores.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>SubmittedScore</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.FileMd5" class="control-label"></label>
+                <input asp-for="SubmittedScore.FileMd5" class="form-control" />
+                <span asp-validation-for="SubmittedScore.FileMd5" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.PlayerUsername" class="control-label"></label>
+                <input asp-for="SubmittedScore.PlayerUsername" class="form-control" />
+                <span asp-validation-for="SubmittedScore.PlayerUsername" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.Count300" class="control-label"></label>
+                <input asp-for="SubmittedScore.Count300" class="form-control" />
+                <span asp-validation-for="SubmittedScore.Count300" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.Count100" class="control-label"></label>
+                <input asp-for="SubmittedScore.Count100" class="form-control" />
+                <span asp-validation-for="SubmittedScore.Count100" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.Count50" class="control-label"></label>
+                <input asp-for="SubmittedScore.Count50" class="form-control" />
+                <span asp-validation-for="SubmittedScore.Count50" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.CountGeki" class="control-label"></label>
+                <input asp-for="SubmittedScore.CountGeki" class="form-control" />
+                <span asp-validation-for="SubmittedScore.CountGeki" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.CountKatu" class="control-label"></label>
+                <input asp-for="SubmittedScore.CountKatu" class="form-control" />
+                <span asp-validation-for="SubmittedScore.CountKatu" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.CountMiss" class="control-label"></label>
+                <input asp-for="SubmittedScore.CountMiss" class="form-control" />
+                <span asp-validation-for="SubmittedScore.CountMiss" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.Score" class="control-label"></label>
+                <input asp-for="SubmittedScore.Score" class="form-control" />
+                <span asp-validation-for="SubmittedScore.Score" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.MaxCombo" class="control-label"></label>
+                <input asp-for="SubmittedScore.MaxCombo" class="form-control" />
+                <span asp-validation-for="SubmittedScore.MaxCombo" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="SubmittedScore.FullCombo" /> @Html.DisplayNameFor(model => model.SubmittedScore.FullCombo)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.Rank" class="control-label"></label>
+                <input asp-for="SubmittedScore.Rank" class="form-control" />
+                <span asp-validation-for="SubmittedScore.Rank" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.Mods" class="control-label"></label>
+                <input asp-for="SubmittedScore.Mods" class="form-control" />
+                <span asp-validation-for="SubmittedScore.Mods" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="SubmittedScore.Passed" /> @Html.DisplayNameFor(model => model.SubmittedScore.Passed)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.GameMode" class="control-label"></label>
+                <input asp-for="SubmittedScore.GameMode" class="form-control" />
+                <span asp-validation-for="SubmittedScore.GameMode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.PlayDateTime" class="control-label"></label>
+                <input asp-for="SubmittedScore.PlayDateTime" class="form-control" />
+                <span asp-validation-for="SubmittedScore.PlayDateTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.OsuVersion" class="control-label"></label>
+                <input asp-for="SubmittedScore.OsuVersion" class="form-control" />
+                <span asp-validation-for="SubmittedScore.OsuVersion" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="SubmittedScore.Quit" /> @Html.DisplayNameFor(model => model.SubmittedScore.Quit)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="SubmittedScore.Failed" /> @Html.DisplayNameFor(model => model.SubmittedScore.Failed)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubmittedScore.Pp" class="control-label"></label>
+                <input asp-for="SubmittedScore.Pp" class="form-control" />
+                <span asp-validation-for="SubmittedScore.Pp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

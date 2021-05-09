@@ -2,42 +2,50 @@
 using System.IO;
 using System.Text;
 using LEB128;
+using osuLocalBancho.Types.Enums;
 
 namespace osuLocalBancho.Bancho
 {
-    public static class DataPacket
+    public abstract class DataPacket
     {
-        public static byte[] PackData(short data)
+        public virtual ServerPacketType Type { get; }
+
+        public virtual byte[] GetBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected byte[] PackData(short data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        public static byte[] PackData(ushort data)
+        protected byte[] PackData(ushort data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        public static byte[] PackData(int data)
+        protected byte[] PackData(int data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        public static byte[] PackData(uint data)
+        protected byte[] PackData(uint data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        public static byte[] PackData(long data)
+        protected byte[] PackData(long data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        public static byte[] PackData(ulong data)
+        protected byte[] PackData(ulong data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        public static byte[] PackData(string data)
+        protected byte[] PackData(string data)
         {
             using var stream = new MemoryStream();
             stream.WriteByte(0x0B);
@@ -47,7 +55,7 @@ namespace osuLocalBancho.Bancho
             return stream.ToArray();
         }
 
-        public static byte[] PackData(int[] data)
+        protected byte[] PackData(int[] data)
         {
             using var stream = new MemoryStream();
             stream.Write(BitConverter.GetBytes((uint)data.Length));
@@ -58,7 +66,7 @@ namespace osuLocalBancho.Bancho
             return stream.ToArray();
         }
 
-        public static byte[] PackData(float data)
+        protected byte[] PackData(float data)
         {
             return BitConverter.GetBytes(data);
         }

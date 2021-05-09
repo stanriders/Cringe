@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using osuLocalBancho.Bancho;
-using osuLocalBancho.Types.Enums;
 
 namespace osuLocalBancho.Services
 {
@@ -18,13 +18,15 @@ namespace osuLocalBancho.Services
             return stream.ToArray();
         }
 
-        public void EnqueuePacket(byte[] data, ServerPacketType type)
+        public void EnqueuePacket(DataPacket packet)
         {
             using var stream = new MemoryStream();
 
-            stream.Write(DataPacket.PackData((short)type));
+            var data = packet.GetBytes();
+
+            stream.Write(BitConverter.GetBytes((short)packet.Type));
             stream.WriteByte(0);
-            stream.Write(DataPacket.PackData(data.Length));
+            stream.Write(BitConverter.GetBytes(data.Length));
             stream.Write(data);
 
             queue.Enqueue(stream.ToArray());

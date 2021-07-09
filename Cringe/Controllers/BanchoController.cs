@@ -16,6 +16,7 @@ namespace Cringe.Controllers
     public class BanchoController : ControllerBase
     {
         private const uint protocol_version = 19;
+
         private readonly BanchoServicePool _banchoServicePool;
         private readonly IConfiguration _configuration;
         private readonly TokenService _tokenService;

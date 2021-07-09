@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using Cringe.Bancho;
 
-namespace Cringe.Services
+namespace Cringe.Types
 {
-    public class BanchoService
+    public class PacketQueue
     {
         private readonly Queue<byte[]> queue = new();
 

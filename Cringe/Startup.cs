@@ -1,5 +1,6 @@
 using Cringe.Database;
 using Cringe.Services;
+using Cringe.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +21,7 @@ namespace Cringe
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<BanchoService>();
+            services.AddSingleton<BanchoServicePool>();
             services.AddSingleton<TokenService>();
             services.AddTransient<ScoreService>();
 

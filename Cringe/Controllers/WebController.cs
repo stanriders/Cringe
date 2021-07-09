@@ -10,12 +10,12 @@ namespace Cringe.Controllers
     [Route("[controller]")]
     public class WebController : ControllerBase
     {
-        private readonly BanchoService _banchoService;
+        private readonly BanchoServicePool _banchoServicePool;
         private readonly ScoreService _scoreService;
 
-        public WebController(BanchoService banchoService, ScoreService scoreService)
+        public WebController(BanchoServicePool banchoServicePool, ScoreService scoreService)
         {
-            _banchoService = banchoService;
+            _banchoServicePool = banchoServicePool;
             _scoreService = scoreService;
         }
 
@@ -33,48 +33,47 @@ namespace Cringe.Controllers
             [FromForm] string osuver, [FromForm(Name = "x")] string quit, [FromForm(Name = "ft")] string failed)
         {
             var submittedScore = await _scoreService.SubmitScore(score, iv, osuver, quit == "1", failed == "1");
-            if (submittedScore != null)
-            {
-                // send score as a notif to confirm submission
-                _banchoService.EnqueuePacket(new Notification(submittedScore.Id.ToString()));
+            if (submittedScore == null) return new OkResult();
+            
+            // send score as a notif to confirm submission
+            var queue = _banchoServicePool.GetFromPool(submittedScore.Player.Id);
+            queue.EnqueuePacket(new Notification(submittedScore.Id.ToString()));
 
-                var outData = "beatmapId:1|beatmapSetId:2|beatmapPlaycount:3|beatmapPasscount:2|approvedDate:0\n" +
-                              new Chart
-                              {
-                                  Type = "beatmap",
-                                  Name = "AYE",
-                                  RankBefore = 2,
-                                  RankAfter = 1,
-                                  ScoreBefore = 100,
-                                  ScoreAfter = 200,
-                                  ComboBefore = 1,
-                                  ComboAfter = 5,
-                                  AccuracyBefore = 0.2f,
-                                  AccuracyAfter = 0.33f,
-                                  PpBefore = 666,
-                                  PpAfter = 727
-                              }
-                              +
-                              new Chart
-                              {
-                                  Type = "overall",
-                                  Name = "AYE",
-                                  RankBefore = 2,
-                                  RankAfter = 1,
-                                  //ScoreBefore = player.TotalScore,
-                                  //ScoreAfter = player.TotalScore + (ulong)submittedScore.Score,
-                                  ComboBefore = 1,
-                                  ComboAfter = 5,
-                                  AccuracyBefore = 0.2f,
-                                  AccuracyAfter = 0.33f,
-                                  PpBefore = 666,
-                                  PpAfter = 727
-                              };
+            var outData = "beatmapId:1|beatmapSetId:2|beatmapPlaycount:3|beatmapPasscount:2|approvedDate:0\n" +
+                          new Chart
+                          {
+                              Type = "beatmap",
+                              Name = "AYE",
+                              RankBefore = 2,
+                              RankAfter = 1,
+                              ScoreBefore = 100,
+                              ScoreAfter = 200,
+                              ComboBefore = 1,
+                              ComboAfter = 5,
+                              AccuracyBefore = 0.2f,
+                              AccuracyAfter = 0.33f,
+                              PpBefore = 666,
+                              PpAfter = 727
+                          }
+                          +
+                          new Chart
+                          {
+                              Type = "overall",
+                              Name = "AYE",
+                              RankBefore = 2,
+                              RankAfter = 1,
+                              //ScoreBefore = player.TotalScore,
+                              //ScoreAfter = player.TotalScore + (ulong)submittedScore.Score,
+                              ComboBefore = 1,
+                              ComboAfter = 5,
+                              AccuracyBefore = 0.2f,
+                              AccuracyAfter = 0.33f,
+                              PpBefore = 666,
+                              PpAfter = 727
+                          };
 
-                return new OkObjectResult(outData);
-            }
+            return new OkObjectResult(outData);
 
-            return new OkResult();
         }
 
         [HttpGet("osu-osz2-getscores.php")]

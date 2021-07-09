@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Cringe.Bancho.Packets;
+using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Controllers
 {
@@ -77,10 +80,38 @@ namespace Cringe.Controllers
         }
 
         [HttpGet("osu-osz2-getscores.php")]
-        public IActionResult GetScores([FromForm] string i)
+        public IActionResult GetScores([FromQuery(Name = "c")] string md5,
+            [FromQuery(Name = "f")] string fileName,
+            [FromQuery(Name = "i")] string beatmapSetId,
+            [FromQuery(Name = "m")] int? gameMode,
+            [FromQuery(Name = "us")] string username,
+            [FromQuery(Name = "ha")] string password,
+            [FromQuery(Name = "v")] int? scoreboardType,
+            [FromQuery(Name = "vv")] int? scoreboardVersion,
+            [FromQuery(Name = "mods")] int? mods)
         {
-            var data = $"2|false|1488|{i}|1\n0\naye\n10\n";
-            return new OkObjectResult(data);
+            var data = $"2|false|1488|{beatmapSetId}|1\n0\naye\n10.0\n";
+
+            using var scoreDb = new ScoreDatabaseContext();
+            var scores = scoreDb.Scores
+                .OrderByDescending(x => x.Score)
+                .Where(x => x.FileMd5 == md5 && x.GameMode == gameMode)
+                .Include(x=> x.Player)
+                .ToArray();
+
+            for (var i = 0; i < scores.Length; i++)
+                scores[i].LeaderboardPosition = i + 1;
+
+            var userBest = scores.FirstOrDefault(x => x.Player.Username == username);
+            if (userBest != null)
+                data += userBest;
+            else
+                data += '\n';
+
+            foreach (var score in scores)
+                data += score;
+
+            return new OkObjectResult(data.TrimEnd('\n'));
         }
     }
 }

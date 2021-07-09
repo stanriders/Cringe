@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using Cringe.Database;
@@ -39,10 +40,12 @@ namespace Cringe.Services
                 var player = await _playerContext.Players.FirstOrDefaultAsync(x => x.Username == username);
                 if (player != null)
                 {
+                    if (!DateTime.TryParseExact(scoreData[16], "yyMMddhhmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                        date = DateTime.Now;
+
                     var submittedScore = new SubmittedScore
                     {
                         FileMd5 = scoreData[0],
-                        PlayerUsername = username,
                         // %s%s%s = scoreData[2]
                         Count300 = int.Parse(scoreData[3]),
                         Count100 = int.Parse(scoreData[4]),
@@ -57,8 +60,8 @@ namespace Cringe.Services
                         Mods = int.Parse(scoreData[13]),
                         Passed = scoreData[14] == "True",
                         GameMode = int.Parse(scoreData[15]),
-                        //PlayDateTime = DateTime.Now,//int.Parse(scoreData[16]),
-                        OsuVersion = scoreData[17],
+                        PlayDateTime = date,
+                        OsuVersion = scoreData[17].Trim(),
                         Quit = quit,
                         Failed = !quit && failed,
                         Player = player

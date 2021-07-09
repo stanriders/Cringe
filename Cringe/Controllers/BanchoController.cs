@@ -39,7 +39,7 @@ namespace Cringe.Controllers
                 service = await HandleLogin();
             else
                 service = await HandleIncomingPackets();
-            return service.GetResult();
+            return service is null ? PacketQueue.NullUser() : service.GetResult();
         }
 
         private async Task<PacketQueue> HandleLogin()

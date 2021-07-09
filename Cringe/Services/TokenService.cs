@@ -24,14 +24,7 @@ namespace Cringe.Services
             var player = await playerDb.Players.FirstOrDefaultAsync(x => x.Username == username);
             if (player == null)
             {
-                player = new Player
-                {
-                    Username = username,
-                    UserRank = UserRanks.Normal | UserRanks.Supporter,
-                    Rank = 1
-                };
-                await playerDb.Players.AddAsync(player);
-                await playerDb.SaveChangesAsync();
+                return null;
             }
 
             var token = new UserToken

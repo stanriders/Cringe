@@ -26,6 +26,7 @@ namespace Cringe.Controllers
         [HttpPost("osu-error.php")]
         [HttpGet("osu-getfriends.php")]
         [HttpGet("lastfm.php")]
+        [HttpGet("osu-getseasonal.php")]
         public IActionResult EmptyAnswer()
         {
             return new OkResult();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Cringe.Bancho;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cringe.Types
 {
@@ -30,6 +31,11 @@ namespace Cringe.Types
             stream.Write(data);
 
             queue.Enqueue(stream.ToArray());
+        }
+
+        public FileContentResult GetResult()
+        {
+            return new FileContentResult(GetDataToSend(), "text/html; charset=UTF-8");
         }
     }
 }

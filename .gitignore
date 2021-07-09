@@ -331,5 +331,5 @@ ASALocalRun/
 cache
 top.db
 
-players.db
-scores.db
+*.db
+

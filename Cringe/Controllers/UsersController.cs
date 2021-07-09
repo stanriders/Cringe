@@ -11,24 +11,31 @@ namespace Cringe.Controllers
     [Route("/users")]
     public class UsersController : ControllerBase
     {
-        private BanchoServicePool _pool;
+        private readonly BanchoServicePool _pool;
+        private readonly PlayerDatabaseContext _playerDatabaseContext;
 
-        public UsersController(BanchoServicePool pool)
+        public UsersController(BanchoServicePool pool, PlayerDatabaseContext playerDatabaseContext)
         {
             _pool = pool;
+            _playerDatabaseContext = playerDatabaseContext;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromForm] RegisterForm form)
+        public async Task<IActionResult> Register([FromForm] RegisterForm user, [FromForm] int check)
         {
-            if (form.check == 0)
+            if (check == 0)
                 return Ok();
-            await using var db = new PlayerDatabaseContext();
-            if (db.Players.Any(x => x.Username == form.username)) return BadRequest();
-            var user = await db.Players.AddAsync(Player.Generate(form.username, form.password));
-            await db.SaveChangesAsync();
-            var queue = _pool.GetFromPool(user.Entity.Id);
-            //TODO: wtf?
+            
+            if (_playerDatabaseContext.Players.Any(x => x.Username == user.username)) 
+                return BadRequest();
+
+            var player = Player.Generate(user.username, user.password);
+
+            await _playerDatabaseContext.Players.AddAsync(player);
+            await _playerDatabaseContext.SaveChangesAsync();
+
+            var queue = _pool.GetFromPool(player.Id);
+
             return queue.GetResult();
         }
     }

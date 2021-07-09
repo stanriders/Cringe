@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Database
 {
-    public class PlayerDatabaseContext : DbContext
+    public sealed class PlayerDatabaseContext : DbContext
     {
         private const string connection_string = "Filename=./players.db";
 

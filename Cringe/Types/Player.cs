@@ -14,7 +14,7 @@ namespace Cringe.Types
         public uint Rank { get; set; }
         public ushort Pp { get; set; }
         public UserRanks UserRank { get; set; }
-
+        public string Password { get; set; }
         public static Player DummyPlayer => new()
         {
             Username = "osuHOW",
@@ -27,10 +27,13 @@ namespace Cringe.Types
                        UserRanks.Peppy
         };
 
-        public static Player Generate(string username)
+        public static Player Generate(string username, string password)
         {
             var player = DummyPlayer;
             player.Username = username;
+            
+            //TODO: crypt the password 
+            player.Password = password;
             return player;
         }
     }

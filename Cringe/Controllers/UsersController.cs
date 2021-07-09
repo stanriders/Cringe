@@ -25,7 +25,7 @@ namespace Cringe.Controllers
                 return Ok();
             await using var db = new PlayerDatabaseContext();
             if (db.Players.Any(x => x.Username == form.username)) return BadRequest();
-            var user = await db.Players.AddAsync(Player.Generate(form.username));
+            var user = await db.Players.AddAsync(Player.Generate(form.username, form.password));
             await db.SaveChangesAsync();
             var queue = _pool.GetFromPool(user.Entity.Id);
             //TODO: wtf?

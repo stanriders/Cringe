@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Cringe.Bancho;
+using Cringe.Bancho.Packets;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGeneration;
 
 namespace Cringe.Types
 {
@@ -19,7 +21,11 @@ namespace Cringe.Types
             return stream.ToArray();
         }
 
-        public void EnqueuePacket(DataPacket packet)
+        public static FileContentResult NullUser()
+        {
+            return new PacketQueue().EnqueuePacket(new UserId(-1)).GetResult();
+        }
+        public PacketQueue EnqueuePacket(DataPacket packet)
         {
             using var stream = new MemoryStream();
 
@@ -31,6 +37,7 @@ namespace Cringe.Types
             stream.Write(data);
 
             queue.Enqueue(stream.ToArray());
+            return this;
         }
 
         public FileContentResult GetResult()

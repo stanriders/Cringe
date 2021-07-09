@@ -60,7 +60,8 @@ namespace Cringe.Services
                         //PlayDateTime = DateTime.Now,//int.Parse(scoreData[16]),
                         OsuVersion = scoreData[17],
                         Quit = quit,
-                        Failed = !quit && failed
+                        Failed = !quit && failed,
+                        Player = player
                     };
                     await _scoreContext.Scores.AddAsync(submittedScore);
                     await _scoreContext.SaveChangesAsync();

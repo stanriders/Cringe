@@ -16,13 +16,14 @@ namespace Cringe.Controllers
     public class BanchoController : ControllerBase
     {
         private const uint protocol_version = 19;
-        private readonly BanchoService _banchoService;
+
+        private readonly BanchoServicePool _banchoServicePool;
         private readonly IConfiguration _configuration;
         private readonly TokenService _tokenService;
 
-        public BanchoController(BanchoService banchoService, TokenService tokenService, IConfiguration configuration)
+        public BanchoController(BanchoServicePool pool, TokenService tokenService, IConfiguration configuration)
         {
-            _banchoService = banchoService;
+            _banchoServicePool = pool;
             _tokenService = tokenService;
             _configuration = configuration;
         }
@@ -33,62 +34,65 @@ namespace Cringe.Controllers
             HttpContext.Response.Headers.Add("Connection", "keep-alive");
             HttpContext.Response.Headers.Add("Keep-Alive", "timeout=5, max=100");
             HttpContext.Response.Headers.Add("cho-protocol", protocol_version.ToString());
-
+            PacketQueue service;
             if (!HttpContext.Request.Headers.ContainsKey("osu-token"))
-                await HandleLogin();
+                service = await HandleLogin();
             else
-                await HandleIncomingPackets();
+                service = await HandleIncomingPackets();
 
-            return new FileContentResult(_banchoService.GetDataToSend(), "text/html; charset=UTF-8");
+            return new FileContentResult(service.GetDataToSend(), "text/html; charset=UTF-8");
         }
 
-        private async Task HandleLogin()
+        private async Task<PacketQueue> HandleLogin()
         {
             var loginData = (await new StreamReader(Request.Body).ReadToEndAsync()).Split('\n');
 
             var token = await _tokenService.AddToken(loginData[0].Trim());
             if (token == null)
-                return;
+                return null;
 
             var player = await _tokenService.GetPlayer(token.Token);
             if (player == null)
-                return;
+                return null;
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
-
+            var banchoService = _banchoServicePool.GetFromPool(player.Id);
             if (!string.IsNullOrEmpty(_configuration["LoginMessage"]))
-                _banchoService.EnqueuePacket(new Notification(_configuration["LoginMessage"]));
+                banchoService.EnqueuePacket(new Notification(_configuration["LoginMessage"]));
 
-            _banchoService.EnqueuePacket(new SilenceEnd(0));
+            banchoService.EnqueuePacket(new SilenceEnd(0));
 
-            _banchoService.EnqueuePacket(new UserId(token.PlayerId));
-            _banchoService.EnqueuePacket(new ProtocolVersion(protocol_version));
+            banchoService.EnqueuePacket(new UserId(token.PlayerId));
+            banchoService.EnqueuePacket(new ProtocolVersion(protocol_version));
 
-            _banchoService.EnqueuePacket(new Supporter(player.UserRank));
+            banchoService.EnqueuePacket(new Supporter(player.UserRank));
 
-            _banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
-            _banchoService.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
+            banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+            banchoService.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
 
-            _banchoService.EnqueuePacket(new ChannelInfoEnd());
+            banchoService.EnqueuePacket(new ChannelInfoEnd());
 
-            _banchoService.EnqueuePacket(new FriendsList(new[] {2}));
+            banchoService.EnqueuePacket(new FriendsList(new[] {2}));
 
             if (!string.IsNullOrEmpty(_configuration["MainMenuBanner"]))
-                _banchoService.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
+                banchoService.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
 
-            _banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+            banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+            return banchoService;
         }
 
-        private async Task HandleIncomingPackets()
+        private async Task<PacketQueue> HandleIncomingPackets()
         {
             var token = _tokenService.GetToken(HttpContext.Request.Headers["osu-token"][0]);
             if (token == null)
             {
                 // force update login
-                _banchoService.EnqueuePacket(new UserId(-1));
-                return;
+                var crashQueue = new PacketQueue();
+                crashQueue.EnqueuePacket(new UserId(-1));
+                return crashQueue;
             }
-
+           
+            var queue = _banchoServicePool.GetFromPool(token.PlayerId);
             await using var inStream = new MemoryStream();
             await Request.Body.CopyToAsync(inStream);
             var data = inStream.ToArray();
@@ -98,18 +102,18 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.ChangeAction:
                 {
-                    _banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
-                    _banchoService.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
+                    queue.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+                    queue.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
                     break;
                 }
                 case ClientPacketType.RequestStatusUpdate:
                 {
-                    _banchoService.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
+                    queue.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
                     break;
                 }
                 case ClientPacketType.UserPanelRequest:
                 {
-                    _banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+                    queue.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
                     break;
                 }
                 /*case ClientPacketType.UserStatsRequest:
@@ -117,6 +121,8 @@ namespace Cringe.Controllers
                     _banchoService.EnqueuePacket(new UserStats(HandleStats()), ServerPacketType.UserStats);
                 }*/
             }
+
+            return queue;
         }
 
         private async Task<Stats> HandleStats(string token)

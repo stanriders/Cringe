@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace Cringe.Types
 {
@@ -32,5 +33,6 @@ namespace Cringe.Types
         public bool Quit { get; set; }
         public bool Failed { get; set; }
         public double Pp { get; set; }
+        public Player Player { get; set; }
     }
 }

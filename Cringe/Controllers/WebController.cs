@@ -99,6 +99,9 @@ namespace Cringe.Controllers
                 .Include(x=> x.Player)
                 .ToArray();
 
+            for (var i = 0; i < scores.Length; i++)
+                scores[i].LeaderboardPosition = i + 1;
+
             var userBest = scores.FirstOrDefault(x => x.Player.Username == username);
             if (userBest != null)
                 data += userBest;
@@ -106,9 +109,7 @@ namespace Cringe.Controllers
                 data += '\n';
 
             foreach (var score in scores)
-            {
                 data += score;
-            }
 
             return new OkObjectResult(data.TrimEnd('\n'));
         }

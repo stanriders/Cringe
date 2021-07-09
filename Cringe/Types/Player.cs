@@ -17,7 +17,6 @@ namespace Cringe.Types
 
         public static Player DummyPlayer => new()
         {
-            Id = 1,
             Username = "osuHOW",
             Accuracy = 0.9999f,
             Playcount = 123456789,
@@ -27,5 +26,12 @@ namespace Cringe.Types
             UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff |
                        UserRanks.Peppy
         };
+
+        public static Player Generate(string username)
+        {
+            var player = DummyPlayer;
+            player.Username = username;
+            return player;
+        }
     }
 }

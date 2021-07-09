@@ -39,8 +39,7 @@ namespace Cringe.Controllers
                 service = await HandleLogin();
             else
                 service = await HandleIncomingPackets();
-
-            return new FileContentResult(service.GetDataToSend(), "text/html; charset=UTF-8");
+            return service.GetResult();
         }
 
         private async Task<PacketQueue> HandleLogin()

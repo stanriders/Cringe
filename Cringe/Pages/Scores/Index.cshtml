@@ -17,7 +17,7 @@
             @Html.DisplayNameFor(model => model.SubmittedScore[0].FileMd5)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SubmittedScore[0].PlayerUsername)
+            @Html.DisplayNameFor(model => model.SubmittedScore[0].Player.Username)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.SubmittedScore[0].Count300)
@@ -84,7 +84,7 @@
                 @Html.DisplayFor(modelItem => item.FileMd5)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PlayerUsername)
+                @Html.DisplayFor(modelItem => item.Player.Username)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Count300)

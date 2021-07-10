@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Cringe.Bancho;
 using Cringe.Bancho.Packets;
 using Cringe.Database;
 using Cringe.Services;
@@ -115,23 +114,21 @@ namespace Cringe.Controllers
                     return queue;
                 }
                 case ClientPacketType.SendPublicMessage:
+                {
+                    var dest = data[9..];
+                    var message = await Message.Parse(dest, token.Username);
+                    await using var players = new PlayerDatabaseContext();
+                    var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == message.Receiver);
+                    if (receivePlayer is null)
+                        return null;
+                    _banchoServicePool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));
+                    break;
+                }
                 case ClientPacketType.SendPrivateMessage:
                 {
                     var dest = data[9..];
                     var message = await Message.Parse(dest, token.Username);
-                    if (packetType == ClientPacketType.SendPublicMessage)
-                    {
-                        _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id == token.PlayerId);
-                    }
-                    else
-                    {
-                        await using var players = new PlayerDatabaseContext();
-                        var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == message.Receiver);
-                        if (receivePlayer is null)
-                            return null;
-                        _banchoServicePool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));
-                    }
-
+                    _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id == token.PlayerId);
                     break;
                 }
                 case ClientPacketType.ChangeAction:

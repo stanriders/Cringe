@@ -4,7 +4,6 @@ using System.IO;
 using Cringe.Bancho;
 using Cringe.Bancho.Packets;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGeneration;
 
 namespace Cringe.Types
 {
@@ -21,9 +20,9 @@ namespace Cringe.Types
             return stream.ToArray();
         }
 
-        public static FileContentResult NullUser()
+        public static PacketQueue NullUser()
         {
-            return new PacketQueue().EnqueuePacket(new UserId(-1)).GetResult();
+            return new PacketQueue().EnqueuePacket(new UserId(-1));
         }
 
         public PacketQueue EnqueuePacket(DataPacket packet)

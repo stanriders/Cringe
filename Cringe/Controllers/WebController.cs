@@ -15,15 +15,15 @@ namespace Cringe.Controllers
     public class WebController : ControllerBase
     {
         private readonly BanchoServicePool _banchoServicePool;
-        private readonly ScoreService _scoreService;
-        private readonly ScoreDatabaseContext _scoreDatabaseContext;
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly PlayerDatabaseContext _playerDatabaseContext;
+        private readonly ScoreDatabaseContext _scoreDatabaseContext;
+        private readonly ScoreService _scoreService;
 
-        public WebController(BanchoServicePool banchoServicePool, 
-            ScoreService scoreService, 
-            ScoreDatabaseContext scoreDatabaseContext, 
-            BeatmapDatabaseContext beatmapContext, 
+        public WebController(BanchoServicePool banchoServicePool,
+            ScoreService scoreService,
+            ScoreDatabaseContext scoreDatabaseContext,
+            BeatmapDatabaseContext beatmapContext,
             PlayerDatabaseContext playerDatabaseContext)
         {
             _banchoServicePool = banchoServicePool;
@@ -44,56 +44,58 @@ namespace Cringe.Controllers
         }
 
         [HttpPost("osu-submit-modular-selector.php")]
-        public async Task<IActionResult> SubmitScore([FromForm] string score, 
+        public async Task<IActionResult> SubmitScore([FromForm] string score,
             [FromForm] string iv,
-            [FromForm] string osuver, 
-            [FromForm(Name = "x")] string quit, 
+            [FromForm] string osuver,
+            [FromForm(Name = "x")] string quit,
             [FromForm(Name = "ft")] string failed)
         {
             var submittedScore = await _scoreService.SubmitScore(score, iv, osuver, quit == "1", failed == "1");
             if (submittedScore == null)
                 return new OkResult();
-            
+
             // send score as a notif to confirm submission
-            var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Username == submittedScore.PlayerUsername);
+            var player =
+                await _playerDatabaseContext.Players.FirstOrDefaultAsync(x =>
+                    x.Username == submittedScore.PlayerUsername);
             var queue = _banchoServicePool.GetFromPool(player.Id);
             queue.EnqueuePacket(new Notification($"{submittedScore.Pp}pp"));
 
-            var outData = $"beatmapId:{submittedScore.BeatmapId}|beatmapSetId:2|beatmapPlaycount:3|beatmapPasscount:2|approvedDate:0\n" +
-                          new Chart
-                          {
-                              Type = "beatmap",
-                              Name = "AYE",
-                              RankBefore = 2,
-                              RankAfter = 1,
-                              ScoreBefore = 100,
-                              ScoreAfter = (ulong)submittedScore.Score,
-                              ComboBefore = 1,
-                              ComboAfter = (uint)submittedScore.MaxCombo,
-                              AccuracyBefore = 0.2f,
-                              AccuracyAfter = (float)submittedScore.Accuracy,
-                              PpBefore = 0,
-                              PpAfter = (ushort)submittedScore.Pp
-                          }
-                          +
-                          new Chart
-                          {
-                              Type = "overall",
-                              Name = "Profile",
-                              RankBefore = 2,
-                              RankAfter = 1,
-                              ScoreBefore = player.TotalScore,
-                              ScoreAfter = player.TotalScore + (ulong)submittedScore.Score,
-                              ComboBefore = 1,
-                              ComboAfter = 5,
-                              AccuracyBefore = 0.2f,
-                              AccuracyAfter = 0.33f,
-                              PpBefore = 666,
-                              PpAfter = 727
-                          };
+            var outData =
+                $"beatmapId:{submittedScore.BeatmapId}|beatmapSetId:2|beatmapPlaycount:3|beatmapPasscount:2|approvedDate:0\n" +
+                new Chart
+                {
+                    Type = "beatmap",
+                    Name = "AYE",
+                    RankBefore = 2,
+                    RankAfter = 1,
+                    ScoreBefore = 100,
+                    ScoreAfter = (ulong) submittedScore.Score,
+                    ComboBefore = 1,
+                    ComboAfter = (uint) submittedScore.MaxCombo,
+                    AccuracyBefore = 0.2f,
+                    AccuracyAfter = (float) submittedScore.Accuracy,
+                    PpBefore = 0,
+                    PpAfter = (ushort) submittedScore.Pp
+                }
+                +
+                new Chart
+                {
+                    Type = "overall",
+                    Name = "Profile",
+                    RankBefore = 2,
+                    RankAfter = 1,
+                    ScoreBefore = player.TotalScore,
+                    ScoreAfter = player.TotalScore + (ulong) submittedScore.Score,
+                    ComboBefore = 1,
+                    ComboAfter = 5,
+                    AccuracyBefore = 0.2f,
+                    AccuracyAfter = 0.33f,
+                    PpBefore = 666,
+                    PpAfter = 727
+                };
 
             return new OkObjectResult(outData);
-
         }
 
         [HttpGet("osu-osz2-getscores.php")]

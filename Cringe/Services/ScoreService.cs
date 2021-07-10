@@ -14,12 +14,13 @@ namespace Cringe.Services
 {
     public class ScoreService
     {
-        private readonly PlayerDatabaseContext _playerContext;
-        private readonly ScoreDatabaseContext _scoreContext;
         private readonly BeatmapDatabaseContext _beatmapContext;
+        private readonly PlayerDatabaseContext _playerContext;
         private readonly PpService _ppService;
+        private readonly ScoreDatabaseContext _scoreContext;
 
-        public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext, BeatmapDatabaseContext beatmapContext, PpService ppService)
+        public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
+            BeatmapDatabaseContext beatmapContext, PpService ppService)
         {
             _scoreContext = scoreContext;
             _playerContext = playerContext;
@@ -53,7 +54,8 @@ namespace Cringe.Services
                 if (beatmap is null)
                     return null;
 
-                if (!DateTime.TryParseExact(scoreData[16], "yyMMddhhmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                if (!DateTime.TryParseExact(scoreData[16], "yyMMddhhmmss", CultureInfo.InvariantCulture,
+                    DateTimeStyles.None, out var date))
                     date = DateTime.UtcNow;
 
                 var submittedScore = new SubmittedScore

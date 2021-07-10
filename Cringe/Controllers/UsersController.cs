@@ -11,8 +11,8 @@ namespace Cringe.Controllers
     [Route("/users")]
     public class UsersController : ControllerBase
     {
-        private readonly BanchoServicePool _pool;
         private readonly PlayerDatabaseContext _playerDatabaseContext;
+        private readonly BanchoServicePool _pool;
 
         public UsersController(BanchoServicePool pool, PlayerDatabaseContext playerDatabaseContext)
         {
@@ -25,8 +25,8 @@ namespace Cringe.Controllers
         {
             if (check == 0)
                 return Ok();
-            
-            if (_playerDatabaseContext.Players.Any(x => x.Username == user.username)) 
+
+            if (_playerDatabaseContext.Players.Any(x => x.Username == user.username))
                 return BadRequest();
 
             var player = Player.Generate(user.username, user.password);

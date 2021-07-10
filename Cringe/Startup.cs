@@ -14,7 +14,7 @@ namespace Cringe
         {
             Configuration = configuration;
         }
-         
+
         // TODO: better way to get config outside of DI
         public static IConfiguration Configuration { get; private set; }
 

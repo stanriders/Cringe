@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Cringe.Types;
 using OppaiSharp;
+using Beatmap = OppaiSharp.Beatmap;
 
 namespace Cringe.Services
 {
@@ -19,10 +20,11 @@ namespace Cringe.Services
             await using var stream = new MemoryStream(await _beatmapService.GetBeatmapBytes(score.BeatmapId), false);
             using var reader = new StreamReader(stream, true);
 
-            var map = OppaiSharp.Beatmap.Read(reader);
-            var diff = new DiffCalc().Calc(map, (Mods)score.Mods);
+            var map = Beatmap.Read(reader);
+            var diff = new DiffCalc().Calc(map, (Mods) score.Mods);
 
-            return new PPv2(new PPv2Parameters(map, diff, score.Accuracy / 100, score.CountMiss, score.MaxCombo, (Mods)score.Mods)).Total;
+            return new PPv2(new PPv2Parameters(map, diff, score.Accuracy / 100, score.CountMiss, score.MaxCombo,
+                (Mods) score.Mods)).Total;
         }
     }
 }

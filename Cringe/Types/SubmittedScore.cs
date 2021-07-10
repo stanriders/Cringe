@@ -6,9 +6,8 @@ namespace Cringe.Types
 {
     public class SubmittedScore
     {
-        [Key] 
-        public int Id { get; set; }
-        
+        [Key] public int Id { get; set; }
+
         public int Count300 { get; set; }
         public int Count100 { get; set; }
         public int Count50 { get; set; }
@@ -31,8 +30,7 @@ namespace Cringe.Types
         public int BeatmapId { get; set; }
         public string PlayerUsername { get; set; }
 
-        [NotMapped]
-        public int LeaderboardPosition { get; set; }
+        [NotMapped] public int LeaderboardPosition { get; set; }
 
         [NotMapped]
         public double Accuracy
@@ -48,8 +46,8 @@ namespace Cringe.Types
         public override string ToString()
         {
             //18204696(scoreId)|sendlolipls(username)|167060(score/pp)|663(combo)|0(50)|6(100)|483(300)|0(miss)|6(katu)|79(geki)|False(fc)|216(mods)|101029(???)|4(rank)|1596985749(date)|1(??)
-            return $"{Id}|{PlayerUsername}|{Score}|{MaxCombo}|{Count50}|{Count100}|{Count300}|{CountMiss}|{CountKatu}|{CountGeki}|{FullCombo}|{Mods}|1|{LeaderboardPosition}|{((DateTimeOffset)PlayDateTime).ToUnixTimeSeconds()}|1\n";
-            
+            return
+                $"{Id}|{PlayerUsername}|{Score}|{MaxCombo}|{Count50}|{Count100}|{Count300}|{CountMiss}|{CountKatu}|{CountGeki}|{FullCombo}|{Mods}|1|{LeaderboardPosition}|{((DateTimeOffset) PlayDateTime).ToUnixTimeSeconds()}|1\n";
         }
     }
 }

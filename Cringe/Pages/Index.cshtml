@@ -8,51 +8,51 @@
 
 <table class="table">
     <thead>
-        <tr>
-            <th>Beatmap</th>
-            <th>Username</th>
-            <th>Accuracy</th>
-            <th>Combo</th>
-            <th>Rank</th>
-            <th>Mods</th>
-            <th>Game Mode</th>
-            <th>Date</th>
-            <th>CRINGE POINTS</th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>Beatmap</th>
+        <th>Username</th>
+        <th>Accuracy</th>
+        <th>Combo</th>
+        <th>Rank</th>
+        <th>Mods</th>
+        <th>Game Mode</th>
+        <th>Date</th>
+        <th>CRINGE POINTS</th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Scores)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BeatmapId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlayerUsername)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Accuracy)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MaxCombo)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rank)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Mods)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.GameMode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlayDateTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Pp)
-                </td>
-            </tr>
-        }
+    @foreach (var item in Model.Scores)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.BeatmapId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerUsername)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Accuracy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxCombo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rank)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mods)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GameMode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Pp)
+            </td>
+        </tr>
+    }
     </tbody>
 </table>

@@ -21,10 +21,7 @@ namespace Cringe.Services
             await using var playerDb = new PlayerDatabaseContext();
 
             var player = await playerDb.Players.FirstOrDefaultAsync(x => x.Username == username);
-            if (player == null)
-            {
-                return null;
-            }
+            if (player == null) return null;
 
             var token = new UserToken
             {

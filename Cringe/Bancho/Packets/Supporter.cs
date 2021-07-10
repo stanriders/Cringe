@@ -11,7 +11,7 @@ namespace Cringe.Bancho.Packets
             rank = _rank;
         }
 
-        public override ServerPacketType Type => ServerPacketType.Supporter;
+        public override ServerPacketType Type => ServerPacketType.Privileges;
 
         public override byte[] GetBytes()
         {

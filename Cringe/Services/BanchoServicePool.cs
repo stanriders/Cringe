@@ -5,7 +5,7 @@ namespace Cringe.Services
 {
     public class BanchoServicePool
     {
-        private Dictionary<int, PacketQueue> _pool;
+        private readonly Dictionary<int, PacketQueue> _pool;
 
         public BanchoServicePool()
         {
@@ -14,10 +14,7 @@ namespace Cringe.Services
 
         public PacketQueue GetFromPool(int user)
         {
-            if (_pool.TryGetValue(user, out var value))
-            {
-                return value;
-            }
+            if (_pool.TryGetValue(user, out var value)) return value;
 
             var service = new PacketQueue();
             _pool.Add(user, service);

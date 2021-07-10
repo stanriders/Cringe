@@ -2,3 +2,74 @@
 @model Cringe.Pages.IndexModel
 @{
 }
+
+<h1>Biggest Cringe</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].BeatmapId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].PlayerUsername)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].Accuracy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].MaxCombo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].Rank)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].Mods)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].GameMode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].PlayDateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores[0].Pp)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Scores)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BeatmapId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlayerUsername)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Accuracy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxCombo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rank)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mods)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameMode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlayDateTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pp)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

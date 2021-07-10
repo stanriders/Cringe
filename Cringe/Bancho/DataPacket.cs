@@ -12,37 +12,37 @@ namespace Cringe.Bancho
 
         public abstract byte[] GetBytes();
 
-        protected byte[] PackData(short data)
+        protected static byte[] PackData(short data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        protected byte[] PackData(ushort data)
+        protected static byte[] PackData(ushort data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        protected byte[] PackData(int data)
+        protected static byte[] PackData(int data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        protected byte[] PackData(uint data)
+        protected static byte[] PackData(uint data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        protected byte[] PackData(long data)
+        protected static byte[] PackData(long data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        protected byte[] PackData(ulong data)
+        protected static byte[] PackData(ulong data)
         {
             return BitConverter.GetBytes(data);
         }
 
-        protected byte[] PackData(string data)
+        protected static byte[] PackData(string data)
         {
             using var stream = new MemoryStream();
             stream.WriteByte(0x0B);
@@ -52,7 +52,7 @@ namespace Cringe.Bancho
             return stream.ToArray();
         }
 
-        protected byte[] PackData(int[] data)
+        protected static byte[] PackData(int[] data)
         {
             using var stream = new MemoryStream();
             stream.Write(BitConverter.GetBytes((uint) data.Length));
@@ -60,9 +60,18 @@ namespace Cringe.Bancho
             return stream.ToArray();
         }
 
-        protected byte[] PackData(float data)
+        protected static byte[] PackData(float data)
         {
             return BitConverter.GetBytes(data);
+        }
+
+        public static string ReadString(MemoryStream stream)
+        {
+            stream.ReadByte();
+            var len = (int) stream.ReadLEB128Unsigned();
+            var buffer = new byte[len];
+            stream.Read(buffer, 0, len);
+            return Encoding.Latin1.GetString(buffer);
         }
     }
 }

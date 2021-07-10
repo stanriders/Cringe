@@ -50,14 +50,12 @@ namespace Cringe.Types
 
         public static Player DummyPlayer => new()
         {
-            Username = "osuHOW",
-            Accuracy = 0.9999f,
-            Playcount = 123456789,
-            TotalScore = 999999999,
+            Accuracy = 1.0f,
+            Playcount = 0,
+            TotalScore = 0,
             Rank = 1,
-            Pp = 11727,
-            UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff |
-                       UserRanks.Peppy
+            Pp = 0,
+            UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff | UserRanks.Peppy
         };
 
         public static Player Generate(string username, string password)

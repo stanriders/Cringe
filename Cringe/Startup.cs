@@ -1,6 +1,5 @@
 using Cringe.Database;
 using Cringe.Services;
-using Cringe.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,8 +14,9 @@ namespace Cringe
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
+         
+        // TODO: better way to get config outside of DI
+        public static IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -24,9 +24,15 @@ namespace Cringe
             services.AddSingleton<BanchoServicePool>();
             services.AddSingleton<TokenService>();
             services.AddTransient<ScoreService>();
+            services.AddTransient<BeatmapService>();
+            services.AddTransient<PpService>();
+            services.AddTransient<OsuApiWrapper>();
 
             services.AddDbContext<PlayerDatabaseContext>();
             services.AddDbContext<ScoreDatabaseContext>();
+            services.AddDbContext<BeatmapDatabaseContext>();
+
+            services.AddHttpClient<OsuApiWrapper>();
 
             services.AddControllers();
             services.AddRazorPages();

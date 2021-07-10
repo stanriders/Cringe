@@ -15,6 +15,39 @@ namespace Cringe.Types
         public ushort Pp { get; set; }
         public UserRanks UserRank { get; set; }
         public string Password { get; set; }
+
+        public Panel Panel =>
+            new()
+            {
+                UserId = Id,
+                Username = Username,
+                Timezone = 24,
+                Country = 0,
+                UserRank = UserRank,
+                Longitude = 0.0f,
+                Latitude = 0.0f,
+                GameRank = Rank
+            };
+
+        public Stats Stats =>
+            new()
+            {
+                UserId = (uint)Id,
+                ActionId = 0,
+                ActionText = "",
+                ActionMd5 = "",
+                ActionMods = 0,
+                GameMode = 0,
+                BeatmapId = 0,
+                RankedScore = TotalScore,
+                Accuracy = Accuracy,
+                Playcount = Playcount,
+                TotalScore = TotalScore,
+                GameRank = Rank,
+                Pp = Pp
+            };
+
+
         public static Player DummyPlayer => new()
         {
             Username = "osuHOW",

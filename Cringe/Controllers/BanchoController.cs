@@ -57,7 +57,9 @@ namespace Cringe.Controllers
                 return null;
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
+
             var banchoService = _banchoServicePool.GetFromPool(player.Id);
+
             if (!string.IsNullOrEmpty(_configuration["LoginMessage"]))
                 banchoService.EnqueuePacket(new Notification(_configuration["LoginMessage"]));
 
@@ -68,8 +70,8 @@ namespace Cringe.Controllers
 
             banchoService.EnqueuePacket(new Supporter(player.UserRank));
 
-            banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
-            banchoService.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
+            banchoService.EnqueuePacket(new UserPanel(player.Panel));
+            banchoService.EnqueuePacket(new UserStats(player.Stats));
 
             banchoService.EnqueuePacket(new ChannelInfoEnd());
 
@@ -78,7 +80,7 @@ namespace Cringe.Controllers
             if (!string.IsNullOrEmpty(_configuration["MainMenuBanner"]))
                 banchoService.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
 
-            banchoService.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+            banchoService.EnqueuePacket(new UserPanel(player.Panel));
             return banchoService;
         }
 
@@ -92,8 +94,11 @@ namespace Cringe.Controllers
                 crashQueue.EnqueuePacket(new UserId(-1));
                 return crashQueue;
             }
-           
+
+            var player = await _tokenService.GetPlayer(token.Token);
+
             var queue = _banchoServicePool.GetFromPool(token.PlayerId);
+
             await using var inStream = new MemoryStream();
             await Request.Body.CopyToAsync(inStream);
             var data = inStream.ToArray();
@@ -103,70 +108,27 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.ChangeAction:
                 {
-                    queue.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
-                    queue.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
+                    queue.EnqueuePacket(new UserPanel(player.Panel));
+                    queue.EnqueuePacket(new UserStats(player.Stats));
                     break;
                 }
                 case ClientPacketType.RequestStatusUpdate:
                 {
-                    queue.EnqueuePacket(new UserStats(await HandleStats(token.Token)));
+                    queue.EnqueuePacket(new UserStats(player.Stats));
                     break;
                 }
                 case ClientPacketType.UserPanelRequest:
                 {
-                    queue.EnqueuePacket(new UserPanel(await HandlePanel(token.Token)));
+                    queue.EnqueuePacket(new UserPanel(player.Panel));
                     break;
                 }
                 /*case ClientPacketType.UserStatsRequest:
                 {
-                    _banchoService.EnqueuePacket(new UserStats(HandleStats()), ServerPacketType.UserStats);
+                    queue.EnqueuePacket(new UserStats(player.Stats));
                 }*/
             }
 
             return queue;
-        }
-
-        private async Task<Stats> HandleStats(string token)
-        {
-            var player = await _tokenService.GetPlayer(token);
-            if (player == null)
-                return null;
-
-            return new Stats
-            {
-                UserId = (uint) player.Id,
-                ActionId = 0,
-                ActionText = "",
-                ActionMd5 = "",
-                ActionMods = 0,
-                GameMode = 0,
-                BeatmapId = 0,
-                RankedScore = player.TotalScore,
-                Accuracy = player.Accuracy,
-                Playcount = player.Playcount,
-                TotalScore = player.TotalScore,
-                GameRank = player.Rank,
-                Pp = player.Pp
-            };
-        }
-
-        private async Task<Panel> HandlePanel(string token)
-        {
-            var player = await _tokenService.GetPlayer(token);
-            if (player == null)
-                return null;
-
-            return new Panel
-            {
-                UserId = player.Id,
-                Username = player.Username,
-                Timezone = 24,
-                Country = 0,
-                UserRank = player.UserRank,
-                Longitude = 0.0f,
-                Latitude = 0.0f,
-                GameRank = player.Rank
-            };
         }
     }
 }

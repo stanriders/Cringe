@@ -34,11 +34,13 @@ namespace Cringe.Controllers
             HttpContext.Response.Headers.Add("Connection", "keep-alive");
             HttpContext.Response.Headers.Add("Keep-Alive", "timeout=5, max=100");
             HttpContext.Response.Headers.Add("cho-protocol", protocol_version.ToString());
+
             PacketQueue service;
             if (!HttpContext.Request.Headers.ContainsKey("osu-token"))
                 service = await HandleLogin();
             else
                 service = await HandleIncomingPackets();
+
             return service is null ? PacketQueue.NullUser() : service.GetResult();
         }
 

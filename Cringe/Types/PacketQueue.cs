@@ -25,6 +25,7 @@ namespace Cringe.Types
         {
             return new PacketQueue().EnqueuePacket(new UserId(-1)).GetResult();
         }
+
         public PacketQueue EnqueuePacket(DataPacket packet)
         {
             using var stream = new MemoryStream();

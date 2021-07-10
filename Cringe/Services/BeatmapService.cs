@@ -1,7 +1,5 @@
-﻿
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
-using Cringe.Database;
 using Microsoft.Extensions.Configuration;
 
 namespace Cringe.Services

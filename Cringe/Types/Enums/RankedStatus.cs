@@ -1,5 +1,4 @@
-﻿
-namespace Cringe.Types.Enums
+﻿namespace Cringe.Types.Enums
 {
     public enum RankedStatus
     {

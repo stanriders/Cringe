@@ -16,7 +16,7 @@ namespace Cringe.Types
         public UserRanks UserRank { get; set; }
         public string Password { get; set; }
 
-        public Panel Panel =>
+        public Presence Presence =>
             new()
             {
                 UserId = Id,
@@ -32,7 +32,7 @@ namespace Cringe.Types
         public Stats Stats =>
             new()
             {
-                UserId = (uint)Id,
+                UserId = (uint) Id,
                 ActionId = 0,
                 ActionText = "",
                 ActionMd5 = "",
@@ -55,14 +55,15 @@ namespace Cringe.Types
             TotalScore = 0,
             Rank = 1,
             Pp = 0,
-            UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff | UserRanks.Peppy
+            UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff |
+                       UserRanks.Peppy
         };
 
         public static Player Generate(string username, string password)
         {
             var player = DummyPlayer;
             player.Username = username;
-            
+
             //TODO: crypt the password 
             player.Password = password;
             return player;

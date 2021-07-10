@@ -1,10 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
-using System.Threading.Tasks;
 using Cringe.Types;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,10 +15,8 @@ namespace Cringe.Database
         public BeatmapDatabaseContext()
         {
             if (Database.EnsureCreated())
-            {
                 // TODO: only seed when requested
                 SeedDatabase();
-            }
         }
 
         public DbSet<Beatmap> Beatmaps { get; set; }
@@ -38,7 +34,6 @@ namespace Cringe.Database
             var addedMaps = 0;
 
             foreach (var beatmapFile in Directory.EnumerateFiles(cachePath, "*.osu").AsParallel())
-            {
                 try
                 {
                     if (addedMaps % 10000 == 0)
@@ -67,7 +62,6 @@ namespace Cringe.Database
                 {
                     Console.WriteLine($"Beatmap seeding failed for {beatmapFile}: {e}");
                 }
-            }
 
             SaveChanges();
         }

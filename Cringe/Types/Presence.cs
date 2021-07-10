@@ -2,7 +2,7 @@
 
 namespace Cringe.Types
 {
-    public class Panel
+    public class Presence
     {
         public int UserId { get; set; }
         public string Username { get; set; }

@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Cringe.Database;
 using Cringe.Types;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Pages.Beatmaps
 {
     public class IndexModel : PageModel
     {
-        private readonly Cringe.Database.BeatmapDatabaseContext _context;
+        private readonly BeatmapDatabaseContext _context;
 
-        public IndexModel(Cringe.Database.BeatmapDatabaseContext context)
+        public IndexModel(BeatmapDatabaseContext context)
         {
             _context = context;
         }
 
-        public IList<Beatmap> Beatmap { get;set; }
+        public IList<Beatmap> Beatmap { get; set; }
 
         public async Task OnGetAsync()
         {

@@ -8,12 +8,9 @@ namespace Cringe.Bancho
 {
     public abstract class DataPacket
     {
-        public virtual ServerPacketType Type { get; }
+        public abstract ServerPacketType Type { get; }
 
-        public virtual byte[] GetBytes()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract byte[] GetBytes();
 
         protected byte[] PackData(short data)
         {

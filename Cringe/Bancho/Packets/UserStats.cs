@@ -13,7 +13,7 @@ namespace Cringe.Bancho.Packets
             stats = _stats;
         }
 
-        public override ServerPacketType Type => ServerPacketType.UserPanel;
+        public override ServerPacketType Type => ServerPacketType.UserStats;
 
         public override byte[] GetBytes()
         {

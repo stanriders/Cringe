@@ -41,7 +41,13 @@ namespace Cringe.Controllers
             else
                 service = await HandleIncomingPackets();
 
-            return service is null ? PacketQueue.NullUser() : service.GetResult();
+            return service is null ? Fail(PacketQueue.NullUser().GetDataToSend()) : service.GetResult();
+        }
+
+        private IActionResult Fail(byte[] data)
+        {
+            HttpContext.Response.Headers.Add("cho-token", " ");
+            return new FileContentResult(data, "application/octet-stream; charset=UTF-8");
         }
 
         private async Task<PacketQueue> HandleLogin()
@@ -58,42 +64,36 @@ namespace Cringe.Controllers
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
 
-            var banchoService = _banchoServicePool.GetFromPool(player.Id);
+            var queue = _banchoServicePool.GetFromPool(player.Id);
 
+            queue.EnqueuePacket(new ProtocolVersion(protocol_version));
+            queue.EnqueuePacket(new UserId(token.PlayerId));
+            queue.EnqueuePacket(new Supporter(player.UserRank));
             if (!string.IsNullOrEmpty(_configuration["LoginMessage"]))
-                banchoService.EnqueuePacket(new Notification(_configuration["LoginMessage"]));
+                queue.EnqueuePacket(new Notification(_configuration["LoginMessage"]));
+            queue.EnqueuePacket(new SilenceEnd(0));
 
-            banchoService.EnqueuePacket(new SilenceEnd(0));
 
-            banchoService.EnqueuePacket(new UserId(token.PlayerId));
-            banchoService.EnqueuePacket(new ProtocolVersion(protocol_version));
+            queue.EnqueuePacket(new UserPresence(player.Presence));
+            queue.EnqueuePacket(new UserStats(player.Stats));
 
-            banchoService.EnqueuePacket(new Supporter(player.UserRank));
+            queue.EnqueuePacket(new ChannelInfoEnd());
 
-            banchoService.EnqueuePacket(new UserPanel(player.Panel));
-            banchoService.EnqueuePacket(new UserStats(player.Stats));
-
-            banchoService.EnqueuePacket(new ChannelInfoEnd());
-
-            banchoService.EnqueuePacket(new FriendsList(new[] {2}));
+            queue.EnqueuePacket(new FriendsList(new[] {2}));
 
             if (!string.IsNullOrEmpty(_configuration["MainMenuBanner"]))
-                banchoService.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
+                queue.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
 
-            banchoService.EnqueuePacket(new UserPanel(player.Panel));
-            return banchoService;
+            queue.EnqueuePacket(new UserPresence(player.Presence));
+            return queue;
         }
 
         private async Task<PacketQueue> HandleIncomingPackets()
         {
             var token = _tokenService.GetToken(HttpContext.Request.Headers["osu-token"][0]);
             if (token == null)
-            {
                 // force update login
-                var crashQueue = new PacketQueue();
-                crashQueue.EnqueuePacket(new UserId(-1));
-                return crashQueue;
-            }
+                return PacketQueue.NullUser();
 
             var player = await _tokenService.GetPlayer(token.Token);
 
@@ -108,7 +108,7 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.ChangeAction:
                 {
-                    queue.EnqueuePacket(new UserPanel(player.Panel));
+                    queue.EnqueuePacket(new UserPresence(player.Presence));
                     queue.EnqueuePacket(new UserStats(player.Stats));
                     break;
                 }
@@ -117,9 +117,9 @@ namespace Cringe.Controllers
                     queue.EnqueuePacket(new UserStats(player.Stats));
                     break;
                 }
-                case ClientPacketType.UserPanelRequest:
+                case ClientPacketType.UserPresenceRequest:
                 {
-                    queue.EnqueuePacket(new UserPanel(player.Panel));
+                    queue.EnqueuePacket(new UserPresence(player.Presence));
                     break;
                 }
                 /*case ClientPacketType.UserStatsRequest:

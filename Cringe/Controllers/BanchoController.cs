@@ -2,11 +2,14 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Cringe.Bancho;
 using Cringe.Bancho.Packets;
+using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Cringe.Controllers
@@ -35,13 +38,13 @@ namespace Cringe.Controllers
             HttpContext.Response.Headers.Add("Keep-Alive", "timeout=5, max=100");
             HttpContext.Response.Headers.Add("cho-protocol", protocol_version.ToString());
 
-            PacketQueue service;
+            PacketQueue queue;
             if (!HttpContext.Request.Headers.ContainsKey("osu-token"))
-                service = await HandleLogin();
+                queue = await HandleLogin();
             else
-                service = await HandleIncomingPackets();
+                queue = await HandleIncomingPackets();
 
-            return service is null ? Fail(PacketQueue.NullUser().GetDataToSend()) : service.GetResult();
+            return queue is null ? Fail(PacketQueue.NullUser().GetDataToSend()) : queue.GetResult();
         }
 
         private IActionResult Fail(byte[] data)
@@ -94,7 +97,7 @@ namespace Cringe.Controllers
             if (token == null)
                 // force update login
                 return PacketQueue.NullUser();
-
+            HttpContext.Response.Headers.Add("cho-token", token.Token);
             var player = await _tokenService.GetPlayer(token.Token);
 
             var queue = _banchoServicePool.GetFromPool(token.PlayerId);
@@ -106,6 +109,27 @@ namespace Cringe.Controllers
             var packetType = (ClientPacketType) BitConverter.ToUInt16(data[..2].ToArray());
             switch (packetType)
             {
+                case ClientPacketType.SendPublicMessage:
+                case ClientPacketType.SendPrivateMessage:
+                {
+                    var dest = data[9..];
+                    await using var stream = new MemoryStream(dest);
+                    var text = DataPacket.ReadString(stream);
+                    var receiver = DataPacket.ReadString(stream);
+                    var message = new Message(text, token.Username, receiver);
+                    if (packetType == ClientPacketType.SendPublicMessage)
+                        _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id == token.PlayerId);
+                    else
+                    {
+                        await using var players = new PlayerDatabaseContext();
+                        var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == receiver);
+                        if (receivePlayer is null)
+                            return null;
+                        _banchoServicePool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));
+                    }
+                    
+                    break;
+                }
                 case ClientPacketType.ChangeAction:
                 {
                     queue.EnqueuePacket(new UserPresence(player.Presence));
@@ -122,6 +146,8 @@ namespace Cringe.Controllers
                     queue.EnqueuePacket(new UserPresence(player.Presence));
                     break;
                 }
+                case ClientPacketType.Ping:
+                    return queue;
                 /*case ClientPacketType.UserStatsRequest:
                 {
                     queue.EnqueuePacket(new UserStats(player.Stats));

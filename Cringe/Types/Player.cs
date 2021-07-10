@@ -16,7 +16,7 @@ namespace Cringe.Types
         public UserRanks UserRank { get; set; }
         public string Password { get; set; }
 
-        public Panel Panel =>
+        public Presence Presence =>
             new()
             {
                 UserId = Id,

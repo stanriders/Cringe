@@ -74,7 +74,7 @@ namespace Cringe.Controllers
             queue.EnqueuePacket(new SilenceEnd(0));
 
 
-            queue.EnqueuePacket(new UserPanel(player.Panel));
+            queue.EnqueuePacket(new UserPresence(player.Presence));
             queue.EnqueuePacket(new UserStats(player.Stats));
 
             queue.EnqueuePacket(new ChannelInfoEnd());
@@ -84,7 +84,7 @@ namespace Cringe.Controllers
             if (!string.IsNullOrEmpty(_configuration["MainMenuBanner"]))
                 queue.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
 
-            queue.EnqueuePacket(new UserPanel(player.Panel));
+            queue.EnqueuePacket(new UserPresence(player.Presence));
             return queue;
         }
 
@@ -108,7 +108,7 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.ChangeAction:
                 {
-                    queue.EnqueuePacket(new UserPanel(player.Panel));
+                    queue.EnqueuePacket(new UserPresence(player.Presence));
                     queue.EnqueuePacket(new UserStats(player.Stats));
                     break;
                 }
@@ -119,7 +119,7 @@ namespace Cringe.Controllers
                 }
                 case ClientPacketType.UserPresenceRequest:
                 {
-                    queue.EnqueuePacket(new UserPanel(player.Panel));
+                    queue.EnqueuePacket(new UserPresence(player.Presence));
                     break;
                 }
                 /*case ClientPacketType.UserStatsRequest:

@@ -38,7 +38,7 @@ namespace Cringe.Services
         public void ActionOn(int id, Action<PacketQueue> action)
         {
             var success = _pool.TryGetValue(id, out var res);
-            if(!success)
+            if (!success)
                 return;
             action(res);
         }

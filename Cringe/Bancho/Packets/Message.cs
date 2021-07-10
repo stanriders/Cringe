@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Text;
 using Cringe.Types.Enums;
 
 namespace Cringe.Bancho.Packets
@@ -7,8 +6,8 @@ namespace Cringe.Bancho.Packets
     public class Message : DataPacket
     {
         private readonly string _message;
-        private readonly string _who;
         private readonly string _where;
+        private readonly string _who;
 
         public Message(string message, string who, string where)
         {
@@ -18,6 +17,7 @@ namespace Cringe.Bancho.Packets
         }
 
         public override ServerPacketType Type => ServerPacketType.SendMessage;
+
         public override byte[] GetBytes()
         {
             var data = PackData(_who).AsEnumerable();

@@ -118,7 +118,9 @@ namespace Cringe.Controllers
                     var receiver = DataPacket.ReadString(stream);
                     var message = new Message(text, token.Username, receiver);
                     if (packetType == ClientPacketType.SendPublicMessage)
+                    {
                         _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id == token.PlayerId);
+                    }
                     else
                     {
                         await using var players = new PlayerDatabaseContext();
@@ -127,7 +129,7 @@ namespace Cringe.Controllers
                             return null;
                         _banchoServicePool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));
                     }
-                    
+
                     break;
                 }
                 case ClientPacketType.ChangeAction:

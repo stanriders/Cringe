@@ -42,7 +42,7 @@ namespace Cringe.Types
 
         public FileContentResult GetResult()
         {
-            return new FileContentResult(GetDataToSend(), "text/html; charset=UTF-8");
+            return new(GetDataToSend(), "text/html; charset=UTF-8");
         }
     }
 }

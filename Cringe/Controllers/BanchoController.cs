@@ -44,7 +44,7 @@ namespace Cringe.Controllers
             else
                 queue = await HandleIncomingPackets();
 
-            return queue is null ? Fail(PacketQueue.NullUser().GetDataToSend()) : queue.GetResult();
+            return queue?.GetResult() ?? Fail(PacketQueue.NullUser().GetDataToSend());
         }
 
         private IActionResult Fail(byte[] data)
@@ -109,6 +109,11 @@ namespace Cringe.Controllers
             var packetType = (ClientPacketType) BitConverter.ToUInt16(data[..2].ToArray());
             switch (packetType)
             {
+                case ClientPacketType.Logout:
+                {
+                    _banchoServicePool.Nuke(token.PlayerId);
+                    return queue;
+                }
                 case ClientPacketType.SendPublicMessage:
                 case ClientPacketType.SendPrivateMessage:
                 {

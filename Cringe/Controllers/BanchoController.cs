@@ -118,10 +118,7 @@ namespace Cringe.Controllers
                 case ClientPacketType.SendPrivateMessage:
                 {
                     var dest = data[9..];
-                    await using var stream = new MemoryStream(dest);
-                    var text = DataPacket.ReadString(stream);
-                    var receiver = DataPacket.ReadString(stream);
-                    var message = new Message(text, token.Username, receiver);
+                    var message = await Message.Parse(dest, token.Username);
                     if (packetType == ClientPacketType.SendPublicMessage)
                     {
                         _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id == token.PlayerId);
@@ -129,7 +126,7 @@ namespace Cringe.Controllers
                     else
                     {
                         await using var players = new PlayerDatabaseContext();
-                        var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == receiver);
+                        var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == message.Receiver);
                         if (receivePlayer is null)
                             return null;
                         _banchoServicePool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));

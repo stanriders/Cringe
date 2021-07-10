@@ -14,10 +14,10 @@
     <thead>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.SubmittedScore[0].FileMd5)
+            @Html.DisplayNameFor(model => model.SubmittedScore[0].BeatmapId)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SubmittedScore[0].Player.Username)
+            @Html.DisplayNameFor(model => model.SubmittedScore[0].PlayerUsername)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.SubmittedScore[0].Count300)
@@ -81,10 +81,10 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FileMd5)
+                @Html.DisplayFor(modelItem => item.BeatmapId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Player.Username)
+                @Html.DisplayFor(modelItem => item.PlayerUsername)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Count300)

@@ -16,15 +16,23 @@ namespace Cringe.Services
     {
         private readonly PlayerDatabaseContext _playerContext;
         private readonly ScoreDatabaseContext _scoreContext;
+        private readonly BeatmapDatabaseContext _beatmapContext;
+        private readonly PpService _ppService;
 
-        public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext)
+        public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext, BeatmapDatabaseContext beatmapContext, PpService ppService)
         {
             _scoreContext = scoreContext;
             _playerContext = playerContext;
+            _beatmapContext = beatmapContext;
+            _ppService = ppService;
         }
 
         public async Task<SubmittedScore> SubmitScore(string score, string iv, string osuver, bool quit, bool failed)
         {
+            // TODO: recent scores
+            if (quit || failed)
+                return null;
+
             var key = "h89f2-890h2h89b34g-h80g134n90133";
             if (!string.IsNullOrEmpty(osuver))
                 key = $"osu!-scoreburgr---------{osuver}";
@@ -38,45 +46,50 @@ namespace Cringe.Services
                 var username = scoreData[1].Trim();
 
                 var player = await _playerContext.Players.FirstOrDefaultAsync(x => x.Username == username);
-                if (player != null)
+                if (player is null)
+                    return null;
+
+                var beatmap = await _beatmapContext.Beatmaps.FirstOrDefaultAsync(x => x.Md5 == scoreData[0]);
+                if (beatmap is null)
+                    return null;
+
+                if (!DateTime.TryParseExact(scoreData[16], "yyMMddhhmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                    date = DateTime.UtcNow;
+
+                var submittedScore = new SubmittedScore
                 {
-                    if (!DateTime.TryParseExact(scoreData[16], "yyMMddhhmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
-                        date = DateTime.Now;
+                    Count300 = int.Parse(scoreData[3]),
+                    Count100 = int.Parse(scoreData[4]),
+                    Count50 = int.Parse(scoreData[5]),
+                    CountGeki = int.Parse(scoreData[6]),
+                    CountKatu = int.Parse(scoreData[7]),
+                    CountMiss = int.Parse(scoreData[8]),
+                    Score = long.Parse(scoreData[9]),
+                    MaxCombo = int.Parse(scoreData[10]),
+                    FullCombo = scoreData[11] == "True",
+                    Rank = scoreData[12],
+                    Mods = int.Parse(scoreData[13]),
+                    Passed = scoreData[14] == "True",
+                    GameMode = int.Parse(scoreData[15]),
+                    PlayDateTime = date,
+                    OsuVersion = scoreData[17].Trim(),
+                    Quit = quit,
+                    Failed = !quit && failed,
+                    PlayerUsername = player.Username,
+                    BeatmapId = beatmap.Id
+                };
+                submittedScore.Pp = await _ppService.CalculatePp(submittedScore);
 
-                    var submittedScore = new SubmittedScore
-                    {
-                        FileMd5 = scoreData[0],
-                        // %s%s%s = scoreData[2]
-                        Count300 = int.Parse(scoreData[3]),
-                        Count100 = int.Parse(scoreData[4]),
-                        Count50 = int.Parse(scoreData[5]),
-                        CountGeki = int.Parse(scoreData[6]),
-                        CountKatu = int.Parse(scoreData[7]),
-                        CountMiss = int.Parse(scoreData[8]),
-                        Score = int.Parse(scoreData[9]),
-                        MaxCombo = int.Parse(scoreData[10]),
-                        FullCombo = scoreData[11] == "True",
-                        Rank = scoreData[12],
-                        Mods = int.Parse(scoreData[13]),
-                        Passed = scoreData[14] == "True",
-                        GameMode = int.Parse(scoreData[15]),
-                        PlayDateTime = date,
-                        OsuVersion = scoreData[17].Trim(),
-                        Quit = quit,
-                        Failed = !quit && failed,
-                        Player = player
-                    };
-                    await _scoreContext.Scores.AddAsync(submittedScore);
-                    await _scoreContext.SaveChangesAsync();
+                await _scoreContext.Scores.AddAsync(submittedScore);
+                await _scoreContext.SaveChangesAsync();
 
-                    if (scoreData[14] == "True")
-                        player.Playcount++;
+                if (scoreData[14] == "True")
+                    player.Playcount++;
 
-                    player.TotalScore += (ulong) submittedScore.Score;
-                    await _playerContext.SaveChangesAsync();
+                player.TotalScore += (ulong) submittedScore.Score;
+                await _playerContext.SaveChangesAsync();
 
-                    return submittedScore;
-                }
+                return submittedScore;
             }
 
             return null;

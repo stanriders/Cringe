@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using Cringe.Bancho.Packets;
 using Cringe.Database;
 using Cringe.Types;
 using Microsoft.EntityFrameworkCore;
@@ -14,18 +15,23 @@ namespace Cringe.Services
 {
     public class ScoreService
     {
+        private readonly BanchoServicePool _banchoServicePool;
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly PlayerDatabaseContext _playerContext;
         private readonly PpService _ppService;
         private readonly ScoreDatabaseContext _scoreContext;
+        private readonly PlayerTopscoreStatsCache _ppCache;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
-            BeatmapDatabaseContext beatmapContext, PpService ppService)
+            BeatmapDatabaseContext beatmapContext, PpService ppService, BanchoServicePool banchoServicePool,
+            PlayerTopscoreStatsCache ppCache)
         {
+            _banchoServicePool = banchoServicePool;
             _scoreContext = scoreContext;
             _playerContext = playerContext;
             _beatmapContext = beatmapContext;
             _ppService = ppService;
+            _ppCache = ppCache;
         }
 
         public async Task<SubmittedScore> SubmitScore(string score, string iv, string osuver, bool quit, bool failed)
@@ -54,6 +60,10 @@ namespace Cringe.Services
                 if (beatmap is null)
                     return null;
 
+                // this shouldn't happen since we check for quit & failed but it does
+                if (scoreData[12] == "F")
+                    return null;
+
                 if (!DateTime.TryParseExact(scoreData[16], "yyMMddhhmmss", CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out var date))
                     date = DateTime.UtcNow;
@@ -77,6 +87,7 @@ namespace Cringe.Services
                     OsuVersion = scoreData[17].Trim(),
                     Quit = quit,
                     Failed = !quit && failed,
+                    PlayerId = player.Id,
                     PlayerUsername = player.Username,
                     BeatmapId = beatmap.Id
                 };
@@ -86,10 +97,17 @@ namespace Cringe.Services
                 await _scoreContext.SaveChangesAsync();
 
                 if (scoreData[14] == "True")
+                {
                     player.Playcount++;
+                    await _ppCache.UpdatePlayerStats(player);
+                }
 
                 player.TotalScore += (ulong) submittedScore.Score;
                 await _playerContext.SaveChangesAsync();
+
+                // send score as a notif to confirm submission
+                var queue = _banchoServicePool.GetFromPool(player.Id);
+                queue.EnqueuePacket(new Notification($"{submittedScore.Pp}pp"));
 
                 return submittedScore;
             }

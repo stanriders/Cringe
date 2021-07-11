@@ -1,10 +1,9 @@
 ﻿namespace Cringe.Types
 {
-    public class Chart
+    public class PlayerChart
     {
         public string Name { get; set; }
         public string Url { get; set; }
-        public string Type { get; set; }
 
         public uint RankBefore { get; set; }
         public uint RankAfter { get; set; }
@@ -23,7 +22,7 @@
 
         public override string ToString()
         {
-            return $"chartId:{Type}|" +
+            return "chartId:overall|" +
                    $"chartUrl:{Url}|" +
                    $"chartName:{Name}|" +
                    $"rankBefore:{RankBefore}|" +
@@ -37,8 +36,7 @@
                    $"accuracyBefore:{AccuracyBefore}|" +
                    $"accuracyAfter:{AccuracyAfter}|" +
                    $"ppBefore:{PpBefore}|" +
-                   $"ppAfter:{PpAfter}|" +
-                   "score_id:1";
+                   $"ppAfter:{PpAfter}";
         }
     }
 }

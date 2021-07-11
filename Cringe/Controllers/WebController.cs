@@ -14,23 +14,17 @@ namespace Cringe.Controllers
     [Route("[controller]")]
     public class WebController : ControllerBase
     {
-        private readonly BanchoServicePool _banchoServicePool;
         private readonly BeatmapDatabaseContext _beatmapContext;
-        private readonly PlayerDatabaseContext _playerDatabaseContext;
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
         private readonly ScoreService _scoreService;
 
-        public WebController(BanchoServicePool banchoServicePool,
-            ScoreService scoreService,
+        public WebController(ScoreService scoreService,
             ScoreDatabaseContext scoreDatabaseContext,
-            BeatmapDatabaseContext beatmapContext,
-            PlayerDatabaseContext playerDatabaseContext)
+            BeatmapDatabaseContext beatmapContext)
         {
-            _banchoServicePool = banchoServicePool;
             _scoreService = scoreService;
             _scoreDatabaseContext = scoreDatabaseContext;
             _beatmapContext = beatmapContext;
-            _playerDatabaseContext = playerDatabaseContext;
         }
 
         [HttpGet("bancho_connect.php")]
@@ -54,18 +48,10 @@ namespace Cringe.Controllers
             if (submittedScore == null)
                 return new OkResult();
 
-            // send score as a notif to confirm submission
-            var player =
-                await _playerDatabaseContext.Players.FirstOrDefaultAsync(x =>
-                    x.Username == submittedScore.PlayerUsername);
-            var queue = _banchoServicePool.GetFromPool(player.Id);
-            queue.EnqueuePacket(new Notification($"{submittedScore.Pp}pp"));
-
             var outData =
                 $"beatmapId:{submittedScore.BeatmapId}|beatmapSetId:2|beatmapPlaycount:3|beatmapPasscount:2|approvedDate:0\n" +
-                new Chart
+                new BeatmapChart
                 {
-                    Type = "beatmap",
                     Name = "AYE",
                     RankBefore = 2,
                     RankAfter = 1,
@@ -79,14 +65,13 @@ namespace Cringe.Controllers
                     PpAfter = (ushort) submittedScore.Pp
                 }
                 +
-                new Chart
+                new PlayerChart
                 {
-                    Type = "overall",
                     Name = "Profile",
                     RankBefore = 2,
                     RankAfter = 1,
-                    ScoreBefore = player.TotalScore,
-                    ScoreAfter = player.TotalScore + (ulong) submittedScore.Score,
+                    ScoreBefore = 0,
+                    ScoreAfter = (ulong) submittedScore.Score,
                     ComboBefore = 1,
                     ComboAfter = 5,
                     AccuracyBefore = 0.2f,

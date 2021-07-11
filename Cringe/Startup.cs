@@ -22,17 +22,20 @@ namespace Cringe
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<BanchoServicePool>();
-            services.AddSingleton<TokenService>();
+
+            services.AddTransient<TokenService>();
             services.AddTransient<ScoreService>();
             services.AddTransient<BeatmapService>();
             services.AddTransient<PpService>();
             services.AddTransient<OsuApiWrapper>();
+            services.AddTransient<PlayerTopscoreStatsCache>();
 
             services.AddDbContext<PlayerDatabaseContext>();
             services.AddDbContext<ScoreDatabaseContext>();
             services.AddDbContext<BeatmapDatabaseContext>();
 
             services.AddHttpClient<OsuApiWrapper>();
+            services.AddMemoryCache();
 
             services.AddControllers();
             services.AddRazorPages();

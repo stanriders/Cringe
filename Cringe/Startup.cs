@@ -23,7 +23,7 @@ namespace Cringe
         {
             services.AddSingleton<BanchoServicePool>();
             services.AddSingleton<ChatService>();
-            services.AddSingleton<TokenService>();
+            services.AddTransient<TokenService>();
             services.AddTransient<ScoreService>();
             services.AddTransient<BeatmapService>();
             services.AddTransient<PpService>();

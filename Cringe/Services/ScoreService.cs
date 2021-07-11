@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cringe.Bancho.Packets;
@@ -34,7 +35,7 @@ namespace Cringe.Services
             _ppCache = ppCache;
         }
 
-        public async Task<SubmittedScore> SubmitScore(string score, string iv, string osuver, bool quit, bool failed)
+        public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit, bool failed)
         {
             // TODO: recent scores
             if (quit || failed)
@@ -44,7 +45,7 @@ namespace Cringe.Services
             if (!string.IsNullOrEmpty(osuver))
                 key = $"osu!-scoreburgr---------{osuver}";
 
-            var decodedData = Convert.FromBase64String(score);
+            var decodedData = Convert.FromBase64String(encodedData);
             var decodedIv = Convert.FromBase64String(iv);
 
             var scoreData = DecryptScoreData(decodedData, decodedIv, Encoding.Default.GetBytes(key));
@@ -64,6 +65,15 @@ namespace Cringe.Services
                 if (scoreData[12] == "F")
                     return null;
 
+                var score = long.Parse(scoreData[9]);
+
+                var previousScore = await _scoreContext.Scores
+                    .Where(x => x.PlayerId == player.Id && x.BeatmapId == beatmap.Id)
+                    .FirstOrDefaultAsync();
+
+                if (previousScore.Score > score)
+                    return null;
+
                 if (!DateTime.TryParseExact(scoreData[16], "yyMMddhhmmss", CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out var date))
                     date = DateTime.UtcNow;
@@ -76,7 +86,7 @@ namespace Cringe.Services
                     CountGeki = int.Parse(scoreData[6]),
                     CountKatu = int.Parse(scoreData[7]),
                     CountMiss = int.Parse(scoreData[8]),
-                    Score = long.Parse(scoreData[9]),
+                    Score = score,
                     MaxCombo = int.Parse(scoreData[10]),
                     FullCombo = scoreData[11] == "True",
                     Rank = scoreData[12],
@@ -93,16 +103,17 @@ namespace Cringe.Services
                 };
                 submittedScore.Pp = await _ppService.CalculatePp(submittedScore);
 
+                _scoreContext.Scores.Remove(previousScore);
                 await _scoreContext.Scores.AddAsync(submittedScore);
                 await _scoreContext.SaveChangesAsync();
 
-                if (scoreData[14] == "True")
+                if (submittedScore.Passed)
                 {
                     player.Playcount++;
                     await _ppCache.UpdatePlayerStats(player);
                 }
 
-                player.TotalScore += (ulong) submittedScore.Score;
+                player.TotalScore += (ulong)score;
                 await _playerContext.SaveChangesAsync();
 
                 // send score as a notif to confirm submission

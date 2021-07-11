@@ -8,7 +8,6 @@ namespace Cringe.Bancho.Packets
     public class Message : DataPacket
     {
         private readonly string _message;
-        public string Receiver { get; }
         private readonly string _who;
 
         private Message(string message, string who, string receiver)
@@ -17,6 +16,8 @@ namespace Cringe.Bancho.Packets
             _who = who;
             Receiver = receiver;
         }
+
+        public string Receiver { get; }
 
         public override ServerPacketType Type => ServerPacketType.SendMessage;
 

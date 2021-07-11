@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Cringe.Bancho.Packets;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;

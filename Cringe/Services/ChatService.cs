@@ -43,14 +43,14 @@ namespace Cringe.Services
                 _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelInfo(chat)));
             }
         }
-        
+
         public void Connect(int user, string channelName)
         {
             if (!_chatPool.TryGetValue(channelName, out var chat))
                 return;
             chat.Users.Add(user);
             _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelJoinSuccess(chat)));
-            _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelInfo(chat))); 
+            _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelInfo(chat)));
         }
 
         public void Disconnect(int user, string channelName)
@@ -58,7 +58,7 @@ namespace Cringe.Services
             if (!_chatPool.TryGetValue(channelName, out var chat))
                 return;
             chat.Users.Remove(user);
-            _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelInfo(chat))); 
+            _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelInfo(chat)));
         }
 
         public void NukeUser(int user)

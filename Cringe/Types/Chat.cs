@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using Cringe.Types.Enums;
 
 namespace Cringe.Types
 {
     public class Chat
     {
-
         public Chat(string name, string description, bool autoJoin = false)
         {
             Name = name;

@@ -4,7 +4,6 @@ using System.IO;
 using Cringe.Bancho;
 using Cringe.Bancho.Packets;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Bcpg;
 
 namespace Cringe.Types
 {

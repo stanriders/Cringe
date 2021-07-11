@@ -5,10 +5,10 @@ namespace Cringe.Bancho.Packets
 {
     public class ChannelAutoJoin : ChannelInfo
     {
-        public override ServerPacketType Type => ServerPacketType.ChannelAutoJoin;
-
         public ChannelAutoJoin(Chat chat) : base(chat)
         {
         }
+
+        public override ServerPacketType Type => ServerPacketType.ChannelAutoJoin;
     }
 }

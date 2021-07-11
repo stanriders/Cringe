@@ -48,7 +48,7 @@ namespace Cringe.Services
 
         public void Nuke(int tokenPlayerId)
         {
-            if(!_pool.ContainsKey(tokenPlayerId)) return;
+            if (!_pool.ContainsKey(tokenPlayerId)) return;
             _logger.LogInformation($"{tokenPlayerId} logged out. Nuking the queue");
             _pool.Remove(tokenPlayerId);
         }

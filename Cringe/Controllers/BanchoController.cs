@@ -20,12 +20,14 @@ namespace Cringe.Controllers
         private const uint protocol_version = 19;
 
         private readonly BanchoServicePool _banchoServicePool;
+        private readonly ChatService _chats;
         private readonly IConfiguration _configuration;
         private readonly TokenService _tokenService;
 
-        public BanchoController(BanchoServicePool pool, TokenService tokenService, IConfiguration configuration)
+        public BanchoController(BanchoServicePool pool, ChatService chats, TokenService tokenService, IConfiguration configuration)
         {
             _banchoServicePool = pool;
+            _chats = chats;
             _tokenService = tokenService;
             _configuration = configuration;
         }
@@ -87,6 +89,12 @@ namespace Cringe.Controllers
                 queue.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
 
             queue.EnqueuePacket(new UserPresence(player.Presence));
+            _chats.Handle(player.Id, "#osu");
+            _chats.Handle(player.Id, "#announce");
+            if (player.UserRank.HasFlag(UserRanks.Admin) || player.UserRank.HasFlag(UserRanks.Peppy))
+            {
+                _chats.Handle(player.Id, "#vacman");
+            }
             return queue;
         }
 
@@ -108,12 +116,19 @@ namespace Cringe.Controllers
             var packetType = (ClientPacketType) BitConverter.ToUInt16(data[..2].ToArray());
             switch (packetType)
             {
+                case ClientPacketType.UserStatsRequest:
+                {
+                    var stream = new MemoryStream(data);
+                    return queue;
+                }
                 case ClientPacketType.Logout:
                 {
                     _banchoServicePool.Nuke(token.PlayerId);
+                    _chats.NukeUser(token.PlayerId);
                     return queue;
                 }
-                case ClientPacketType.SendPublicMessage:
+                case ClientPacketType.SendPrivateMessage:
+                    
                 {
                     var dest = data[9..];
                     var message = await Message.Parse(dest, token.Username);
@@ -124,11 +139,11 @@ namespace Cringe.Controllers
                     _banchoServicePool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));
                     break;
                 }
-                case ClientPacketType.SendPrivateMessage:
+                case ClientPacketType.SendPublicMessage:
                 {
                     var dest = data[9..];
                     var message = await Message.Parse(dest, token.Username);
-                    _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id == token.PlayerId);
+                    _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id != token.PlayerId);
                     break;
                 }
                 case ClientPacketType.ChangeAction:

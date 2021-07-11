@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Cringe.Bancho;
 using Cringe.Bancho.Packets;
 using Cringe.Database;
 using Cringe.Services;
@@ -20,11 +22,12 @@ namespace Cringe.Controllers
         private const uint protocol_version = 19;
 
         private readonly BanchoServicePool _banchoServicePool;
-        private readonly ChatService _chats;
+        private readonly ChatServicePool _chats;
         private readonly IConfiguration _configuration;
         private readonly TokenService _tokenService;
 
-        public BanchoController(BanchoServicePool pool, ChatService chats, TokenService tokenService, IConfiguration configuration)
+        public BanchoController(BanchoServicePool pool, ChatServicePool chats, TokenService tokenService,
+            IConfiguration configuration)
         {
             _banchoServicePool = pool;
             _chats = chats;
@@ -89,12 +92,15 @@ namespace Cringe.Controllers
                 queue.EnqueuePacket(new MainMenuIcon(_configuration["MainMenuBanner"]));
 
             queue.EnqueuePacket(new UserPresence(player.Presence));
-            _chats.Handle(player.Id, "#osu");
-            _chats.Handle(player.Id, "#announce");
-            if (player.UserRank.HasFlag(UserRanks.Admin) || player.UserRank.HasFlag(UserRanks.Peppy))
+            var servers = new List<string>
             {
-                _chats.Handle(player.Id, "#vacman");
-            }
+                "#osu",
+                "#announce",
+                "#russian"
+            };
+            if (player.UserRank.HasFlag(UserRanks.Admin) || player.UserRank.HasFlag(UserRanks.Peppy))
+                servers.Add("#vacman");
+            servers.ForEach(x => _chats.AutoJoinOrPackInfo(token.PlayerId, x));
             return queue;
         }
 
@@ -118,9 +124,10 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.UserStatsRequest:
                 {
-                    var stream = new MemoryStream(data);
+                    queue.EnqueuePacket(new UserStats(player.Stats));
                     return queue;
                 }
+
                 case ClientPacketType.Logout:
                 {
                     _banchoServicePool.Nuke(token.PlayerId);
@@ -128,7 +135,6 @@ namespace Cringe.Controllers
                     return queue;
                 }
                 case ClientPacketType.SendPrivateMessage:
-                    
                 {
                     var dest = data[9..];
                     var message = await Message.Parse(dest, token.Username);
@@ -151,6 +157,18 @@ namespace Cringe.Controllers
                     queue.EnqueuePacket(new UserPresence(player.Presence));
                     queue.EnqueuePacket(new UserStats(player.Stats));
                     break;
+                }
+                case ClientPacketType.ChannelJoin:
+                {
+                    var str = DataPacket.ReadString(new MemoryStream(data[7..]));
+                    _chats.Connect(token.PlayerId, str);
+                    return queue;
+                }
+                case ClientPacketType.ChannelPart:
+                {
+                    var server = DataPacket.ReadString(new MemoryStream(data[7..]));
+                    _chats.Disconnect(token.PlayerId, server);
+                    return queue;
                 }
                 case ClientPacketType.RequestStatusUpdate:
                 {

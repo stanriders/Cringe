@@ -21,8 +21,12 @@ namespace Cringe
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<PlayerDatabaseContext>();
+            services.AddDbContext<ScoreDatabaseContext>();
+            services.AddDbContext<BeatmapDatabaseContext>();
+            
             services.AddSingleton<BanchoServicePool>();
-            services.AddSingleton<ChatService>();
+            services.AddSingleton<ChatServicePool>();
             services.AddTransient<TokenService>();
             services.AddTransient<ScoreService>();
             services.AddTransient<BeatmapService>();
@@ -30,9 +34,6 @@ namespace Cringe
             services.AddTransient<OsuApiWrapper>();
             services.AddTransient<PlayerTopscoreStatsCache>();
 
-            services.AddDbContext<PlayerDatabaseContext>();
-            services.AddDbContext<ScoreDatabaseContext>();
-            services.AddDbContext<BeatmapDatabaseContext>();
 
             services.AddHttpClient<OsuApiWrapper>();
             services.AddMemoryCache();

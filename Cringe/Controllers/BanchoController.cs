@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Cringe.Bancho;
 using Cringe.Bancho.Packets;
 using Cringe.Database;
 using Cringe.Services;
@@ -44,7 +43,7 @@ namespace Cringe.Controllers
             else
                 queue = await HandleIncomingPackets();
 
-            return queue is null ? Fail(PacketQueue.NullUser().GetDataToSend()) : queue.GetResult();
+            return queue?.GetResult() ?? Fail(PacketQueue.NullUser().GetDataToSend());
         }
 
         private IActionResult Fail(byte[] data)
@@ -109,27 +108,27 @@ namespace Cringe.Controllers
             var packetType = (ClientPacketType) BitConverter.ToUInt16(data[..2].ToArray());
             switch (packetType)
             {
+                case ClientPacketType.Logout:
+                {
+                    _banchoServicePool.Nuke(token.PlayerId);
+                    return queue;
+                }
                 case ClientPacketType.SendPublicMessage:
+                {
+                    var dest = data[9..];
+                    var message = await Message.Parse(dest, token.Username);
+                    await using var players = new PlayerDatabaseContext();
+                    var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == message.Receiver);
+                    if (receivePlayer is null)
+                        return null;
+                    _banchoServicePool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));
+                    break;
+                }
                 case ClientPacketType.SendPrivateMessage:
                 {
                     var dest = data[9..];
-                    await using var stream = new MemoryStream(dest);
-                    var text = DataPacket.ReadString(stream);
-                    var receiver = DataPacket.ReadString(stream);
-                    var message = new Message(text, token.Username, receiver);
-                    if (packetType == ClientPacketType.SendPublicMessage)
-                    {
-                        _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id == token.PlayerId);
-                    }
-                    else
-                    {
-                        await using var players = new PlayerDatabaseContext();
-                        var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == receiver);
-                        if (receivePlayer is null)
-                            return null;
-                        _banchoServicePool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));
-                    }
-
+                    var message = await Message.Parse(dest, token.Username);
+                    _banchoServicePool.ActionMapFilter(x => x.EnqueuePacket(message), id => id == token.PlayerId);
                     break;
                 }
                 case ClientPacketType.ChangeAction:

@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cringe.Types;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Services
 {
     public class BanchoServicePool
     {
+        private readonly ILogger<BanchoServicePool> _logger;
         private readonly Dictionary<int, PacketQueue> _pool;
 
-        public BanchoServicePool()
+        public BanchoServicePool(ILogger<BanchoServicePool> logger)
         {
+            _logger = logger;
             _pool = new Dictionary<int, PacketQueue>();
         }
 
@@ -41,6 +44,13 @@ namespace Cringe.Services
             if (!success)
                 return;
             action(res);
+        }
+
+        public void Nuke(int tokenPlayerId)
+        {
+            if(!_pool.ContainsKey(tokenPlayerId)) return;
+            _logger.LogInformation($"{tokenPlayerId} logged out. Nuking the queue");
+            _pool.Remove(tokenPlayerId);
         }
     }
 }

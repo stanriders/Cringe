@@ -28,6 +28,7 @@ namespace Cringe.Types
         public double Pp { get; set; }
 
         public int BeatmapId { get; set; }
+        public int PlayerId { get; set; }
         public string PlayerUsername { get; set; }
 
         [NotMapped] public int LeaderboardPosition { get; set; }

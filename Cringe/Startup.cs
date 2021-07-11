@@ -28,12 +28,14 @@ namespace Cringe
             services.AddTransient<BeatmapService>();
             services.AddTransient<PpService>();
             services.AddTransient<OsuApiWrapper>();
+            services.AddTransient<PlayerTopscoreStatsCache>();
 
             services.AddDbContext<PlayerDatabaseContext>();
             services.AddDbContext<ScoreDatabaseContext>();
             services.AddDbContext<BeatmapDatabaseContext>();
 
             services.AddHttpClient<OsuApiWrapper>();
+            services.AddMemoryCache();
 
             services.AddControllers();
             services.AddRazorPages();

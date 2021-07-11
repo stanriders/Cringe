@@ -10,17 +10,24 @@ namespace Cringe.Services
 {
     public class TokenService
     {
-        private readonly List<UserToken> tokens = new();
+        private readonly PlayerTopscoreStatsCache _ppCache;
+        private readonly PlayerDatabaseContext _playerDatabaseContext;
+
+        public TokenService(PlayerTopscoreStatsCache ppCache, PlayerDatabaseContext playerDatabaseContext)
+        {
+            _ppCache = ppCache;
+            _playerDatabaseContext = playerDatabaseContext;
+        }
+
+        private static readonly List<UserToken> Tokens = new();
 
         public async Task<UserToken> AddToken(string username)
         {
-            var existingToken = tokens.FirstOrDefault(x => x.Username == username);
+            var existingToken = Tokens.FirstOrDefault(x => x.Username == username);
             if (existingToken != null)
                 return existingToken;
 
-            await using var playerDb = new PlayerDatabaseContext();
-
-            var player = await playerDb.Players.FirstOrDefaultAsync(x => x.Username == username);
+            var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Username == username);
             if (player == null) return null;
 
             var token = new UserToken
@@ -29,25 +36,36 @@ namespace Cringe.Services
                 Token = Guid.NewGuid().ToString(),
                 Username = username
             };
-            tokens.Add(token);
+            Tokens.Add(token);
 
             return token;
         }
 
         public UserToken GetToken(string token)
         {
-            return tokens.FirstOrDefault(x => x.Token == token);
+            return Tokens.FirstOrDefault(x => x.Token == token);
         }
 
         public async Task<Player> GetPlayer(string token)
         {
-            var tokenData = tokens.FirstOrDefault(x => x.Token == token);
+            var tokenData = Tokens.FirstOrDefault(x => x.Token == token);
             if (tokenData == null)
                 return null;
+            
+            var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == tokenData.PlayerId);
 
-            await using var playerDb = new PlayerDatabaseContext();
+            if (player != null)
+            {
+                var playerStats = await _ppCache.GetPlayerTopscoreStats(player.Id);
+                if (player.Pp != playerStats.Pp)
+                {
+                    player.Pp = (ushort)playerStats.Pp;
+                    player.Accuracy = (float)playerStats.Accuracy / 100.0f;
+                    await _playerDatabaseContext.SaveChangesAsync();
+                }
+            }
 
-            return await playerDb.Players.FirstOrDefaultAsync(x => x.Id == tokenData.PlayerId);
+            return player;
         }
     }
 }

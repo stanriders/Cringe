@@ -34,7 +34,7 @@ namespace Cringe.Services
 
         public void ActionMapFilter(Action<PacketQueue> action, Func<int, bool> predicate)
         {
-            foreach (var packet in _pool.Where(x => !predicate(x.Key)))
+            foreach (var packet in _pool.Where(x => predicate(x.Key)))
                 action(packet.Value);
         }
 

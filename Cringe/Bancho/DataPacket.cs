@@ -24,6 +24,8 @@ namespace Cringe.Bancho
 
         protected static byte[] PackData(int data)
         {
+            var bytes = new byte[] {0xE2, 0x9C, 0x00, 0x00,};
+            BitConverter.ToInt16(bytes, 0);
             return BitConverter.GetBytes(data);
         }
 

@@ -26,6 +26,11 @@ namespace Cringe.Services
             return service;
         }
 
+        public IEnumerable<T> Apply<T>(Func<int, T> func)
+        {
+            return _pool.Select(x => func(x.Key));
+        }
+
         public void ActionMap(Action<PacketQueue> action)
         {
             foreach (var packet in _pool)
@@ -48,7 +53,7 @@ namespace Cringe.Services
 
         public void Nuke(int tokenPlayerId)
         {
-            if(!_pool.ContainsKey(tokenPlayerId)) return;
+            if (!_pool.ContainsKey(tokenPlayerId)) return;
             _logger.LogInformation($"{tokenPlayerId} logged out. Nuking the queue");
             _pool.Remove(tokenPlayerId);
         }

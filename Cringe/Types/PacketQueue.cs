@@ -4,7 +4,6 @@ using System.IO;
 using Cringe.Bancho;
 using Cringe.Bancho.Packets;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Bcpg;
 
 namespace Cringe.Types
 {
@@ -21,6 +20,7 @@ namespace Cringe.Types
             return stream.ToArray();
         }
 
+        public static PacketQueue NoPacket() => new();
         public static PacketQueue NullUser()
         {
             return new PacketQueue().EnqueuePacket(new UserId(-1));

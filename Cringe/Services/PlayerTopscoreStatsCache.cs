@@ -12,6 +12,7 @@ namespace Cringe.Services
     {
         private readonly IMemoryCache _memoryCache;
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
+
         public PlayerTopscoreStatsCache(IMemoryCache memoryCache, ScoreDatabaseContext scoreDatabaseContext)
         {
             _memoryCache = memoryCache;
@@ -35,8 +36,8 @@ namespace Cringe.Services
             ClearCache(player.Id);
 
             var stats = await RefreshStats(player.Id);
-            player.Accuracy = (float)stats.Accuracy / 100.0f;
-            player.Pp = (ushort)stats.Pp;
+            player.Accuracy = (float) stats.Accuracy / 100.0f;
+            player.Pp = (ushort) stats.Pp;
 
             _memoryCache.Set(player.Id, stats);
         }
@@ -51,7 +52,7 @@ namespace Cringe.Services
             var topscores = await _scoreDatabaseContext.Scores
                 .Where(x => x.PlayerId == playerId)
                 .OrderByDescending(x => x.Pp)
-                .Select(x => new { x.Pp, x.Accuracy })
+                .Select(x => new {x.Pp, x.Accuracy})
                 .Take(100)
                 .ToArrayAsync();
 
@@ -68,7 +69,6 @@ namespace Cringe.Services
                 Pp = pp,
                 Accuracy = acc
             };
-
         }
     }
 }

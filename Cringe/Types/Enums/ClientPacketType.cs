@@ -39,10 +39,10 @@
         FriendRemove = 74,
         MatchChangeTeam = 77,
         ChannelPart = 78,
-        ReceiveUpdates = 79,
+        ReceiveUpdates = 79, //4F
         SetAwayMessage = 82,
         IrcOnly = 84,
-        UserStatsRequest = 85,
+        UserStatsRequest = 85, //55
         MatchInvite = 87,
         MatchChangePassword = 90,
         TournamentMatchInfoRequest = 93,

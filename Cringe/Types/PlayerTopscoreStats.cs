@@ -1,5 +1,4 @@
-﻿
-namespace Cringe.Types
+﻿namespace Cringe.Types
 {
     public class PlayerTopscoreStats
     {

@@ -19,9 +19,9 @@ namespace Cringe.Services
         private readonly BanchoServicePool _banchoServicePool;
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly PlayerDatabaseContext _playerContext;
+        private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly PpService _ppService;
         private readonly ScoreDatabaseContext _scoreContext;
-        private readonly PlayerTopscoreStatsCache _ppCache;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
             BeatmapDatabaseContext beatmapContext, PpService ppService, BanchoServicePool banchoServicePool,
@@ -35,7 +35,8 @@ namespace Cringe.Services
             _ppCache = ppCache;
         }
 
-        public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit, bool failed)
+        public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit,
+            bool failed)
         {
             // TODO: recent scores
             if (quit || failed)
@@ -113,7 +114,7 @@ namespace Cringe.Services
                     await _ppCache.UpdatePlayerStats(player);
                 }
 
-                player.TotalScore += (ulong)score;
+                player.TotalScore += (ulong) score;
                 await _playerContext.SaveChangesAsync();
 
                 // send score as a notif to confirm submission

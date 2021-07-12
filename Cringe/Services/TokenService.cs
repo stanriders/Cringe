@@ -10,16 +10,15 @@ namespace Cringe.Services
 {
     public class TokenService
     {
-        private readonly PlayerTopscoreStatsCache _ppCache;
+        private static readonly List<UserToken> Tokens = new();
         private readonly PlayerDatabaseContext _playerDatabaseContext;
+        private readonly PlayerTopscoreStatsCache _ppCache;
 
         public TokenService(PlayerTopscoreStatsCache ppCache, PlayerDatabaseContext playerDatabaseContext)
         {
             _ppCache = ppCache;
             _playerDatabaseContext = playerDatabaseContext;
         }
-
-        private static readonly List<UserToken> Tokens = new();
 
         public async Task<UserToken> AddToken(string username)
         {
@@ -51,7 +50,7 @@ namespace Cringe.Services
             var tokenData = Tokens.FirstOrDefault(x => x.Token == token);
             if (tokenData == null)
                 return null;
-            
+
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == tokenData.PlayerId);
 
             if (player != null)
@@ -59,8 +58,8 @@ namespace Cringe.Services
                 var playerStats = await _ppCache.GetPlayerTopscoreStats(player.Id);
                 if (player.Pp != playerStats.Pp)
                 {
-                    player.Pp = (ushort)playerStats.Pp;
-                    player.Accuracy = (float)playerStats.Accuracy / 100.0f;
+                    player.Pp = (ushort) playerStats.Pp;
+                    player.Accuracy = (float) playerStats.Accuracy / 100.0f;
                     await _playerDatabaseContext.SaveChangesAsync();
                 }
             }

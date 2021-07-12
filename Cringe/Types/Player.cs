@@ -21,8 +21,8 @@ namespace Cringe.Types
             {
                 UserId = Id,
                 Username = Username,
-                Timezone = 24,
-                Country = 0,
+                Timezone = 0x3, //Moscow UTC
+                Country = 0x1F, //Brazil Code
                 UserRank = UserRank,
                 Longitude = 0.0f,
                 Latitude = 0.0f,

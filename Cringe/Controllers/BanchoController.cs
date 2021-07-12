@@ -75,12 +75,14 @@ namespace Cringe.Controllers
 
             queue.EnqueuePacket(new ProtocolVersion(protocol_version));
             queue.EnqueuePacket(new UserId(token.PlayerId));
+            queue.EnqueuePacket(new UserPresenceBundle(_banchoServicePool.Apply(x => x)));
             queue.EnqueuePacket(new Supporter(player.UserRank));
             if (!string.IsNullOrEmpty(_configuration["LoginMessage"]))
                 queue.EnqueuePacket(new Notification(_configuration["LoginMessage"]));
             queue.EnqueuePacket(new SilenceEnd(0));
 
 
+            
             queue.EnqueuePacket(new UserPresence(player.Presence));
             queue.EnqueuePacket(new UserStats(player.Stats));
 
@@ -124,6 +126,10 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.UserStatsRequest:
                 {
+                    if (player.Stats.ActionId == 0)
+                    {
+                        return PacketQueue.NoPacket();
+                    }
                     queue.EnqueuePacket(new UserStats(player.Stats));
                     return queue;
                 }

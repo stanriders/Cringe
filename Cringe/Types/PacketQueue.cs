@@ -20,6 +20,7 @@ namespace Cringe.Types
             return stream.ToArray();
         }
 
+        public static PacketQueue NoPacket() => new();
         public static PacketQueue NullUser()
         {
             return new PacketQueue().EnqueuePacket(new UserId(-1));

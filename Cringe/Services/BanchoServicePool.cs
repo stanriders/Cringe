@@ -26,6 +26,11 @@ namespace Cringe.Services
             return service;
         }
 
+        public IEnumerable<T> Apply<T>(Func<int, T> func)
+        {
+            return _pool.Select(x => func(x.Key));
+        }
+
         public void ActionMap(Action<PacketQueue> action)
         {
             foreach (var packet in _pool)

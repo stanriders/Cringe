@@ -6,17 +6,19 @@ namespace Cringe.Types
 {
     public class ChangeAction
     {
-        public ActionType Action {
+        public ActionType Action
+        {
             get => (ActionType) ActionId;
             set => ActionId = (byte) value;
         }
+
         public byte ActionId { get; set; }
         public string ActionText { get; set; }
         public string ActionMd5 { get; set; }
         public uint ActionMods { get; set; }
         public byte GameMode { get; set; }
         public int BeatmapId { get; set; }
-        
+
         public static ChangeAction Parse(byte[] bytes)
         {
             var reader = new BinaryReader(new MemoryStream(bytes));

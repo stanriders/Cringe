@@ -6,13 +6,14 @@ namespace Cringe.Bancho.Packets
 {
     public class UserPresenceBundle : DataPacket
     {
-        public override ServerPacketType Type => ServerPacketType.UserPresenceBundle;
         private readonly IEnumerable<int> _userIds;
 
         public UserPresenceBundle(IEnumerable<int> userIds)
         {
             _userIds = userIds;
         }
+
+        public override ServerPacketType Type => ServerPacketType.UserPresenceBundle;
 
         public override byte[] GetBytes()
         {

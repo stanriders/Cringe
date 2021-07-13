@@ -21,13 +21,13 @@ namespace Cringe.Bancho.Packets
             var action = stats.Action;
             statsStream.Write(PackData(stats.UserId));
             statsStream.WriteByte(action.ActionId);
-            if(!string.IsNullOrEmpty(action.ActionText))
+            if (!string.IsNullOrEmpty(action.ActionText))
                 statsStream.Write(PackData(action.ActionText));
             else
                 statsStream.WriteByte(0);
-            if(!string.IsNullOrEmpty(action.ActionMd5))
+            if (!string.IsNullOrEmpty(action.ActionMd5))
                 statsStream.Write(PackData(action.ActionMd5));
-            else 
+            else
                 statsStream.WriteByte(0);
             statsStream.Write(PackData(action.ActionMods));
             statsStream.WriteByte(action.GameMode);

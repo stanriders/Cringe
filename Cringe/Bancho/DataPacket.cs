@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Cringe.Types.Enums;
 using LEB128;
 
@@ -80,17 +79,14 @@ namespace Cringe.Bancho
             return BitConverter.ToInt32(data);
         }
 
-        
+
         public static int[] ReadI32(BinaryReader reader)
         {
             reader.ReadBytes(3);
             var length = (reader.ReadInt32() - 2) / 4;
             reader.ReadBytes(2);
             var buffer = new int[length];
-            for (var i = 0; i < length; i++)
-            {
-                buffer[i] = reader.ReadInt32();
-            }
+            for (var i = 0; i < length; i++) buffer[i] = reader.ReadInt32();
 
             return buffer;
         }

@@ -1,6 +1,6 @@
 ﻿namespace Cringe.Types
 {
-    public class Stats 
+    public class Stats
     {
         public uint UserId { get; set; }
         public ChangeAction Action { get; set; }

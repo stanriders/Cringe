@@ -104,7 +104,7 @@ namespace Cringe.Services
                 };
                 submittedScore.Pp = await _ppService.CalculatePp(submittedScore);
 
-                if(previousScore is not null)
+                if (previousScore is not null)
                     _scoreContext.Scores.Remove(previousScore);
                 await _scoreContext.Scores.AddAsync(submittedScore);
                 await _scoreContext.SaveChangesAsync();

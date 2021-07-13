@@ -145,10 +145,7 @@ namespace Cringe.Controllers
                         queue.EnqueuePacket(new UserStats(st));
                     }
 
-                    foreach (var players in presencePlayers)
-                    {
-                        queue.EnqueuePacket(new UserPresence(players.Presence));
-                    }
+                    foreach (var players in presencePlayers) queue.EnqueuePacket(new UserPresence(players.Presence));
 
                     return queue;
                 }

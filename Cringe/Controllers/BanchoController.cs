@@ -141,7 +141,7 @@ namespace Cringe.Controllers
                     {
                         var st = _statsService.GetUpdates(stats.Id);
                         if (st is null)
-                            return PacketQueue.NoPacket();
+                            continue;
                         queue.EnqueuePacket(new UserStats(st));
                     }
 
@@ -182,6 +182,7 @@ namespace Cringe.Controllers
                     var action = ChangeAction.Parse(data);
                     var pl = player.Stats;
                     pl.Action = action;
+                    _statsService.SetUpdates(token.PlayerId, pl);
                     queue.EnqueuePacket(new UserStats(pl));
                     queue.EnqueuePacket(new UserPresence(player.Presence));
                     break;

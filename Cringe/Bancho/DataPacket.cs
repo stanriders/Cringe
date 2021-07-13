@@ -66,7 +66,7 @@ namespace Cringe.Bancho
             return BitConverter.GetBytes(data);
         }
 
-        public static string ReadString(MemoryStream stream)
+        public static string ReadString(Stream stream)
         {
             stream.ReadByte();
             var len = (int) stream.ReadLEB128Unsigned();

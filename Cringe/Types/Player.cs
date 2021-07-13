@@ -33,12 +33,15 @@ namespace Cringe.Types
             new()
             {
                 UserId = (uint) Id,
-                ActionId = 0,
-                ActionText = "",
-                ActionMd5 = "",
-                ActionMods = 0,
-                GameMode = 0,
-                BeatmapId = 0,
+                Action = new ChangeAction
+                {
+                    ActionId = 0,
+                    ActionText = "",
+                    ActionMd5 = "",
+                    ActionMods = 0,
+                    GameMode = 0,
+                    BeatmapId = 0
+                },
                 RankedScore = TotalScore,
                 Accuracy = Accuracy,
                 Playcount = Playcount,

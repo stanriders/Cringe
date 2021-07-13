@@ -18,20 +18,20 @@ namespace Cringe.Bancho.Packets
         public override byte[] GetBytes()
         {
             using var statsStream = new MemoryStream();
-
+            var action = stats.Action;
             statsStream.Write(PackData(stats.UserId));
-            statsStream.WriteByte(stats.ActionId);
-            if(!string.IsNullOrEmpty(stats.ActionText))
-                statsStream.Write(PackData(stats.ActionText));
+            statsStream.WriteByte(action.ActionId);
+            if(!string.IsNullOrEmpty(action.ActionText))
+                statsStream.Write(PackData(action.ActionText));
             else
                 statsStream.WriteByte(0);
-            if(!string.IsNullOrEmpty(stats.ActionMd5))
-                statsStream.Write(PackData(stats.ActionMd5));
+            if(!string.IsNullOrEmpty(action.ActionMd5))
+                statsStream.Write(PackData(action.ActionMd5));
             else 
                 statsStream.WriteByte(0);
-            statsStream.Write(PackData(stats.ActionMods));
-            statsStream.WriteByte(stats.GameMode);
-            statsStream.Write(PackData(stats.BeatmapId));
+            statsStream.Write(PackData(action.ActionMods));
+            statsStream.WriteByte(action.GameMode);
+            statsStream.Write(PackData(action.BeatmapId));
             statsStream.Write(PackData(stats.RankedScore));
             statsStream.Write(PackData(stats.Accuracy));
             statsStream.Write(PackData(stats.Playcount));

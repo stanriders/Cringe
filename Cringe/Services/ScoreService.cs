@@ -72,10 +72,10 @@ namespace Cringe.Services
                     .Where(x => x.PlayerId == player.Id && x.BeatmapId == beatmap.Id)
                     .FirstOrDefaultAsync();
 
-                if (previousScore.Score > score)
+                if (previousScore?.Score > score)
                     return null;
 
-                if (!DateTime.TryParseExact(scoreData[16], "yyMMddhhmmss", CultureInfo.InvariantCulture,
+                if (!DateTime.TryParseExact(scoreData[16], "yyMMddHHmmss", CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out var date))
                     date = DateTime.UtcNow;
 
@@ -104,7 +104,8 @@ namespace Cringe.Services
                 };
                 submittedScore.Pp = await _ppService.CalculatePp(submittedScore);
 
-                _scoreContext.Scores.Remove(previousScore);
+                if(previousScore is not null)
+                    _scoreContext.Scores.Remove(previousScore);
                 await _scoreContext.Scores.AddAsync(submittedScore);
                 await _scoreContext.SaveChangesAsync();
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Cringe.Types
+namespace Cringe.Types.Enums
 {
     public static class Countries
     {

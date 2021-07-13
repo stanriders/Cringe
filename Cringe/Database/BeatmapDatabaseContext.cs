@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using Cringe.Types;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Database
 {

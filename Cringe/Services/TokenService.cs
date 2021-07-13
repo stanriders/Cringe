@@ -27,7 +27,8 @@ namespace Cringe.Services
                 return existingToken;
 
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Username == username);
-            if (player == null) return null;
+            if (player == null) 
+                return null;
 
             var token = new UserToken
             {

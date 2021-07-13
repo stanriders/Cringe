@@ -12,6 +12,7 @@ using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Controllers
 {
@@ -20,15 +21,20 @@ namespace Cringe.Controllers
     public class BanchoController : ControllerBase
     {
         private const uint protocol_version = 19;
-
         private readonly BanchoServicePool _banchoServicePool;
         private readonly ChatServicePool _chats;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<BanchoController> _logger;
+
+        private readonly StatsService _statsService;
         private readonly TokenService _tokenService;
 
-        public BanchoController(BanchoServicePool pool, ChatServicePool chats, TokenService tokenService,
+        public BanchoController(StatsService statsService, ILogger<BanchoController> logger, BanchoServicePool pool,
+            ChatServicePool chats, TokenService tokenService,
             IConfiguration configuration)
         {
+            _statsService = statsService;
+            _logger = logger;
             _banchoServicePool = pool;
             _chats = chats;
             _tokenService = tokenService;
@@ -59,6 +65,7 @@ namespace Cringe.Controllers
 
         private async Task<PacketQueue> HandleLogin()
         {
+            _logger.LogDebug("Logging " + Request.HttpContext.Connection.RemoteIpAddress);
             var loginData = (await new StreamReader(Request.Body).ReadToEndAsync()).Split('\n');
 
             var token = await _tokenService.AddToken(loginData[0].Trim());
@@ -82,7 +89,6 @@ namespace Cringe.Controllers
             queue.EnqueuePacket(new SilenceEnd(0));
 
 
-            
             queue.EnqueuePacket(new UserPresence(player.Presence));
             queue.EnqueuePacket(new UserStats(player.Stats));
 
@@ -126,11 +132,24 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.UserStatsRequest:
                 {
-                    if (player.Stats.ActionId == 0)
+                    var reader = new BinaryReader(new MemoryStream(data));
+                    var statsIdsTasks = DataPacket.ReadI32(reader).Select(x => _tokenService.GetPlayerWithoutScores(x));
+                    var statsPlayers = await Task.WhenAll(statsIdsTasks);
+                    var presencePlayers = statsPlayers.Where(x => x.Id != token.PlayerId).ToArray();
+
+                    foreach (var stats in statsPlayers)
                     {
-                        return PacketQueue.NoPacket();
+                        var st = _statsService.GetUpdates(stats.Id);
+                        if (st is null)
+                            return PacketQueue.NoPacket();
+                        queue.EnqueuePacket(new UserStats(st));
                     }
-                    queue.EnqueuePacket(new UserStats(player.Stats));
+
+                    foreach (var players in presencePlayers)
+                    {
+                        queue.EnqueuePacket(new UserPresence(players.Presence));
+                    }
+
                     return queue;
                 }
 

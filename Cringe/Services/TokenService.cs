@@ -27,7 +27,8 @@ namespace Cringe.Services
                 return existingToken;
 
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Username == username);
-            if (player == null) return null;
+            if (player == null) 
+                return null;
 
             var token = new UserToken
             {
@@ -64,6 +65,15 @@ namespace Cringe.Services
                 }
             }
 
+            return player;
+        }
+
+        public async Task<Player> GetPlayerWithoutScores(int id)
+        {
+            var tokenData = Tokens.FirstOrDefault(x => x.PlayerId == id);
+            if (tokenData is null)
+                return null;
+            var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == tokenData.PlayerId);
             return player;
         }
     }

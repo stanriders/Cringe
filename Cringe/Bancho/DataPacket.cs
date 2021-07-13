@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Cringe.Types.Enums;
 using LEB128;
 
@@ -24,8 +25,6 @@ namespace Cringe.Bancho
 
         protected static byte[] PackData(int data)
         {
-            var bytes = new byte[] {0xE2, 0x9C, 0x00, 0x00,};
-            BitConverter.ToInt16(bytes, 0);
             return BitConverter.GetBytes(data);
         }
 
@@ -74,6 +73,26 @@ namespace Cringe.Bancho
             var buffer = new byte[len];
             stream.Read(buffer, 0, len);
             return Encoding.Latin1.GetString(buffer);
+        }
+
+        public static int ReadInt(byte[] data)
+        {
+            return BitConverter.ToInt32(data);
+        }
+
+        
+        public static int[] ReadI32(BinaryReader reader)
+        {
+            reader.ReadBytes(3);
+            var length = (reader.ReadInt32() - 2) / 4;
+            reader.ReadBytes(2);
+            var buffer = new int[length];
+            for (var i = 0; i < length; i++)
+            {
+                buffer[i] = reader.ReadInt32();
+            }
+
+            return buffer;
         }
     }
 }

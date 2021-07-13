@@ -21,5 +21,11 @@ namespace Cringe.Services
             _stats.Remove(id);
             return value;
         }
+
+        public void SetUpdates(int id, Stats newStats)
+        {
+            if (!_stats.TryAdd(id, newStats)) 
+                _stats[id] = newStats;
+        }
     }
 }

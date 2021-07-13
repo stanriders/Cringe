@@ -21,8 +21,14 @@ namespace Cringe.Bancho.Packets
 
             statsStream.Write(PackData(stats.UserId));
             statsStream.WriteByte(stats.ActionId);
-            statsStream.Write(PackData(stats.ActionText));
-            statsStream.Write(PackData(stats.ActionMd5));
+            if(!string.IsNullOrEmpty(stats.ActionText))
+                statsStream.Write(PackData(stats.ActionText));
+            else
+                statsStream.WriteByte(0);
+            if(!string.IsNullOrEmpty(stats.ActionMd5))
+                statsStream.Write(PackData(stats.ActionMd5));
+            else 
+                statsStream.WriteByte(0);
             statsStream.Write(PackData(stats.ActionMods));
             statsStream.WriteByte(stats.GameMode);
             statsStream.Write(PackData(stats.BeatmapId));

@@ -12,6 +12,7 @@ using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Org.BouncyCastle.Bcpg;
 
 namespace Cringe.Controllers
 {
@@ -126,11 +127,21 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.UserStatsRequest:
                 {
-                    if (player.Stats.ActionId == 0)
+                    var reader = new BinaryReader(new MemoryStream(data));
+                    var statsIdsTasks = DataPacket.ReadI32(reader).Select(x => _tokenService.GetPlayerWithoutScores(x));
+                    var statsPlayers = await Task.WhenAll(statsIdsTasks);
+                    var presencePlayers = statsPlayers.Where(x => x.Id != token.PlayerId).ToArray();
+                    
+                    foreach (var stats in statsPlayers)
                     {
-                        return PacketQueue.NoPacket();
+                        queue.EnqueuePacket(new UserStats(stats.Stats));
                     }
-                    queue.EnqueuePacket(new UserStats(player.Stats));
+
+                    foreach (var players in presencePlayers)
+                    {
+                        queue.EnqueuePacket(new UserPresence(players.Presence));
+                    }
+
                     return queue;
                 }
 

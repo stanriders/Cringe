@@ -1,43 +1,80 @@
-﻿@page
-@model Cringe.Pages.Beatmaps.IndexModel
+﻿@page "{id?}"
+@model Cringe.Pages.Beatmaps.DetailsModel
 
 @{
+    ViewData["Title"] = Model.Beatmap.Id;
 }
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Beatmap[0].Id)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Beatmap[0].Md5)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Beatmap[0].Ranked)
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.Beatmap)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Md5)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ranked)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+<div>
+    <h4><a href="http://osu.ppy.sh/beatmaps/@Model.Beatmap.Id">osu! beatmap link</a></h4>
+    <hr/>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.Md5)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.Md5)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.Ranked)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.Ranked)
+        </dd>
+    </dl>
+    <div>
+        <a asp-page="./Edit" asp-route-id="@Model.Beatmap.Id">Edit</a> |
+        <a asp-page="./Listing">Back to List</a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Score</th>
+                <th>Username</th>
+                <th>Accuracy</th>
+                <th>Combo</th>
+                <th>Mods</th>
+                <th>Game Mode</th>
+                <th>Date</th>
+                <th>CRINGE POINTS</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Scores)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rank)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Score)
+                </td>
+                <td>
+                    <a asp-page="Players/Index" asp-route-id="@item.PlayerId">@item.PlayerUsername</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Accuracy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxCombo)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mods)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameMode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlayDateTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pp)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

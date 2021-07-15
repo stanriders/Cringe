@@ -1,0 +1,70 @@
+﻿@page
+@model Cringe.Pages.Players.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Player[0].Username)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Player[0].Accuracy)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Player[0].Playcount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Player[0].TotalScore)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Player[0].Rank)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Player[0].Pp)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Player[0].UserRank)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Player)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Accuracy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Playcount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalScore)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rank)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Pp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserRank)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Index" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,26 +1,43 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Pages.Players
 {
-    public class IndexModel : PageModel
+    public class DetailsModel : PageModel
     {
         private readonly PlayerDatabaseContext _context;
+        private readonly ScoreDatabaseContext _scoreContext;
 
-        public IndexModel(PlayerDatabaseContext context)
+        public DetailsModel(PlayerDatabaseContext context, ScoreDatabaseContext scoreContext)
         {
             _context = context;
+            _scoreContext = scoreContext;
         }
 
-        public IList<Player> Player { get; set; }
+        public Player Player { get; set; }
 
-        public async Task OnGetAsync()
+        public SubmittedScore[] Scores { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            Player = await _context.Players.ToListAsync();
+            if (id == null) return NotFound();
+
+            Player = await _context.Players.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (Player == null) return NotFound();
+
+            Scores = await _scoreContext.Scores
+                .Where(x => x.PlayerId == Player.Id)
+                .Take(100)
+                .OrderByDescending(x => x.Pp)
+                .ToArrayAsync();
+
+            return Page();
         }
     }
 }

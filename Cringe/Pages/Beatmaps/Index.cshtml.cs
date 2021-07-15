@@ -1,27 +1,43 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Pages.Beatmaps
 {
-    public class IndexModel : PageModel
+    public class DetailsModel : PageModel
     {
         private readonly BeatmapDatabaseContext _context;
+        private readonly ScoreDatabaseContext _scoreContext;
 
-        public IndexModel(BeatmapDatabaseContext context)
+        public DetailsModel(BeatmapDatabaseContext context, ScoreDatabaseContext scoreContext)
         {
             _context = context;
+            _scoreContext = scoreContext;
         }
 
-        public IList<Beatmap> Beatmap { get; set; }
+        public Beatmap Beatmap { get; set; }
 
-        public async Task OnGetAsync()
+        public SubmittedScore[] Scores { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            Beatmap = await _context.Beatmaps.Take(1000).ToListAsync();
+            if (id == null) return NotFound();
+
+            Beatmap = await _context.Beatmaps.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (Beatmap == null) return NotFound();
+
+            Scores = await _scoreContext.Scores
+                .Where(x => x.BeatmapId == Beatmap.Id)
+                .Take(100)
+                .OrderByDescending(x => x.Score)
+                .ToArrayAsync();
+
+            return Page();
         }
     }
 }

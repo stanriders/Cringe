@@ -26,10 +26,10 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.BeatmapId)
+                <a asp-page="Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapId.ToString()</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PlayerUsername)
+                <a asp-page="Players/Index" asp-route-id="@item.PlayerId">@item.PlayerUsername</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Accuracy)

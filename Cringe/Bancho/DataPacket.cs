@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Cringe.Types.Enums;
@@ -80,7 +81,7 @@ namespace Cringe.Bancho
         }
 
 
-        public static int[] ReadI32(BinaryReader reader)
+        public static IEnumerable<int> ReadI32(BinaryReader reader)
         {
             reader.ReadBytes(3);
             var length = (reader.ReadInt32() - 2) / 4;

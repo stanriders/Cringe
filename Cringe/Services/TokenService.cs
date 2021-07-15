@@ -64,6 +64,9 @@ namespace Cringe.Services
 
         public async Task<Player> GetPlayerWithoutScores(int id)
         {
+            if (id <= 0)
+                return null;
+            
             var tokenData = Tokens.FirstOrDefault(x => x.PlayerId == id);
             if (tokenData is null)
                 return null;

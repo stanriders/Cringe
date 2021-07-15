@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Packets;
 using Cringe.Database;
 using Cringe.Types;
+using Cringe.Types.Enums;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
@@ -91,9 +92,9 @@ namespace Cringe.Services
                     MaxCombo = int.Parse(scoreData[10]),
                     FullCombo = scoreData[11] == "True",
                     Rank = scoreData[12],
-                    Mods = int.Parse(scoreData[13]),
+                    Mods = (Mods)Enum.Parse(typeof(Mods), scoreData[13]),
                     Passed = scoreData[14] == "True",
-                    GameMode = int.Parse(scoreData[15]),
+                    GameMode = (GameModes)Enum.Parse(typeof(GameModes), scoreData[15]),
                     PlayDateTime = date,
                     OsuVersion = scoreData[17].Trim(),
                     Quit = quit,

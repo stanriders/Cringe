@@ -86,12 +86,12 @@ namespace Cringe.Controllers
         public async Task<IActionResult> GetScores([FromQuery(Name = "c")] string md5,
             [FromQuery(Name = "f")] string fileName,
             [FromQuery(Name = "i")] string beatmapSetId,
-            [FromQuery(Name = "m")] int? gameMode,
+            [FromQuery(Name = "m")] GameModes? gameMode,
             [FromQuery(Name = "us")] string username,
             [FromQuery(Name = "ha")] string password,
             [FromQuery(Name = "v")] int? scoreboardType,
             [FromQuery(Name = "vv")] int? scoreboardVersion,
-            [FromQuery(Name = "mods")] int? mods)
+            [FromQuery(Name = "mods")] Mods? mods)
         {
             var beatmap = await _beatmapContext.Beatmaps.FirstOrDefaultAsync(x => x.Md5 == md5);
             if (beatmap is null)

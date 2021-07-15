@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Cringe.Types.Enums;
 
 namespace Cringe.Types
 {
@@ -18,9 +19,9 @@ namespace Cringe.Types
         public int MaxCombo { get; set; }
         public bool FullCombo { get; set; }
         public string Rank { get; set; }
-        public int Mods { get; set; }
+        public Mods Mods { get; set; }
         public bool Passed { get; set; }
-        public int GameMode { get; set; }
+        public GameModes GameMode { get; set; }
         public DateTime PlayDateTime { get; set; }
         public string OsuVersion { get; set; }
         public bool Quit { get; set; }
@@ -31,7 +32,8 @@ namespace Cringe.Types
         public int PlayerId { get; set; }
         public string PlayerUsername { get; set; }
 
-        [NotMapped] public int LeaderboardPosition { get; set; }
+        [NotMapped]
+        public int LeaderboardPosition { get; set; }
 
         [NotMapped]
         public double Accuracy
@@ -46,9 +48,9 @@ namespace Cringe.Types
 
         public override string ToString()
         {
-            //18204696(scoreId)|sendlolipls(username)|167060(score/pp)|663(combo)|0(50)|6(100)|483(300)|0(miss)|6(katu)|79(geki)|False(fc)|216(mods)|101029(???)|4(rank)|1596985749(date)|1(??)
+            //18204696(scoreId)|sendlolipls(username)|167060(score)|663(combo)|0(50)|6(100)|483(300)|0(miss)|6(katu)|79(geki)|False(fc)|216(mods)|101029(???)|4(rank)|1596985749(date)|1(??)
             return
-                $"{Id}|{PlayerUsername}|{Score}|{MaxCombo}|{Count50}|{Count100}|{Count300}|{CountMiss}|{CountKatu}|{CountGeki}|{FullCombo}|{Mods}|1|{LeaderboardPosition}|{((DateTimeOffset) PlayDateTime).ToUnixTimeSeconds()}|1\n";
+                $"{Id}|{PlayerUsername}|{Score}|{MaxCombo}|{Count50}|{Count100}|{Count300}|{CountMiss}|{CountKatu}|{CountGeki}|{FullCombo}|{(int)Mods}|1|{LeaderboardPosition}|{((DateTimeOffset) PlayDateTime).ToUnixTimeSeconds()}|1\n";
         }
     }
 }

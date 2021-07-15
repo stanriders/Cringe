@@ -134,10 +134,9 @@ namespace Cringe.Controllers
                 {
                     using var reader = new BinaryReader(new MemoryStream(data));
                     var statsIdsTasks = DataPacket.ReadI32(reader).Select(x => _tokenService.GetPlayerWithoutScores(x));
-                    var statsPlayers = (await Task.WhenAll(statsIdsTasks)).Where(x => x is not null).ToArray();
-                    var presencePlayers = statsPlayers.Where(x => x.Id != token.PlayerId).ToArray();
+                    var bodyPlayers = (await Task.WhenAll(statsIdsTasks)).Where(x => x is not null).ToArray();
 
-                    foreach (var stats in statsPlayers)
+                    foreach (var stats in bodyPlayers)
                     {
                         var st = _statsService.GetUpdates(stats.Id);
                         if (st is null)
@@ -145,7 +144,8 @@ namespace Cringe.Controllers
                         queue.EnqueuePacket(new UserStats(st));
                     }
 
-                    foreach (var players in presencePlayers) queue.EnqueuePacket(new UserPresence(players.Presence));
+                    foreach (var players in bodyPlayers) 
+                        queue.EnqueuePacket(new UserPresence(players.Presence));
 
                     return queue;
                 }

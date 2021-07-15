@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cringe.Bancho.Packets;
+using Cringe.Bancho.ResponsePackets;
 using Cringe.Database;
 using Cringe.Types;
 using Cringe.Types.Enums;
@@ -21,8 +21,8 @@ namespace Cringe.Services
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly PlayerDatabaseContext _playerContext;
         private readonly PlayerTopscoreStatsCache _ppCache;
-        private readonly PlayerRankCache _rankCache;
         private readonly PpService _ppService;
+        private readonly PlayerRankCache _rankCache;
         private readonly ScoreDatabaseContext _scoreContext;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
@@ -94,9 +94,9 @@ namespace Cringe.Services
                     MaxCombo = int.Parse(scoreData[10]),
                     FullCombo = scoreData[11] == "True",
                     Rank = scoreData[12],
-                    Mods = (Mods)Enum.Parse(typeof(Mods), scoreData[13]),
+                    Mods = (Mods) Enum.Parse(typeof(Mods), scoreData[13]),
                     Passed = scoreData[14] == "True",
-                    GameMode = (GameModes)Enum.Parse(typeof(GameModes), scoreData[15]),
+                    GameMode = (GameModes) Enum.Parse(typeof(GameModes), scoreData[15]),
                     PlayDateTime = date,
                     OsuVersion = scoreData[17].Trim(),
                     Quit = quit,

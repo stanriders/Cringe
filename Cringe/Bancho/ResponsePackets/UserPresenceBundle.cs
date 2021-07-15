@@ -2,9 +2,9 @@
 using System.Linq;
 using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class UserPresenceBundle : DataPacket
+    public class UserPresenceBundle : ResponsePacket
     {
         private readonly IEnumerable<int> _userIds;
 

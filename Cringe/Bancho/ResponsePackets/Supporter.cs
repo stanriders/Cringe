@@ -1,8 +1,8 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class Supporter : DataPacket
+    public class Supporter : ResponsePacket
     {
         private readonly UserRanks rank;
 

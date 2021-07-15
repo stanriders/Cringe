@@ -1,8 +1,8 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class MainMenuIcon : DataPacket
+    public class MainMenuIcon : ResponsePacket
     {
         private readonly string link;
 

@@ -1,8 +1,8 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class ChannelInfoEnd : DataPacket
+    public class ChannelInfoEnd : ResponsePacket
     {
         public override ServerPacketType Type => ServerPacketType.ChannelInfoEnd;
 

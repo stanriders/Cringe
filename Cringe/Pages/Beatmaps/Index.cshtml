@@ -6,7 +6,9 @@
 }
 
 <div>
-    <h4><a href="http://osu.ppy.sh/beatmaps/@Model.Beatmap.Id">osu! beatmap link</a></h4>
+    <h4>
+        <a href="http://osu.ppy.sh/beatmaps/@Model.Beatmap.Id">osu! beatmap link</a>
+    </h4>
     <hr/>
     <dl class="dl-horizontal">
         <dt>
@@ -28,18 +30,18 @@
     </div>
     <table class="table">
         <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Score</th>
-                <th>Username</th>
-                <th>Accuracy</th>
-                <th>Combo</th>
-                <th>Mods</th>
-                <th>Game Mode</th>
-                <th>Date</th>
-                <th>CRINGE POINTS</th>
-                <th></th>
-            </tr>
+        <tr>
+            <th>Rank</th>
+            <th>Score</th>
+            <th>Username</th>
+            <th>Accuracy</th>
+            <th>Combo</th>
+            <th>Mods</th>
+            <th>Game Mode</th>
+            <th>Date</th>
+            <th>CRINGE POINTS</th>
+            <th></th>
+        </tr>
         </thead>
         <tbody>
         @foreach (var item in Model.Scores)

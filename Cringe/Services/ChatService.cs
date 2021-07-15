@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Cringe.Bancho.Packets;
+using Cringe.Bancho.ResponsePackets;
 using Cringe.Types;
 using Microsoft.Extensions.Logging;
 

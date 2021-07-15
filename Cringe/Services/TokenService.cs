@@ -53,16 +53,10 @@ namespace Cringe.Services
                 return null;
 
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == tokenData.PlayerId);
-
             if (player != null)
             {
-                var playerStats = await _ppCache.GetPlayerTopscoreStats(player.Id);
-                if (player.Pp != playerStats.Pp)
-                {
-                    player.Pp = (ushort) playerStats.Pp;
-                    player.Accuracy = (float) playerStats.Accuracy / 100.0f;
-                    await _playerDatabaseContext.SaveChangesAsync();
-                }
+                await _ppCache.UpdatePlayerStats(player);
+                await _playerDatabaseContext.SaveChangesAsync();
             }
 
             return player;
@@ -73,6 +67,7 @@ namespace Cringe.Services
             var tokenData = Tokens.FirstOrDefault(x => x.PlayerId == id);
             if (tokenData is null)
                 return null;
+            
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == tokenData.PlayerId);
             return player;
         }

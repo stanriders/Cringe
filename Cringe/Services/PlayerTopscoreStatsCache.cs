@@ -33,13 +33,16 @@ namespace Cringe.Services
 
         public async Task UpdatePlayerStats(Player player)
         {
-            ClearCache(player.Id);
-
             var stats = await RefreshStats(player.Id);
-            player.Accuracy = (float) stats.Accuracy / 100.0f;
-            player.Pp = (ushort) stats.Pp;
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (stats.Pp != player.Pp)
+            {
+                player.Accuracy = (float) stats.Accuracy / 100.0f;
+                player.Pp = (ushort) stats.Pp;
 
-            _memoryCache.Set(player.Id, stats);
+                ClearCache(player.Id);
+                _memoryCache.Set(player.Id, stats);
+            }
         }
 
         public void ClearCache(int playerId)

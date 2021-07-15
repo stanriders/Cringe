@@ -1,4 +1,5 @@
 ﻿
+using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types;
@@ -27,7 +28,8 @@ namespace Cringe.Services
         private async Task<uint> RefreshRank(int playerId)
         {
             var rank = await _playerDatabaseContext.PlayerRankQuery
-                .FromSqlInterpolated($@"SELECT Rank FROM (SELECT ROW_NUMBER() OVER (ORDER BY Pp) Rank, Id FROM 'Players') WHERE Id = {playerId}")
+                .FromSqlInterpolated($@"SELECT ROW_NUMBER() OVER (ORDER BY Pp DESC) Rank, Id FROM 'Players'")
+                .Where(x=> x.Id == playerId)
                 .FirstOrDefaultAsync();
 
             return rank.Rank;

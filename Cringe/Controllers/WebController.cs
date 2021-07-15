@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,24 +18,34 @@ namespace Cringe.Controllers
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
         private readonly ScoreService _scoreService;
+        private readonly ReplayStorage _replayStorage;
 
         public WebController(ScoreService scoreService,
             ScoreDatabaseContext scoreDatabaseContext,
-            BeatmapDatabaseContext beatmapContext)
+            BeatmapDatabaseContext beatmapContext,
+            ReplayStorage replayStorage)
         {
             _scoreService = scoreService;
             _scoreDatabaseContext = scoreDatabaseContext;
             _beatmapContext = beatmapContext;
+            _replayStorage = replayStorage;
         }
 
-        [HttpGet("bancho_connect.php")]
         [HttpPost("osu-error.php")]
         [HttpGet("osu-getfriends.php")]
         [HttpGet("lastfm.php")]
         [HttpGet("osu-getseasonal.php")]
+        [HttpPost("osu-session.php")]
         public IActionResult EmptyAnswer()
         {
             return new OkResult();
+        }
+
+        [HttpGet("bancho_connect.php")]
+        public IActionResult Connect(string u, string h)
+        {
+            // TODO: login here
+            return new OkObjectResult("63"); // ripple outputs player's country here, we output brazil
         }
 
         [HttpPost("osu-submit-modular-selector.php")]
@@ -41,11 +53,16 @@ namespace Cringe.Controllers
             [FromForm] string iv,
             [FromForm] string osuver,
             [FromForm(Name = "x")] string quit,
-            [FromForm(Name = "ft")] string failed)
+            [FromForm(Name = "ft")] string failed,
+            [FromForm(Name = "score")] IFormFile replay)
         {
             var submittedScore = await _scoreService.SubmitScore(score, iv, osuver, quit == "1", failed == "1");
             if (submittedScore == null)
                 return new OkResult();
+
+            await using var replayStream = new MemoryStream();
+            await replay.CopyToAsync(replayStream);
+            await _replayStorage.SaveReplay(submittedScore.Id, replayStream);
 
             var outData =
                 $"beatmapId:{submittedScore.BeatmapId}|beatmapSetId:2|beatmapPlaycount:3|beatmapPasscount:2|approvedDate:0\n" +
@@ -91,6 +108,8 @@ namespace Cringe.Controllers
             [FromQuery(Name = "vv")] int? scoreboardVersion,
             [FromQuery(Name = "mods")] Mods? mods)
         {
+            // TODO: check username/password
+
             var beatmap = await _beatmapContext.Beatmaps.FirstOrDefaultAsync(x => x.Md5 == md5);
             if (beatmap is null)
                 return new OkObjectResult($"{(int) RankedStatus.NotSubmitted}|false");
@@ -115,6 +134,20 @@ namespace Cringe.Controllers
                 data += score;
 
             return new OkObjectResult(data);
+        }
+
+        [HttpGet("osu-getreplay.php")]
+        public async Task<IActionResult> GetReplay([FromQuery(Name = "c")] int scoreId,
+            [FromQuery(Name = "u")] string username,
+            [FromQuery(Name = "h")] string password)
+        {
+            // TODO: check username/password
+
+            await using var replayData = _replayStorage.GetReplay(scoreId);
+            if (replayData is not null)
+                return File(replayData, "application/octet-stream");
+
+            return NotFound();
         }
     }
 }

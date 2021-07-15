@@ -1,8 +1,8 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class FriendsList : DataPacket
+    public class FriendsList : ResponsePacket
     {
         private readonly int[] friends;
 

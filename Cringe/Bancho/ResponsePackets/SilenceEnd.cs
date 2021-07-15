@@ -1,8 +1,8 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class SilenceEnd : DataPacket
+    public class SilenceEnd : ResponsePacket
     {
         private readonly uint time;
 

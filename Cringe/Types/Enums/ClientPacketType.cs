@@ -2,6 +2,7 @@
 {
     public enum ClientPacketType : ushort
     {
+        Login = 255,
         ChangeAction = 0,
         SendPublicMessage = 1,
         Logout = 2,

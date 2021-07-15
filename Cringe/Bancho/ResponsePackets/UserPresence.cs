@@ -2,9 +2,9 @@
 using Cringe.Types;
 using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class UserPresence : DataPacket
+    public class UserPresence : ResponsePacket
     {
         private readonly Presence _presence;
 

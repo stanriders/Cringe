@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cringe.Bancho.Packets;
+using Cringe.Bancho.ResponsePackets;
 using Cringe.Database;
 using Cringe.Types;
 using Cringe.Types.Enums;

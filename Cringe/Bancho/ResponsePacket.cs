@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Cringe.Types.Enums;
-using LEB128;
+using Cringe.Utils;
 
 namespace Cringe.Bancho
 {
-    public abstract class DataPacket
+    public abstract class ResponsePacket
     {
         public abstract ServerPacketType Type { get; }
 
@@ -66,30 +66,6 @@ namespace Cringe.Bancho
             return BitConverter.GetBytes(data);
         }
 
-        public static string ReadString(Stream stream)
-        {
-            stream.ReadByte();
-            var len = (int) stream.ReadLEB128Unsigned();
-            var buffer = new byte[len];
-            stream.Read(buffer, 0, len);
-            return Encoding.Latin1.GetString(buffer);
-        }
-
-        public static int ReadInt(byte[] data)
-        {
-            return BitConverter.ToInt32(data);
-        }
-
-
-        public static IEnumerable<int> ReadI32(BinaryReader reader)
-        {
-            reader.ReadBytes(3);
-            var length = (reader.ReadInt32() - 2) / 4;
-            reader.ReadBytes(2);
-            var buffer = new int[length];
-            for (var i = 0; i < length; i++) buffer[i] = reader.ReadInt32();
-
-            return buffer;
-        }
+        
     }
 }

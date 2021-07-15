@@ -1,8 +1,8 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class Notification : DataPacket
+    public class Notification : ResponsePacket
     {
         private readonly string text;
 

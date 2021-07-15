@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Cringe.Bancho;
 using Cringe.Types.Enums;
 
@@ -25,8 +26,8 @@ namespace Cringe.Types
             var action = new ChangeAction();
             reader.ReadBytes(7);
             action.ActionId = reader.ReadByte();
-            action.ActionText = DataPacket.ReadString(reader.BaseStream);
-            action.ActionMd5 = DataPacket.ReadString(reader.BaseStream);
+            action.ActionText = RequestPacket.ReadString(reader.BaseStream);
+            action.ActionMd5 = RequestPacket.ReadString(reader.BaseStream);
             action.ActionMods = reader.ReadUInt32();
             action.GameMode = reader.ReadByte();
             action.BeatmapId = reader.ReadInt32();

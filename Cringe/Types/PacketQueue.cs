@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Cringe.Bancho;
-using Cringe.Bancho.Packets;
+using Cringe.Bancho.ResponsePackets;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cringe.Types
@@ -30,7 +30,7 @@ namespace Cringe.Types
             return new PacketQueue().EnqueuePacket(new UserId(-1));
         }
 
-        public PacketQueue EnqueuePacket(DataPacket packet)
+        public PacketQueue EnqueuePacket(ResponsePacket packet)
         {
             using var stream = new MemoryStream();
 

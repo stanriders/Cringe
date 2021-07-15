@@ -2,9 +2,9 @@
 using Cringe.Types;
 using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Packets
+namespace Cringe.Bancho.ResponsePackets
 {
-    public class ChannelInfo : DataPacket
+    public class ChannelInfo : ResponsePacket
     {
         private readonly Chat _chat;
 

@@ -36,6 +36,15 @@ namespace Cringe.Types
         public int LeaderboardPosition { get; set; }
 
         [NotMapped]
+        public Beatmap Beatmap { get; set; }
+
+        [NotMapped]
+        public Player Player { get; set; }
+
+        [NotMapped]
+        public SubmittedScore PreviousScore { get; set; }
+
+        [NotMapped]
         public double Accuracy
         {
             get

@@ -54,29 +54,27 @@ namespace Cringe.Controllers
                     Name = "AYE",
                     RankBefore = 2,
                     RankAfter = 1,
-                    ScoreBefore = 100,
+                    ScoreBefore = (ulong) (submittedScore.PreviousScore?.Score ?? 0),
                     ScoreAfter = (ulong) submittedScore.Score,
-                    ComboBefore = 1,
+                    ComboBefore = (uint) (submittedScore.PreviousScore?.MaxCombo ?? 0),
                     ComboAfter = (uint) submittedScore.MaxCombo,
-                    AccuracyBefore = 0.2f,
+                    AccuracyBefore = (float) (submittedScore.PreviousScore?.Accuracy ?? 0.0f),
                     AccuracyAfter = (float) submittedScore.Accuracy,
-                    PpBefore = 0,
+                    PpBefore = (ushort) (submittedScore.PreviousScore?.Pp ?? 0),
                     PpAfter = (ushort) submittedScore.Pp
                 }
                 +
                 new PlayerChart
                 {
                     Name = "Profile",
-                    RankBefore = 2,
-                    RankAfter = 1,
-                    ScoreBefore = 0,
-                    ScoreAfter = (ulong) submittedScore.Score,
-                    ComboBefore = 1,
-                    ComboAfter = 5,
-                    AccuracyBefore = 0.2f,
-                    AccuracyAfter = 0.33f,
-                    PpBefore = 666,
-                    PpAfter = 727
+                    RankBefore = 99999,
+                    RankAfter = submittedScore.Player.Rank,
+                    ScoreBefore = submittedScore.Player.TotalScore - (ulong) submittedScore.Score,
+                    ScoreAfter = submittedScore.Player.TotalScore,
+                    AccuracyBefore = 0.0f,
+                    AccuracyAfter = submittedScore.Player.Accuracy * 100.0f,
+                    PpBefore = 0,
+                    PpAfter = submittedScore.Player.Pp
                 };
 
             return new OkObjectResult(outData);

@@ -101,7 +101,10 @@ namespace Cringe.Services
                     Failed = !quit && failed,
                     PlayerId = player.Id,
                     PlayerUsername = player.Username,
-                    BeatmapId = beatmap.Id
+                    BeatmapId = beatmap.Id,
+                    Beatmap = beatmap,
+                    Player = player,
+                    PreviousScore = previousScore
                 };
                 submittedScore.Pp = await _ppService.CalculatePp(submittedScore);
 

@@ -132,10 +132,10 @@ namespace Cringe.Controllers
             {
                 case ClientPacketType.UserStatsRequest:
                 {
-                    var reader = new BinaryReader(new MemoryStream(data));
+                    using var reader = new BinaryReader(new MemoryStream(data));
                     var statsIdsTasks = DataPacket.ReadI32(reader).Select(x => _tokenService.GetPlayerWithoutScores(x));
-                    var statsPlayers = await Task.WhenAll(statsIdsTasks);
-                    var presencePlayers = statsPlayers.Where(x => x is not null && x.Id != token.PlayerId).ToArray();
+                    var statsPlayers = (await Task.WhenAll(statsIdsTasks)).Where(x => x is not null).ToArray();
+                    var presencePlayers = statsPlayers.Where(x => x.Id != token.PlayerId).ToArray();
 
                     foreach (var stats in statsPlayers)
                     {

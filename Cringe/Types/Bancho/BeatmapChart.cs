@@ -1,6 +1,6 @@
-﻿namespace Cringe.Types
+﻿namespace Cringe.Types.Bancho
 {
-    public class PlayerChart
+    public class BeatmapChart
     {
         public string Name { get; set; }
         public string Url { get; set; }
@@ -22,7 +22,7 @@
 
         public override string ToString()
         {
-            return "chartId:overall|" +
+            return "chartId:beatmap|" +
                    $"chartUrl:{Url}|" +
                    $"chartName:{Name}|" +
                    $"rankBefore:{RankBefore}|" +
@@ -36,7 +36,8 @@
                    $"accuracyBefore:{AccuracyBefore}|" +
                    $"accuracyAfter:{AccuracyAfter}|" +
                    $"ppBefore:{PpBefore}|" +
-                   $"ppAfter:{PpAfter}";
+                   $"ppAfter:{PpAfter}|" +
+                   "score_id:1\n";
         }
     }
 }

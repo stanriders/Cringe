@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Cringe.Types;
+using Cringe.Types.Database;
 using OppaiSharp;
 using Beatmap = OppaiSharp.Beatmap;
 

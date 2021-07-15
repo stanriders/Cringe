@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cringe.Types;
+using Cringe.Types.Bancho;
 using Microsoft.Extensions.Logging;
 
 namespace Cringe.Services

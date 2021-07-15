@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Cringe.Bancho;
 using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;

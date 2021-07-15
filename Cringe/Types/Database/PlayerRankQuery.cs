@@ -1,4 +1,4 @@
-﻿namespace Cringe.Types
+﻿namespace Cringe.Types.Database
 {
     public class PlayerRankQuery
     {

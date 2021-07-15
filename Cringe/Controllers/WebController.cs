@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿
 using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;
+using Cringe.Types.Bancho;
 using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -60,8 +61,7 @@ namespace Cringe.Controllers
             if (submittedScore == null)
                 return new OkResult();
 
-            await using var replayStream = new MemoryStream();
-            await replay.CopyToAsync(replayStream);
+            await using var replayStream = replay.OpenReadStream();
             await _replayStorage.SaveReplay(submittedScore.Id, replayStream);
 
             var outData =

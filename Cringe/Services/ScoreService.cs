@@ -21,12 +21,13 @@ namespace Cringe.Services
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly PlayerDatabaseContext _playerContext;
         private readonly PlayerTopscoreStatsCache _ppCache;
+        private readonly PlayerRankCache _rankCache;
         private readonly PpService _ppService;
         private readonly ScoreDatabaseContext _scoreContext;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
             BeatmapDatabaseContext beatmapContext, PpService ppService, BanchoServicePool banchoServicePool,
-            PlayerTopscoreStatsCache ppCache)
+            PlayerTopscoreStatsCache ppCache, PlayerRankCache rankCache)
         {
             _banchoServicePool = banchoServicePool;
             _scoreContext = scoreContext;
@@ -34,6 +35,7 @@ namespace Cringe.Services
             _beatmapContext = beatmapContext;
             _ppService = ppService;
             _ppCache = ppCache;
+            _rankCache = rankCache;
         }
 
         public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit,
@@ -117,6 +119,7 @@ namespace Cringe.Services
                 {
                     player.Playcount++;
                     await _ppCache.UpdatePlayerStats(player);
+                    await _rankCache.UpdatePlayerRank(player);
                 }
 
                 player.TotalScore += (ulong) score;

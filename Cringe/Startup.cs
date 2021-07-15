@@ -35,6 +35,7 @@ namespace Cringe
             services.AddTransient<OsuApiWrapper>();
             services.AddTransient<PlayerTopscoreStatsCache>();
             services.AddTransient<PlayerRankCache>();
+            services.AddTransient<ReplayStorage>();
 
             services.AddHttpClient<OsuApiWrapper>();
             services.AddMemoryCache();

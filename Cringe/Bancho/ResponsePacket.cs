@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Cringe.Types.Enums;
@@ -65,7 +64,5 @@ namespace Cringe.Bancho
         {
             return BitConverter.GetBytes(data);
         }
-
-        
     }
 }

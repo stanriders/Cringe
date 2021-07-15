@@ -3,17 +3,19 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.ResponsePackets;
-using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Cringe.Bancho.RequestPackets
 {
     public class UserStatsRequest : RequestPacket
     {
-        
+        public UserStatsRequest(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
+
         public override ClientPacketType Type => ClientPacketType.UserStatsRequest;
+
         public override async Task Execute(UserToken token, byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));
@@ -27,7 +29,5 @@ namespace Cringe.Bancho.RequestPackets
                 pool.ActionOn(token.PlayerId, queue => queue.EnqueuePacket(new UserPresence(player.Presence)));
             }
         }
-
-        public UserStatsRequest(IServiceProvider serviceProvider) : base(serviceProvider) {}
     }
 }

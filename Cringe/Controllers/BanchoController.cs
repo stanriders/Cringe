@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Cringe.Bancho;
-using Cringe.Bancho.RequestPackets;
-using Cringe.Bancho.ResponsePackets;
-using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Cringe.Controllers
@@ -22,11 +16,12 @@ namespace Cringe.Controllers
     {
         private const uint protocol_version = 19;
         private readonly BanchoServicePool _banchoServicePool;
+        private readonly InvokeService _invoke;
         private readonly ILogger<BanchoController> _logger;
         private readonly TokenService _tokenService;
-        private readonly InvokeService _invoke;
 
-        public BanchoController(ILogger<BanchoController> logger, BanchoServicePool pool, TokenService tokenService, InvokeService invoke)
+        public BanchoController(ILogger<BanchoController> logger, BanchoServicePool pool, TokenService tokenService,
+            InvokeService invoke)
         {
             _logger = logger;
             _banchoServicePool = pool;

@@ -13,6 +13,7 @@ namespace Cringe.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.ChannelJoin;
+
         public override Task Execute(UserToken token, byte[] data)
         {
             using var stream = new MemoryStream(data[7..]);

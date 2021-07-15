@@ -15,6 +15,7 @@ namespace Cringe.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.SendPrivateMessage;
+
         public override async Task Execute(UserToken token, byte[] data)
         {
             var dest = data[9..];

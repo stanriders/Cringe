@@ -24,7 +24,7 @@ namespace Cringe.Services
 
         public void SetUpdates(int id, Stats newStats)
         {
-            if (!_stats.TryAdd(id, newStats)) 
+            if (!_stats.TryAdd(id, newStats))
                 _stats[id] = newStats;
         }
     }

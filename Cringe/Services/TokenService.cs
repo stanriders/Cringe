@@ -66,11 +66,11 @@ namespace Cringe.Services
         {
             if (id <= 0)
                 return null;
-            
+
             var tokenData = Tokens.FirstOrDefault(x => x.PlayerId == id);
             if (tokenData is null)
                 return null;
-            
+
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == tokenData.PlayerId);
             return player;
         }

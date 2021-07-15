@@ -12,6 +12,7 @@ namespace Cringe.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.Logout;
+
         public override Task Execute(UserToken token, byte[] data)
         {
             Pool.Nuke(token.PlayerId);

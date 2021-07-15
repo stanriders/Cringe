@@ -14,16 +14,18 @@ namespace Cringe.Bancho
 {
     public abstract class RequestPacket
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        protected RequestPacket(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         protected BanchoServicePool Pool => _serviceProvider.GetService<BanchoServicePool>();
         protected TokenService Token => _serviceProvider.GetService<TokenService>();
         protected ChatServicePool Chats => _serviceProvider.GetService<ChatServicePool>();
         protected StatsService Stats => _serviceProvider.GetService<StatsService>();
         protected IConfiguration Configuration => _serviceProvider.GetService<IConfiguration>();
-        private readonly IServiceProvider _serviceProvider;
-        protected RequestPacket(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        } 
         public abstract ClientPacketType Type { get; }
         public abstract Task Execute(UserToken token, byte[] data);
 
@@ -31,6 +33,7 @@ namespace Cringe.Bancho
         {
             return reader.ReadInt32();
         }
+
         public static string ReadString(Stream stream)
         {
             stream.ReadByte();
@@ -53,6 +56,6 @@ namespace Cringe.Bancho
             var buffer = new int[length];
             for (var i = 0; i < length; i++) buffer[i] = reader.ReadInt32();
             return buffer;
-        } 
+        }
     }
 }

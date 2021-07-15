@@ -17,7 +17,7 @@ namespace Cringe.Bancho.RequestPackets
         public override async Task Execute(UserToken token, byte[] data)
         {
             var action = ChangeAction.Parse(data);
-            var player = (await Token.GetPlayerWithoutScores(token.PlayerId));
+            var player = await Token.GetPlayerWithoutScores(token.PlayerId);
             var pl = player.Stats;
             pl.Action = action;
             Stats.SetUpdates(token.PlayerId, pl);

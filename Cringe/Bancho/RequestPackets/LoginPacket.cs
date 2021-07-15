@@ -10,11 +10,13 @@ namespace Cringe.Bancho.RequestPackets
     public class LoginPacket : RequestPacket
     {
         private const uint protocol_version = 19;
+
         public LoginPacket(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
         public override ClientPacketType Type => ClientPacketType.Login;
+
         public override async Task Execute(UserToken token, byte[] data)
         {
             var pool = Pool;

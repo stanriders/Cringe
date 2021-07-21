@@ -40,7 +40,7 @@ namespace Cringe.Services
                 _pool.ActionOn(userId, queue =>
                 { 
                     queue.EnqueuePacket(new MatchJoinFail());
-                    queue.EnqueuePacket(new Notification("Ебать братан тебя вштырило)"));
+                    queue.EnqueuePacket(new Notification("AYE LOBBI DOES NOT EXIST"));
                 });
                 return;
             }
@@ -50,7 +50,7 @@ namespace Cringe.Services
                 _pool.ActionOn(userId, queue =>
                 {
                     queue.EnqueuePacket(new MatchJoinFail());
-                    queue.EnqueuePacket(new Notification("циферки правильные набери"));
+                    queue.EnqueuePacket(new Notification("WRONG NUMBERS"));
                 });
                 return;
             }
@@ -61,10 +61,11 @@ namespace Cringe.Services
                 _pool.ActionOn(userId, queue =>
                 {
                     queue.EnqueuePacket(new MatchJoinFail());
-                    queue.EnqueuePacket(new Notification("матч забит"));
+                    queue.EnqueuePacket(new Notification("DOUBLE SHTAK LOBBI FULL"));
                 });
                 return;
             }
+            _pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             _pool.ActionOn(userId, queue =>
             {
                 queue.EnqueuePacket(new MatchJoinSuccess(lobby));
@@ -93,6 +94,7 @@ namespace Cringe.Services
             var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(p => p.Id == player.Id));
             if (lobby is null) return;
             lobby.Disconnect(player);
+            _pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             _chats.NukeUserFromPrivateChat(player.Id, "#multiplayer" + lobby.Id);
             if (lobby.Players.Count == 0)
                 _lobbies.Remove(lobby);

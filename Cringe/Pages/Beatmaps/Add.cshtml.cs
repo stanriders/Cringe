@@ -40,8 +40,9 @@ namespace Cringe.Pages.Beatmaps
 
                 if (addedMap != null)
                 {
+                    await _osuApiWrapper.DownloadBeatmap(BeatmapId.Value);
                     await _context.SaveChangesAsync();
-                    return RedirectToPage($"./Index?id={addedMap.Entity.Id}");
+                    return Redirect(Url.Page("Index", new { id = BeatmapId.Value }));
                 }
             }
 

@@ -41,11 +41,11 @@ namespace Cringe.Pages.Beatmaps
                 if (addedMap != null)
                 {
                     await _context.SaveChangesAsync();
-                    return RedirectToPage($"./{addedMap.Entity.Id}");
+                    return RedirectToPage($"./Index?id={addedMap.Entity.Id}");
                 }
             }
 
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }

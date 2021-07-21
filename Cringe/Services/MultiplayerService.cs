@@ -94,6 +94,7 @@ namespace Cringe.Services
             var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(p => p.Id == player.Id));
             if (lobby is null) return;
             lobby.Disconnect(player);
+            _pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             _chats.NukeUserFromPrivateChat(player.Id, "#multiplayer" + lobby.Id);
             if (lobby.Players.Count == 0)
                 _lobbies.Remove(lobby);

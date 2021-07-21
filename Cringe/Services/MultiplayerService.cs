@@ -31,6 +31,46 @@ namespace Cringe.Services
             return _lobbies.FirstOrDefault(x => x.Players.Any(v => v.Id == id));
         }
 
+        public void Connect(Player player, int lobbyId, string password)
+        {
+            var userId = player.Id;
+            var lobby = _lobbies.FirstOrDefault(x => x.Id == lobbyId);
+            if (lobby is null)
+            {
+                _pool.ActionOn(userId, queue =>
+                { 
+                    queue.EnqueuePacket(new MatchJoinFail());
+                    queue.EnqueuePacket(new Notification("Ебать братан тебя вштырило)"));
+                });
+                return;
+            }
+
+            if (lobby.Password != password)
+            {
+                _pool.ActionOn(userId, queue =>
+                {
+                    queue.EnqueuePacket(new MatchJoinFail());
+                    queue.EnqueuePacket(new Notification("циферки правильные набери"));
+                });
+                return;
+            }
+
+            var res = lobby.Connect(player);
+            if (!res)
+            {
+                _pool.ActionOn(userId, queue =>
+                {
+                    queue.EnqueuePacket(new MatchJoinFail());
+                    queue.EnqueuePacket(new Notification("матч забит"));
+                });
+                return;
+            }
+            _pool.ActionOn(userId, queue =>
+            {
+                queue.EnqueuePacket(new MatchJoinSuccess(lobby));
+            });
+
+        }
         public void SetLobby(Lobby old, Lobby newLobby)
         {
             _lobbies.Remove(old);

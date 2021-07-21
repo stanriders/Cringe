@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types.Database;
 using Cringe.Types.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Cringe.Services
@@ -50,7 +51,22 @@ namespace Cringe.Services
                     if (addedMaps % 10000 == 0)
                         _dbContext.SaveChanges();
 
+                    if (!File.ReadLines(beatmapPath).First().StartsWith("osu file format"))
+                        continue;
+
                     var beatmapModel = ParseBeatmap(beatmapPath);
+
+                    // some people just want everything to break (see /b/2269460)
+                    var nans = beatmapModel.GetType()
+                        .GetProperties()
+                        .Where(x => x.PropertyType == typeof(double) && double.IsNaN((double)x.GetValue(beatmapModel)))
+                        .Select(x=> x.Name).ToArray();
+
+                    if (nans.Length > 0)
+                    {
+                        Console.WriteLine($"Map {beatmapPath} contains NaN on fields: {string.Join(' ', nans)}");
+                        continue;
+                    }
 
                     using var md5 = MD5.Create();
                     using var stream = File.OpenRead(beatmapPath);
@@ -61,6 +77,11 @@ namespace Cringe.Services
 
                     _dbContext.Beatmaps.Add(beatmapModel);
                     Interlocked.Add(ref addedMaps, 1);
+                }
+                catch (DbUpdateException ioEx)
+                {
+                    Console.WriteLine($"Failed to save: {ioEx}");
+                    return;
                 }
                 catch (Exception e)
                 {
@@ -92,11 +113,17 @@ namespace Cringe.Services
                 if (parsingTimingPoints)
                 {
                     var timingPoint = line.Split(',');
-                    var beatLength = double.Parse(timingPoint[1]);
-                    if (beatLength > 0)
+                    if (timingPoint.Length > 1)
                     {
-                        beatmap.Bpm = Math.Round(60000 / beatLength, 2);
-                        parsingTimingPoints = false;
+                        var beatLength = double.Parse(timingPoint[1]);
+                        if (beatLength > 0)
+                        {
+                            beatmap.Bpm = Math.Round(60000.0 / beatLength, 2);
+                            if (double.IsNaN(beatmap.Bpm))
+                                beatmap.Bpm = -1;
+
+                            parsingTimingPoints = false;
+                        }
                     }
                 }
 

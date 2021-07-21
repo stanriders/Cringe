@@ -23,13 +23,22 @@ namespace Cringe.Pages.Beatmaps
 
         public IList<Beatmap> Beatmap { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int? start, int? amount)
         {
-            Beatmap = await _context.Beatmaps.OrderByDescending(x=>x.Id).Take(100).ToListAsync();
+            Beatmap = await _context.Beatmaps.OrderByDescending(x=>x.Id)
+                .Skip(start ?? 0)
+                .Take(amount ?? 100)
+                .ToListAsync();
         }
 
         public IActionResult OnPost()
         {
+            if (_context.Beatmaps.Any())
+            {
+                System.IO.File.Delete("beatmaps.db");
+                _context.Database.EnsureCreated();
+            }
+
             _beatmapService.SeedDatabse();
             return Page();
         }

@@ -18,6 +18,7 @@ namespace Cringe.Bancho.RequestPackets
         {
             var lobby = Chat.Lobby;
             Chats.Connect(token.PlayerId, lobby.Name);
+            Multiplayer.EnqueueLobbies(token.PlayerId);
             return Task.CompletedTask;
         }
     }

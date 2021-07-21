@@ -37,6 +37,17 @@ namespace Cringe.Services
             _lobbies.Add(newLobby);
         }
 
+        public void EnqueueLobbies(int id)
+        {
+            _pool.ActionOn(id, queue =>
+            {
+                foreach (var lobby in _lobbies)
+                {
+                    queue.EnqueuePacket(new NewMatch(lobby));
+                }
+            });
+            
+        }
         public void NukePlayer(Player player)
         {
             var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(p => p.Id == player.Id));

@@ -23,6 +23,7 @@ namespace Cringe.Services
                 new ChannelPart(serviceProvider),
                 new CreateMatch(serviceProvider),
                 new JoinLobby(serviceProvider),
+                new JoinMatch(serviceProvider),
                 new LoginPacket(serviceProvider),
                 new LogoutPacket(serviceProvider),
                 new MatchChangeSlot(serviceProvider),

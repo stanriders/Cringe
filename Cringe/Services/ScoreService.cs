@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Cringe.Bancho.ResponsePackets;
 using Cringe.Database;
-using Cringe.Types;
 using Cringe.Types.Database;
 using Cringe.Types.Enums;
 using Microsoft.EntityFrameworkCore;

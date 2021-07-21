@@ -10,6 +10,14 @@ namespace Cringe.Types.Enums
 
         [Display(Name = "catch")] Catch = 2,
 
-        [Display(Name = "mania")] Mania = 3
+        [Display(Name = "mania")] Mania = 3,
+
+        [Display(Name = "Relax osu!")] RxStd = 4,
+
+        [Display(Name = "Relax taiko")] RxTaiko = 5,
+
+        [Display(Name = "Relax catch")] RxCatch = 6,
+
+        [Display(Name = "Autoplay Std")] ApStd = 7
     }
 }

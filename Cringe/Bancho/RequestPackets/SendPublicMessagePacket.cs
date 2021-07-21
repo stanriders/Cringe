@@ -16,9 +16,12 @@ namespace Cringe.Bancho.RequestPackets
 
         public override async Task Execute(UserToken token, byte[] data)
         {
-            var dest = data[9..];
+            var dest = data[2..];
             var message = await Message.Parse(dest, token.Username);
-            Pool.ActionMapFilter(x => x.EnqueuePacket(message), id => id != token.PlayerId);
+            if (message.Receiver == "#multiplayer")
+                Multiplayer.SendMessage(message);
+            else
+                Pool.ActionMapFilter(x => x.EnqueuePacket(message), id => id != token.PlayerId);
         }
     }
 }

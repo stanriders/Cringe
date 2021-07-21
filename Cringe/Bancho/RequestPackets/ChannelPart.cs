@@ -16,7 +16,7 @@ namespace Cringe.Bancho.RequestPackets
 
         public override Task Execute(UserToken token, byte[] data)
         {
-            using var stream = new MemoryStream(data[7..]);
+            using var stream = new MemoryStream(data);
             var server = ReadString(stream);
             Chats.Disconnect(token.PlayerId, server);
             return Task.CompletedTask;

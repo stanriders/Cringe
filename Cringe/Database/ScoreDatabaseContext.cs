@@ -1,5 +1,4 @@
-﻿using Cringe.Types;
-using Cringe.Types.Database;
+﻿using Cringe.Types.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Database

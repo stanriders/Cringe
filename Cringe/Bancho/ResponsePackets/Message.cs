@@ -7,15 +7,15 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class Message : ResponsePacket
     {
-        private readonly string _message;
-        private readonly string _who;
-
         private Message(string message, string who, string receiver)
         {
-            _message = message;
-            _who = who;
+            Content = message;
+            Sender = who;
             Receiver = receiver;
         }
+
+        public string Content { get; }
+        public string Sender { get; }
 
         public string Receiver { get; }
 
@@ -23,8 +23,8 @@ namespace Cringe.Bancho.ResponsePackets
 
         public override byte[] GetBytes()
         {
-            var data = PackData(_who).AsEnumerable();
-            data = data.Concat(PackData(_message));
+            var data = PackData(Sender).AsEnumerable();
+            data = data.Concat(PackData(Content));
             data = data.Concat(PackData(Receiver));
             return data.ToArray();
         }

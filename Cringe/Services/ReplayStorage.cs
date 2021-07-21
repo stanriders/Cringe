@@ -1,5 +1,4 @@
-﻿
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
@@ -7,8 +6,8 @@ namespace Cringe.Services
 {
     public class ReplayStorage
     {
-        private readonly IConfiguration _configuration;
         private readonly string _cachePath;
+        private readonly IConfiguration _configuration;
 
         public ReplayStorage(IConfiguration configuration)
         {

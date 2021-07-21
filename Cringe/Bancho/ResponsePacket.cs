@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Cringe.Types.Enums;
 using Cringe.Utils;
@@ -15,6 +17,11 @@ namespace Cringe.Bancho
         protected static byte[] PackData(short data)
         {
             return BitConverter.GetBytes(data);
+        }
+
+        protected static byte[] PackData(bool data)
+        {
+            return new[] {(byte) (data ? 1 : 0)};
         }
 
         protected static byte[] PackData(ushort data)
@@ -63,6 +70,11 @@ namespace Cringe.Bancho
         protected static byte[] PackData(float data)
         {
             return BitConverter.GetBytes(data);
+        }
+
+        protected static byte[] ConcatData(params IEnumerable<byte>[] arrays)
+        {
+            return arrays.Aggregate((acc, it) => acc.Concat(it)).ToArray();
         }
     }
 }

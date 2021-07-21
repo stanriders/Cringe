@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Cringe.Bancho;
 using Cringe.Services;
-using Cringe.Types;
 using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -66,7 +63,7 @@ namespace Cringe.Controllers
                 return null;
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
-            await _invoke.Invoke(ClientPacketType.Login, token, null);
+            await _invoke.InvokeOne(ClientPacketType.Login, token, null);
             return _banchoServicePool.GetFromPool(token.PlayerId);
         }
 
@@ -85,8 +82,7 @@ namespace Cringe.Controllers
             await Request.Body.CopyToAsync(inStream);
             var data = inStream.ToArray();
 
-            var packetType = (ClientPacketType) BitConverter.ToUInt16(data[..2].ToArray());
-            await _invoke.Invoke(packetType, token, data);
+            await _invoke.Invoke(token, data);
             return queue;
         }
     }

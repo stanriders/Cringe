@@ -1,9 +1,7 @@
-﻿
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Services;
-using Cringe.Types;
 using Cringe.Types.Bancho;
 using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Http;
@@ -17,9 +15,9 @@ namespace Cringe.Controllers
     public class WebController : ControllerBase
     {
         private readonly BeatmapDatabaseContext _beatmapContext;
+        private readonly ReplayStorage _replayStorage;
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
         private readonly ScoreService _scoreService;
-        private readonly ReplayStorage _replayStorage;
 
         public WebController(ScoreService scoreService,
             ScoreDatabaseContext scoreDatabaseContext,

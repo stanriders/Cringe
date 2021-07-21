@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types.Database;
@@ -20,7 +21,7 @@ namespace Cringe.Pages.Players
 
         public async Task OnGetAsync()
         {
-            Player = await _context.Players.ToListAsync();
+            Player = await _context.Players.OrderByDescending(x=> x.Pp).ToListAsync();
         }
     }
 }

@@ -5,11 +5,11 @@
     ViewData["Title"] = "Beatmap Listing";
 }
 
-<div>
+<h4>
 <form method="post">
     <input type="submit" value="Seed database (SLOW)" class="btn btn-default" />
 </form>
-</div>
+</h4>
 
 <table class="table">
     <thead>
@@ -46,7 +46,6 @@
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Index" asp-route-id="@item.Id">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

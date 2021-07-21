@@ -10,6 +10,7 @@
 <table class="table">
     <thead>
     <tr>
+        <th>#</th>
         <th>
             @Html.DisplayNameFor(model => model.Player[0].Username)
         </th>
@@ -23,9 +24,6 @@
             @Html.DisplayNameFor(model => model.Player[0].TotalScore)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Player[0].Rank)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.Player[0].Pp)
         </th>
         <th>
@@ -35,36 +33,35 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.Player)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Username)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Accuracy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Playcount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalScore)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rank)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Pp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserRank)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Index" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-    }
+        @for (int i = 0; i < Model.Player.Count; i++)
+        {
+            <tr>
+                <td>
+                    @(i+1)
+                </td>
+                <td>
+                    <a asp-page="./Index" asp-route-id="@Model.Player[i].Id">@Html.DisplayFor(modelItem => Model.Player[i].Username)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Player[i].Accuracy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Player[i].Playcount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Player[i].TotalScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Player[i].Pp)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Player[i].UserRank)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@Model.Player[i].Id">Edit</a> |
+                    <a asp-page="./Delete" asp-route-id="@Model.Player[i].Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

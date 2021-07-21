@@ -9,6 +9,8 @@ namespace Cringe.Types.Database
         [Key] public int Id { get; set; }
 
         public string Username { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:P2}")]
         public float Accuracy { get; set; }
         public uint Playcount { get; set; }
         public ulong TotalScore { get; set; }

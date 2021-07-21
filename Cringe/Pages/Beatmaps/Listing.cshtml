@@ -29,7 +29,14 @@
     {
         <tr>
             <td>
-                <img src="https://assets.ppy.sh/beatmaps/@item.BeatmapSetId/covers/list.jpg" width="64px"/>
+                @if (item.BeatmapSetId != null)
+                {
+                    <img src="https://assets.ppy.sh/beatmaps/@item.BeatmapSetId/covers/list.jpg" width="64px"/>
+                }
+                else
+                {
+                    <img src="https://a.stanr.info/default.png" width="64px" />
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Id)

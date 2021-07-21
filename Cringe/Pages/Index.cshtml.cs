@@ -23,7 +23,7 @@ namespace Cringe.Pages
 
         public async Task OnGetAsync()
         {
-            Scores = await _scoreContext.Scores.OrderByDescending(x => x.Pp).Take(100).ToListAsync();
+            Scores = await _scoreContext.Scores.OrderByDescending(x => x.Pp).Take(50).ToListAsync();
             foreach (var score in Scores)
             {
                 score.Beatmap = await _beatmapContext.Beatmaps.Where(x => x.Id == score.BeatmapId)

@@ -2,6 +2,7 @@
 using System.Linq;
 using Cringe.Bancho.ResponsePackets;
 using Cringe.Types;
+using Cringe.Types.Bancho;
 using Cringe.Types.Database;
 
 namespace Cringe.Services
@@ -10,16 +11,19 @@ namespace Cringe.Services
     {
         private readonly HashSet<Lobby> _lobbies;
         private readonly BanchoServicePool _pool;
+        private readonly ChatServicePool _chats;
 
-        public MultiplayerService(BanchoServicePool pool)
+        public MultiplayerService(BanchoServicePool pool, ChatServicePool chats)
         {
             _pool = pool;
+            _chats = chats;
             _lobbies = new HashSet<Lobby>();
         }
 
         public void Register(Lobby lobby)
         {
             _lobbies.Add(lobby);
+            _chats.Create(Chat.Multiplayer(lobby.Id.ToString()));
         }
 
         public Lobby GetFromUser(int id)
@@ -29,9 +33,10 @@ namespace Cringe.Services
 
         public void NukePlayer(Player player)
         {
-            var lobby = _lobbies.FirstOrDefault(x => x.Players.Contains(player));
+            var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(p => p.Id == player.Id));
             if (lobby is null) return;
             lobby.Disconnect(player);
+            _chats.NukeUserFromPrivateChat(player.Id, "#multiplayer" + lobby.Id);
             if (lobby.Players.Count == 0)
                 _lobbies.Remove(lobby);
         }

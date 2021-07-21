@@ -28,6 +28,12 @@ namespace Cringe.Services
             _chatPool.Add(Chat.Lobby.Name, Chat.Lobby);
         }
 
+        public void Create(Chat chat)
+        {
+            if(_chatPool.ContainsKey(chat.KvName)) return;
+            _chatPool.Add(chat.KvName, chat);
+        }
+
         public void AutoJoinOrPackInfo(int user, string channelName)
         {
             var success = _chatPool.TryGetValue(channelName, out var chat);
@@ -60,6 +66,16 @@ namespace Cringe.Services
                 return;
             chat.Users.Remove(user);
             _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelInfo(chat)));
+        }
+
+        public void NukeUserFromPrivateChat(int user, string channelName)
+        {
+            if (!_chatPool.TryGetValue(channelName, out var chat))
+                return;
+            chat.Users.Remove(user);
+            _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelKick(chat)));
+            if (chat.Users.Count == 0)
+                _chatPool.Remove(channelName);
         }
 
         public void NukeUser(int user)

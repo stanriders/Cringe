@@ -15,8 +15,18 @@ namespace Cringe.Types.Bancho
         }
 
         public string Name { get; set; }
+        public string UniqueId { get; set; }
+        public string KvName => Name + UniqueId;
         public string Description { get; set; }
         public bool AutoJoin { get; }
         public HashSet<int> Users { get; }
+
+        public static Chat Multiplayer(string uniqueId)
+        {
+            return new("#multiplayer", "/a/")
+            {
+                UniqueId = uniqueId,
+            };
+        }
     }
 }

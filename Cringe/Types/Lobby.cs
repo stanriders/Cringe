@@ -26,7 +26,6 @@ namespace Cringe.Types
 
         public HashSet<Player> Players { get; } = new();
         public Mods Mods { get; set; }
-
         public bool Connect(Player player)
         {
             var slot = Slots.OrderBy(x => x.Index).FirstOrDefault(x => x.Player is null);

@@ -26,10 +26,11 @@ namespace Cringe.Services
         {
             return _lobbies.FirstOrDefault(x => x.Players.Any(v => v.Id == id));
         }
+
         public void NukePlayer(Player player)
         {
             var lobby = _lobbies.FirstOrDefault(x => x.Players.Contains(player));
-            if(lobby is null) return;
+            if (lobby is null) return;
             lobby.Disconnect(player);
             if (lobby.Players.Count == 0)
                 _lobbies.Remove(lobby);
@@ -38,8 +39,8 @@ namespace Cringe.Services
         public void SendMessage(Message message)
         {
             var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(player => player.Username == message.Sender));
-            if(lobby is null) return;
-            
+            if (lobby is null) return;
+
             foreach (var lobbyPlayer in lobby.Players.Where(x => x.Username != message.Sender))
                 _pool.ActionOn(lobbyPlayer.Id, queue => queue.EnqueuePacket(message));
         }

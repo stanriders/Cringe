@@ -14,12 +14,13 @@ namespace Cringe.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.MatchChangeMods;
+
         public override Task Execute(UserToken token, byte[] data)
         {
-            var mods = (Mods)ReadInt(data);
+            var mods = (Mods) ReadInt(data);
             var lobby = Multiplayer.GetFromUser(token.PlayerId);
-            if(lobby is null) return Task.CompletedTask;
-            if(lobby.FreeMode)
+            if (lobby is null) return Task.CompletedTask;
+            if (lobby.FreeMode)
             {
                 var slot = lobby.Slots.FirstOrDefault(x => x.Player.Id == token.PlayerId);
                 slot!.Mods = mods;
@@ -28,6 +29,7 @@ namespace Cringe.Bancho.RequestPackets
             {
                 lobby.Mods = mods;
             }
+
             Pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             return Task.CompletedTask;
         }

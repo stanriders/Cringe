@@ -44,6 +44,7 @@ namespace Cringe.Bancho
             using var reader = new BinaryReader(new MemoryStream(data));
             return reader.ReadInt32();
         }
+
         protected static IEnumerable<int> ReadI32(BinaryReader reader, int length)
         {
             var buffer = new int[length];

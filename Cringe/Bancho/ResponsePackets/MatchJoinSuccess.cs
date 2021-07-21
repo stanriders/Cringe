@@ -23,7 +23,7 @@ namespace Cringe.Bancho.ResponsePackets
             var host = Match.Host;
             var players = Match.Players.Select(x => PackData(x.Id)).SelectMany(x => x);
             var playerMods = Match.FreeMode ? Match.Slots.Select(x => (byte) x.Mods).ToArray() : Array.Empty<byte>();
-            var mods = (int)Match.Mods;
+            var mods = (int) Match.Mods;
             return ConcatData(
                 PackData(Match.Id),
                 PackData(Match.InProgress),

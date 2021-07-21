@@ -14,12 +14,13 @@ namespace Cringe.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.MatchChangeSlot;
+
         public override Task Execute(UserToken token, byte[] data)
         {
             var id = ReadInt(data);
             var lobby = Multiplayer.GetFromUser(token.PlayerId);
             if (lobby is null) throw new Exception("Null lobby");
-            
+
             var slot = lobby.Slots.FirstOrDefault(x => x.Player.Id == token.PlayerId);
             var slotPos = lobby.Slots.FirstOrDefault(x => x.Index == id);
             if (slotPos is null) throw new Exception("No slotPos found");

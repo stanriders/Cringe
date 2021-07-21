@@ -15,6 +15,7 @@ namespace Cringe.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.MatchReady;
+
         public override Task Execute(UserToken token, byte[] data)
         {
             var lobby = Multiplayer.GetFromUser(token.PlayerId);

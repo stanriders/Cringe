@@ -32,7 +32,7 @@ namespace Cringe.Bancho.RequestPackets
                 if (lobby.Host == token.PlayerId) lobby.Mods = mods;
             }
 
-            Pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
+            Pool.ActionOn(lobby.Players, queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             return Task.CompletedTask;
         }
     }

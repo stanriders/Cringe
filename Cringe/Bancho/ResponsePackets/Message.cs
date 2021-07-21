@@ -7,7 +7,7 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class Message : ResponsePacket
     {
-        private Message(string message, string who, string receiver)
+        public Message(string message, string who, string receiver)
         {
             Content = message;
             Sender = who;
@@ -16,6 +16,7 @@ namespace Cringe.Bancho.ResponsePackets
 
         public string Content { get; }
         public string Sender { get; }
+        public int SenderId { get; set; }
 
         public string Receiver { get; }
 

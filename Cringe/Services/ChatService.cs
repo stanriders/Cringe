@@ -65,6 +65,7 @@ namespace Cringe.Services
             if (!_chatPool.TryGetValue(channelName, out var chat))
                 return;
             chat.Users.Remove(user);
+            _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelKick(chat)));
             _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelInfo(chat)));
         }
 

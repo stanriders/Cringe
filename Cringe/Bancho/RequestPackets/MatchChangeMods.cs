@@ -22,14 +22,21 @@ namespace Cringe.Bancho.RequestPackets
             if (lobby is null) return Task.CompletedTask;
             if (lobby.FreeMode)
             {
-                var slot = lobby.Slots.FirstOrDefault(x => x.Player.Id == token.PlayerId);
-                slot!.Mods = mods;
+                if (lobby.Host == token.PlayerId)
+                {
+                    lobby.Mods = mods & Mods.SpeedChangingMods;
+                }
+
+                var slot = lobby.Slots.First(x => x.Player.Id == token.PlayerId);
+                slot.Mods = mods & ~Mods.SpeedChangingMods;
             }
             else
             {
-                lobby.Mods = mods;
+                if (lobby.Host == token.PlayerId)
+                {
+                    lobby.Mods = mods;
+                }
             }
-
             Pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             return Task.CompletedTask;
         }

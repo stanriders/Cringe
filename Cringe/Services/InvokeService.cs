@@ -27,6 +27,7 @@ namespace Cringe.Services
                 new LogoutPacket(serviceProvider),
                 new MatchChangeSlot(serviceProvider),
                 new MatchChangeMods(serviceProvider),
+                new MatchChangeSettings(serviceProvider),
                 new MatchNotReady(serviceProvider),
                 new MatchReady(serviceProvider),
                 new PartLobby(serviceProvider),

@@ -51,7 +51,9 @@ namespace Cringe.Types
         {
             using var reader = new BinaryReader(new MemoryStream(data));
             var id = reader.ReadInt16();
-            reader.ReadBytes(6);
+            var inprogress = reader.ReadBoolean();
+            reader.ReadByte();
+            var mods = (Mods) reader.ReadInt32();
             var name = RequestPacket.ReadString(reader.BaseStream);
             var password = RequestPacket.ReadString(reader.BaseStream);
             var lobby = new Lobby
@@ -59,6 +61,8 @@ namespace Cringe.Types
                 Id = id,
                 Name = name,
                 Password = password,
+                InProgress = inprogress,
+                Mods = mods,
                 MapName = RequestPacket.ReadString(reader.BaseStream),
                 MapId = reader.ReadInt32(),
                 MapMd5 = RequestPacket.ReadString(reader.BaseStream)
@@ -69,14 +73,13 @@ namespace Cringe.Types
             foreach (var slot in lobby.Slots) slot.Team = (MatchTeams) reader.ReadByte();
 
             foreach (var slot in lobby.Slots)
-                if (slot.Status.HasFlag(SlotStatus.has_player))
+                if((byte)(slot.Status & SlotStatus.has_player) != 0) //If slot is not empty
                     reader.ReadInt32();
 
-            var host = reader.ReadInt32();
-            lobby.Host = host;
+            lobby.Host = reader.ReadInt32();
             lobby.Mode = (GameModes) reader.ReadByte();
-            lobby.Mods = Mods.None;
             lobby.WinConditions = (MatchWinConditions) reader.ReadByte();
+            lobby.TeamTypes = (MatchTeamTypes) reader.ReadByte();
             lobby.FreeMode = reader.ReadByte() == 1;
             if (!lobby.FreeMode) return lobby;
             foreach (var slot in lobby.Slots)

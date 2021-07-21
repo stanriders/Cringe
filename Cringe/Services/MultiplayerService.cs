@@ -31,6 +31,11 @@ namespace Cringe.Services
             return _lobbies.FirstOrDefault(x => x.Players.Any(v => v.Id == id));
         }
 
+        public void SetLobby(Lobby old, Lobby newLobby)
+        {
+            _lobbies.Remove(old);
+            _lobbies.Add(newLobby);
+        }
         public void NukePlayer(Player player)
         {
             var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(p => p.Id == player.Id));

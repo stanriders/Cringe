@@ -34,6 +34,7 @@ namespace Cringe.Types.Enums
         Key1 = 67108864,
         Key3 = 134217728,
         Key2 = 268435456,
-        V2 = 536870912
+        V2 = 536870912,
+        SpeedChangingMods = DoubleTime | Nightcore | HalfTime
     }
 }

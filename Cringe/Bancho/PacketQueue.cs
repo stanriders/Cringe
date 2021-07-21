@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Cringe.Bancho;
 using Cringe.Bancho.ResponsePackets;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cringe.Types
+namespace Cringe.Bancho
 {
     public class PacketQueue
     {

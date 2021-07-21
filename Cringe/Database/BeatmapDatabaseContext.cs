@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using Cringe.Types;
+using Cringe.Types.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Database

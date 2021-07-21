@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types;
+using Cringe.Types.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Cringe.Types
+namespace Cringe.Types.Database
 {
     public class Beatmap
     {

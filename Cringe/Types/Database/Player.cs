@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Cringe.Types.Bancho;
 using Cringe.Types.Enums;
 
-namespace Cringe.Types
+namespace Cringe.Types.Database
 {
     public class Player
     {

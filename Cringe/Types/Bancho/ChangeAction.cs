@@ -2,7 +2,7 @@
 using Cringe.Bancho;
 using Cringe.Types.Enums;
 
-namespace Cringe.Types
+namespace Cringe.Types.Bancho
 {
     public class ChangeAction
     {

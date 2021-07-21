@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Cringe.Types.Enums;
 
-namespace Cringe.Types
+namespace Cringe.Types.Database
 {
     public class SubmittedScore
     {

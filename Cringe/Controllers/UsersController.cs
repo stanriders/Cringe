@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;
+using Cringe.Types.Database;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cringe.Controllers

@@ -17,7 +17,6 @@ namespace Cringe.Bancho.RequestPackets
         public override async Task Execute(UserToken token, byte[] data)
         {
             var lobby = Lobby.Parse(data);
-            lobby.Id = 5;
             Multiplayer.Register(lobby);
             Chats.Connect(token.PlayerId, "#multiplayer" + lobby.Id);
             var user = await Token.GetPlayerWithoutScores(token.PlayerId);

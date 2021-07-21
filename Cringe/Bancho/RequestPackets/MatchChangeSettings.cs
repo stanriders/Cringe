@@ -31,7 +31,7 @@ namespace Cringe.Bancho.RequestPackets
             curLobby.MapName = lobby.MapName;
             curLobby.TeamTypes = lobby.TeamTypes;
             curLobby.WinConditions = lobby.WinConditions;
-            Pool.ActionOn(curLobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(curLobby)));
+            Pool.ActionOn(curLobby.Players, queue => queue.EnqueuePacket(new UpdateMatch(curLobby)));
             return Task.CompletedTask;
         }
     }

@@ -21,7 +21,7 @@ namespace Cringe.Bancho.ResponsePackets
             var status = slots.Select(x => (byte) x.Status);
             var teams = slots.Select(x => (byte) x.Team);
             var host = Match.Host;
-            var players = Match.Players.Select(x => PackData(x.Id)).SelectMany(x => x).ToArray();
+            var players = Match.Players.Select(PackData).SelectMany(x => x).ToArray();
             var playerMods = Match.FreeMode ? Match.Slots.Select(x => (byte) x.Mods).ToArray() : Array.Empty<byte>();
             var mods = (int) Match.Mods;
             return ConcatData(

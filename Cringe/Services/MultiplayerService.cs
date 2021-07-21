@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cringe.Bancho;
 using Cringe.Bancho.ResponsePackets;
 using Cringe.Types;
 using Cringe.Types.Bancho;
@@ -22,13 +23,24 @@ namespace Cringe.Services
 
         public void Register(Lobby lobby)
         {
+            lobby.Id = GetId();
             _lobbies.Add(lobby);
             _chats.Create(Chat.Multiplayer(lobby.Id.ToString()));
+            UpdateLobby(new NewMatch(lobby));
         }
 
+        private void UpdateLobby(ResponsePacket packet)
+        {
+            var users = _chats.GetLobbyUsers();
+            _pool.ActionOn(users, queue =>
+            {
+                queue.EnqueuePacket(packet);
+            });
+        }
+        
         public Lobby GetFromUser(int id)
         {
-            return _lobbies.FirstOrDefault(x => x.Players.Any(v => v.Id == id));
+            return _lobbies.FirstOrDefault(x => x.Players.Any(v => v == id));
         }
 
         public void Connect(Player player, int lobbyId, string password)
@@ -65,12 +77,13 @@ namespace Cringe.Services
                 });
                 return;
             }
-            _pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
+            _chats.Connect(userId, "#multiplayer" + lobbyId);
+            _pool.ActionOn(lobby.Players, queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             _pool.ActionOn(userId, queue =>
             {
                 queue.EnqueuePacket(new MatchJoinSuccess(lobby));
             });
-
+            UpdateLobby(new NewMatch(lobby));
         }
         public void SetLobby(Lobby old, Lobby newLobby)
         {
@@ -91,22 +104,29 @@ namespace Cringe.Services
         }
         public void NukePlayer(Player player)
         {
-            var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(p => p.Id == player.Id));
+            var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(p => p == player.Id));
             if (lobby is null) return;
             lobby.Disconnect(player);
-            _pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
+            _pool.ActionOn(lobby.Players, queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             _chats.NukeUserFromPrivateChat(player.Id, "#multiplayer" + lobby.Id);
-            if (lobby.Players.Count == 0)
-                _lobbies.Remove(lobby);
+            if (lobby.Players.Count != 0) return;
+            
+            _lobbies.Remove(lobby);
+            UpdateLobby(new DisposeMatch(lobby));
         }
 
         public void SendMessage(Message message)
         {
-            var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(player => player.Username == message.Sender));
+            var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(player => player == message.SenderId));
             if (lobby is null) return;
 
-            foreach (var lobbyPlayer in lobby.Players.Where(x => x.Username != message.Sender))
-                _pool.ActionOn(lobbyPlayer.Id, queue => queue.EnqueuePacket(message));
+            foreach (var lobbyPlayer in lobby.Players.Where(x => x != message.SenderId))
+                _pool.ActionOn(lobbyPlayer, queue => queue.EnqueuePacket(message));
+        }
+
+        private short GetId()
+        {
+            return (short) _lobbies.Count;
         }
     }
 }

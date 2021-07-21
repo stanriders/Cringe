@@ -27,7 +27,7 @@ namespace Cringe.Bancho.RequestPackets
 
             slotPos.Index = slot!.Index;
             slot!.Index = id;
-            Pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
+            Pool.ActionOn(lobby.Players, queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             return Task.CompletedTask;
         }
     }

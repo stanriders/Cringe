@@ -22,7 +22,7 @@ namespace Cringe.Bancho.RequestPackets
             var slot = lobby.Slots.FirstOrDefault(x => x.Player.Id == token.PlayerId);
             slot!.Status |= SlotStatus.not_ready;
             slot!.Status ^= SlotStatus.ready;
-            Pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
+            Pool.ActionOn(lobby.Players, queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             return Task.CompletedTask;
         }
     }

@@ -24,7 +24,7 @@ namespace Cringe.Types
         public bool InProgress { get; set; }
         public Slot[] Slots { get; set; } = new Slot[16];
 
-        public HashSet<Player> Players { get; } = new();
+        public HashSet<int> Players { get; } = new();
         public Mods Mods { get; set; }
 
         public bool Connect(Player player)
@@ -32,7 +32,7 @@ namespace Cringe.Types
             var slot = Slots.OrderBy(x => x.Index).FirstOrDefault(x => x.Player is null);
             if (slot is null) return false;
 
-            Players.Add(player);
+            Players.Add(player.Id);
             slot.Player = player;
             slot.Status = SlotStatus.not_ready;
             return true;
@@ -40,12 +40,13 @@ namespace Cringe.Types
 
         public void Disconnect(Player player)
         {
-            Players.Remove(player);
-        }
-
-        public bool Contains(string player)
-        {
-            return Players.Any(x => x.Username == player);
+            Players.Remove(player.Id);
+            var slot = Slots.FirstOrDefault(x => x.Player.Id == player.Id);
+            if(slot is null) return;
+            slot.Mods = Mods.None;
+            slot.Player = null;
+            slot.Status = SlotStatus.open;
+            slot.Team = MatchTeams.neutral;
         }
 
         public static Lobby Parse(byte[] data)

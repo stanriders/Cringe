@@ -28,6 +28,10 @@ namespace Cringe.Services
             _chatPool.Add(Chat.Lobby.Name, Chat.Lobby);
         }
 
+        public HashSet<int> GetLobbyUsers()
+        {
+            return _chatPool[Chat.Lobby.Name].Users;
+        }
         public void Create(Chat chat)
         {
             if (_chatPool.ContainsKey(chat.KvName)) return;

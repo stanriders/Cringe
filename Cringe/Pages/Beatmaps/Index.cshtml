@@ -2,15 +2,22 @@
 @model Cringe.Pages.Beatmaps.DetailsModel
 
 @{
-    ViewData["Title"] = Model.Beatmap.Id;
+    ViewData["Title"] = $"{Model.Beatmap.Artist} - {Model.Beatmap.Title}";
 }
 
 <div>
+    <img src="https://assets.ppy.sh/beatmaps/@Model.Beatmap.BeatmapSetId/covers/cover.jpg">
     <h4>
         <a href="http://osu.ppy.sh/beatmaps/@Model.Beatmap.Id">osu! beatmap link</a>
     </h4>
-    <hr/>
+    <hr />
     <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.BeatmapSetId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.BeatmapSetId)
+        </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Beatmap.Md5)
         </dt>
@@ -18,10 +25,64 @@
             @Html.DisplayFor(model => model.Beatmap.Md5)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Beatmap.Ranked)
+            @Html.DisplayNameFor(model => model.Beatmap.Status)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Beatmap.Ranked)
+            @Html.DisplayFor(model => model.Beatmap.Status)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.FullTitle)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.Creator)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.Creator)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.Bpm)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.Bpm)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.Length)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.Length)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.Mode)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.Mode)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.ApproachRate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.ApproachRate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.OverallDifficulty)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.OverallDifficulty)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.CircleSize)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.CircleSize)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Beatmap.HpDrain)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Beatmap.HpDrain)
         </dd>
     </dl>
     <div>
@@ -30,21 +91,21 @@
     </div>
     <table class="table">
         <thead>
-        <tr>
-            <th>Rank</th>
-            <th>Score</th>
-            <th>Username</th>
-            <th>Accuracy</th>
-            <th>Combo</th>
-            <th>Mods</th>
-            <th>Game Mode</th>
-            <th>Date</th>
-            <th>CRINGE POINTS</th>
-            <th></th>
-        </tr>
+            <tr>
+                <th>Rank</th>
+                <th>Score</th>
+                <th>Username</th>
+                <th>Accuracy</th>
+                <th>Combo</th>
+                <th>Mods</th>
+                <th>Game Mode</th>
+                <th>Date</th>
+                <th>CRINGE POINTS</th>
+                <th></th>
+            </tr>
         </thead>
         <tbody>
-        @foreach (var item in Model.Scores)
+            @foreach (var item in Model.Scores)
         {
             <tr>
                 <td>

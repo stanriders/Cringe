@@ -5,7 +5,7 @@
 }
 
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Are you sure you want to delete @Model.Beatmap.FullTitle?</h3>
 <div>
     <h4>Beatmap</h4>
     <hr/>
@@ -17,10 +17,10 @@
             @Html.DisplayFor(model => model.Beatmap.Md5)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Beatmap.Ranked)
+            @Html.DisplayNameFor(model => model.Beatmap.Status)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Beatmap.Ranked)
+            @Html.DisplayFor(model => model.Beatmap.Status)
         </dd>
     </dl>
 

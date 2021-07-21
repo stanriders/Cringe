@@ -12,11 +12,13 @@ namespace Cringe.Pages.Players
     {
         private readonly PlayerDatabaseContext _context;
         private readonly ScoreDatabaseContext _scoreContext;
+        private readonly BeatmapDatabaseContext _beatmapContext;
 
-        public DetailsModel(PlayerDatabaseContext context, ScoreDatabaseContext scoreContext)
+        public DetailsModel(PlayerDatabaseContext context, ScoreDatabaseContext scoreContext, BeatmapDatabaseContext beatmapContext)
         {
             _context = context;
             _scoreContext = scoreContext;
+            _beatmapContext = beatmapContext;
         }
 
         public Player Player { get; set; }
@@ -36,6 +38,13 @@ namespace Cringe.Pages.Players
                 .Take(100)
                 .OrderByDescending(x => x.Pp)
                 .ToArrayAsync();
+
+            foreach (var score in Scores)
+            {
+                score.Beatmap = await _beatmapContext.Beatmaps.Where(x => x.Id == score.BeatmapId)
+                    .Select(x => new Beatmap { Artist = x.Artist, Title = x.Title, DifficultyName = x.DifficultyName })
+                    .FirstOrDefaultAsync();
+            }
 
             return Page();
         }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types.Database;
+using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -35,7 +36,20 @@ namespace Cringe.Pages.Beatmaps
                 var addedMap = await _context.Beatmaps.AddAsync(new Beatmap
                 {
                     Id = BeatmapId.Value,
-                    Md5 = apiMap.Md5
+                    BeatmapSetId = apiMap.BeatmapSetId,
+                    Mode = apiMap.Mode,
+                    Md5 = apiMap.Md5,
+                    Status = RankedStatus.Ranked,
+                    Artist = apiMap.BeatmapSet?.Artist,
+                    Title = apiMap.BeatmapSet?.Title,
+                    DifficultyName = apiMap.Version,
+                    Creator = apiMap.BeatmapSet?.CreatorName,
+                    Bpm = apiMap.BPM,
+                    HpDrain = apiMap.HP,
+                    CircleSize = apiMap.CS,
+                    OverallDifficulty = apiMap.OD,
+                    ApproachRate = apiMap.AR,
+                    Length = (int)apiMap.DrainLength
                 });
 
                 if (addedMap != null)

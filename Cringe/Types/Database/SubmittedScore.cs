@@ -26,6 +26,8 @@ namespace Cringe.Types.Database
         public string OsuVersion { get; set; }
         public bool Quit { get; set; }
         public bool Failed { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:N2}")]
         public double Pp { get; set; }
 
         public int BeatmapId { get; set; }
@@ -41,6 +43,7 @@ namespace Cringe.Types.Database
         [NotMapped] public SubmittedScore PreviousScore { get; set; }
 
         [NotMapped]
+        [DisplayFormat(DataFormatString = "{0:N2}%")]
         public double Accuracy
         {
             get
@@ -50,6 +53,9 @@ namespace Cringe.Types.Database
                 return totalPoints / (totalHits * 300) * 100;
             }
         }
+
+        [NotMapped]
+        public string BeatmapTitle => string.IsNullOrEmpty(Beatmap?.FullTitle) ? BeatmapId.ToString() : Beatmap?.FullTitle;
 
         public override string ToString()
         {

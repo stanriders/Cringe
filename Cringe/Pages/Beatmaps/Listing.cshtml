@@ -2,19 +2,24 @@
 @model Cringe.Pages.Beatmaps.IndexModel
 
 @{
+    ViewData["Title"] = "Beatmap Listing";
 }
+
+<div>
+<form method="post">
+    <input type="submit" value="Seed database (SLOW)" class="btn btn-default" />
+</form>
+</div>
 
 <table class="table">
     <thead>
     <tr>
+        <th></th>
         <th>
             @Html.DisplayNameFor(model => model.Beatmap[0].Id)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Beatmap[0].Md5)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Beatmap[0].Ranked)
+            @Html.DisplayNameFor(model => model.Beatmap[0].Title)
         </th>
         <th></th>
     </tr>
@@ -24,13 +29,13 @@
     {
         <tr>
             <td>
+                <img src="https://assets.ppy.sh/beatmaps/@item.BeatmapSetId/covers/list.jpg" width="64px"/>
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Md5)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ranked)
+                <a asp-page="./Index" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Artist) - @Html.DisplayFor(modelItem => item.Title) [@Html.DisplayFor(modelItem => item.DifficultyName)]</a>
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

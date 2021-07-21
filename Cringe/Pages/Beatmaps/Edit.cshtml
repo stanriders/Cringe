@@ -1,10 +1,11 @@
 ﻿@page
+@using Cringe.Types.Database
 @model Cringe.Pages.Beatmaps.EditModel
 
 @{
 }
 
-<h4>Beatmap</h4>
+<h4>@Model.Beatmap.FullTitle</h4>
 <hr/>
 <div class="row">
     <div class="col-md-4">
@@ -12,16 +13,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Beatmap.Id"/>
             <div class="form-group">
-                <label asp-for="Beatmap.Md5" class="control-label"></label>
-                <input asp-for="Beatmap.Md5" class="form-control"/>
-                <span asp-validation-for="Beatmap.Md5" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="Beatmap.Ranked"/> @Html.DisplayNameFor(model => model.Beatmap.Ranked)
-                    </label>
-                </div>
+                <label asp-for="Beatmap.Status" class="control-label"></label>
+                <input asp-for="Beatmap.Status" class="form-control"/>
+                <span asp-validation-for="Beatmap.Status" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default"/>

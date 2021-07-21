@@ -74,7 +74,7 @@
                     @Html.DisplayFor(modelItem => item.Rank)
                 </td>
                 <td>
-                    <a asp-page="Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapId.ToString()</a>
+                    <a asp-page="./Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Accuracy)

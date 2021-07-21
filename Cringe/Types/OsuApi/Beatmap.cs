@@ -15,7 +15,7 @@ namespace Cringe.Types.OsuApi
 		public string Md5 { get; set; }
 
 		[JsonProperty("beatmapset_id")]
-		public uint BeatmapSetId { get; set; }
+		public int BeatmapSetId { get; set; }
 
 		[JsonProperty("version")]
 		public string Version { get; set; }

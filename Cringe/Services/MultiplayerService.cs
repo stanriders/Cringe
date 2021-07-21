@@ -9,9 +9,9 @@ namespace Cringe.Services
 {
     public class MultiplayerService
     {
+        private readonly ChatServicePool _chats;
         private readonly HashSet<Lobby> _lobbies;
         private readonly BanchoServicePool _pool;
-        private readonly ChatServicePool _chats;
 
         public MultiplayerService(BanchoServicePool pool, ChatServicePool chats)
         {
@@ -36,6 +36,7 @@ namespace Cringe.Services
             _lobbies.Remove(old);
             _lobbies.Add(newLobby);
         }
+
         public void NukePlayer(Player player)
         {
             var lobby = _lobbies.FirstOrDefault(x => x.Players.Any(p => p.Id == player.Id));

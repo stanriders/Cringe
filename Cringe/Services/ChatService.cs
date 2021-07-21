@@ -30,7 +30,7 @@ namespace Cringe.Services
 
         public void Create(Chat chat)
         {
-            if(_chatPool.ContainsKey(chat.KvName)) return;
+            if (_chatPool.ContainsKey(chat.KvName)) return;
             _chatPool.Add(chat.KvName, chat);
         }
 

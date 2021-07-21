@@ -21,11 +21,12 @@ namespace Cringe.Types
         public bool FreeMode { get; set; }
         public MatchWinConditions WinConditions { get; set; }
         public MatchTeamTypes TeamTypes { get; set; } = MatchTeamTypes.head_to_head;
-        public bool InProgress { get; set; } = false;
+        public bool InProgress { get; set; }
         public Slot[] Slots { get; set; } = new Slot[16];
 
         public HashSet<Player> Players { get; } = new();
         public Mods Mods { get; set; }
+
         public bool Connect(Player player)
         {
             var slot = Slots.OrderBy(x => x.Index).FirstOrDefault(x => x.Player is null);
@@ -73,7 +74,7 @@ namespace Cringe.Types
             foreach (var slot in lobby.Slots) slot.Team = (MatchTeams) reader.ReadByte();
 
             foreach (var slot in lobby.Slots)
-                if((byte)(slot.Status & SlotStatus.has_player) != 0) //If slot is not empty
+                if ((byte) (slot.Status & SlotStatus.has_player) != 0) //If slot is not empty
                     reader.ReadInt32();
 
             lobby.Host = reader.ReadInt32();

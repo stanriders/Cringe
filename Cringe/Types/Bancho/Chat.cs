@@ -25,7 +25,7 @@ namespace Cringe.Types.Bancho
         {
             return new("#multiplayer", "/a/")
             {
-                UniqueId = uniqueId,
+                UniqueId = uniqueId
             };
         }
     }

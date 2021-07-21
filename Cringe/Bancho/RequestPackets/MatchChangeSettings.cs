@@ -14,11 +14,12 @@ namespace Cringe.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.MatchChangeSettings;
+
         public override Task Execute(UserToken token, byte[] data)
         {
             var lobby = Lobby.Parse(data);
             var curLobby = Multiplayer.GetFromUser(token.PlayerId);
-            if (lobby.Id != curLobby.Id || curLobby.Host != token.PlayerId ) return Task.CompletedTask;
+            if (lobby.Id != curLobby.Id || curLobby.Host != token.PlayerId) return Task.CompletedTask;
             curLobby.Host = lobby.Host;
             curLobby.Mode = lobby.Mode;
             curLobby.Name = lobby.Name;

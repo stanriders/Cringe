@@ -38,7 +38,11 @@ namespace Cringe.Bancho.ResponsePackets
                 teams,
                 PackData(host),
                 players,
-                new[] {(byte) Match.Mode, (byte) Match.WinConditions, (byte) Match.TeamTypes, (byte)(Match.FreeMode ? 1 : 0)},
+                new[]
+                {
+                    (byte) Match.Mode, (byte) Match.WinConditions, (byte) Match.TeamTypes,
+                    (byte) (Match.FreeMode ? 1 : 0)
+                },
                 playerMods);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Cringe.Types;
 using Cringe.Types.Bancho;
 using Cringe.Types.Enums;
 

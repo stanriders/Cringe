@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cringe.Bancho;
-using Cringe.Types;
 using Microsoft.Extensions.Logging;
 
 namespace Cringe.Services
@@ -50,6 +49,17 @@ namespace Cringe.Services
             if (!success)
                 return;
             action(res);
+        }
+
+        public void ActionOn(IEnumerable<int> ids, Action<PacketQueue> action)
+        {
+            foreach (var id in ids)
+            {
+                var success = _pool.TryGetValue(id, out var res);
+                if (!success)
+                    return;
+                action(res);
+            }
         }
 
         public void Nuke(int tokenPlayerId)

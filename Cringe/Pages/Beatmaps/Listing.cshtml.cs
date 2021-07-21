@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
-using Cringe.Types;
 using Cringe.Types.Database;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

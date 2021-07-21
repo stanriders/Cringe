@@ -20,7 +20,7 @@ namespace Cringe.Bancho.RequestPackets
             var message = await Message.Parse(dest, token.Username);
             if (message.Receiver == "#multiplayer")
                 Multiplayer.SendMessage(message);
-            else 
+            else
                 Pool.ActionMapFilter(x => x.EnqueuePacket(message), id => id != token.PlayerId);
         }
     }

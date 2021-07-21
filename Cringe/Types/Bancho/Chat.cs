@@ -4,6 +4,8 @@ namespace Cringe.Types.Bancho
 {
     public class Chat
     {
+        public static Chat Lobby = new("#lobby", "JUGAMA MULTIPLAYER");
+
         public Chat(string name, string description, bool autoJoin = false)
         {
             Name = name;
@@ -16,7 +18,5 @@ namespace Cringe.Types.Bancho
         public string Description { get; set; }
         public bool AutoJoin { get; }
         public HashSet<int> Users { get; }
-
-        public static Chat Lobby = new Chat("#lobby", "JUGAMA MULTIPLAYER");
     }
 }

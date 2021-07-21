@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Cringe.Bancho;
+using Cringe.Types.Database;
 using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
 
@@ -9,7 +10,7 @@ namespace Cringe.Types
 {
     public class Lobby
     {
-        public int Id { get; set; }
+        public short Id { get; set; }
         public string Name { get; set; }
         public string Password { get; set; }
         public int Host { get; set; }
@@ -24,12 +25,13 @@ namespace Cringe.Types
         public Slot[] Slots { get; set; } = new Slot[16];
 
         public HashSet<Player> Players { get; } = new();
+        public Mods Mods { get; set; }
 
         public bool Connect(Player player)
         {
-            var slot = Slots.FirstOrDefault(x => x.Player is null);
-            if(slot is null) return false;
-            
+            var slot = Slots.OrderBy(x => x.Index).FirstOrDefault(x => x.Player is null);
+            if (slot is null) return false;
+
             Players.Add(player);
             slot.Player = player;
             slot.Status = SlotStatus.not_ready;
@@ -63,7 +65,7 @@ namespace Cringe.Types
                 MapMd5 = RequestPacket.ReadString(reader.BaseStream)
             };
             for (var i = 0; i < lobby.Slots.Length; i++)
-                lobby.Slots[i] = new Slot {Status = (SlotStatus) reader.ReadByte()};
+                lobby.Slots[i] = new Slot {Index = i, Status = (SlotStatus) reader.ReadByte()};
 
             foreach (var slot in lobby.Slots) slot.Team = (MatchTeams) reader.ReadByte();
 
@@ -74,6 +76,7 @@ namespace Cringe.Types
             var host = reader.ReadInt32();
             lobby.Host = host;
             lobby.Mode = (GameModes) reader.ReadByte();
+            lobby.Mods = Mods.None;
             lobby.WinConditions = (MatchWinConditions) reader.ReadByte();
             lobby.FreeMode = reader.ReadByte() == 1;
             if (!lobby.FreeMode) return lobby;

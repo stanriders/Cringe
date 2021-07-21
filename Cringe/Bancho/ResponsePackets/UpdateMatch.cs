@@ -5,10 +5,10 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class UpdateMatch : MatchJoinSuccess
     {
-        public override ServerPacketType Type => ServerPacketType.UpdateMatch;
-
         public UpdateMatch(Lobby match) : base(match)
         {
         }
+
+        public override ServerPacketType Type => ServerPacketType.UpdateMatch;
     }
 }

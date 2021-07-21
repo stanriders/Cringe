@@ -19,6 +19,11 @@ namespace Cringe.Bancho
             return BitConverter.GetBytes(data);
         }
 
+        protected static byte[] PackData(bool data)
+        {
+            return new[] {(byte) (data ? 1 : 0)};
+        }
+
         protected static byte[] PackData(ushort data)
         {
             return BitConverter.GetBytes(data);

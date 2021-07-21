@@ -25,7 +25,12 @@ namespace Cringe.Services
                 new JoinLobby(serviceProvider),
                 new LoginPacket(serviceProvider),
                 new LogoutPacket(serviceProvider),
+                new MatchChangeSlot(serviceProvider),
+                new MatchChangeMods(serviceProvider),
+                new MatchNotReady(serviceProvider),
+                new MatchReady(serviceProvider),
                 new PartLobby(serviceProvider),
+                new PartMatch(serviceProvider),
                 new PingPacket(serviceProvider),
                 new RequestStatusUpdatePacket(serviceProvider),
                 new SendPrivateMessagePacket(serviceProvider),
@@ -51,7 +56,7 @@ namespace Cringe.Services
             var packets = new List<(ClientPacketType type, byte[] data)>();
             while (reader.BaseStream.Position < reader.BaseStream.Length)
             {
-                var type = (ClientPacketType)reader.ReadInt16();
+                var type = (ClientPacketType) reader.ReadInt16();
                 reader.ReadByte();
                 var length = reader.ReadInt32();
                 var packetData = reader.ReadBytes(length);
@@ -60,11 +65,11 @@ namespace Cringe.Services
 
             foreach (var (type, data) in packets)
             {
-                if(!_handlers.TryGetValue(type, out var request)) continue;
+                if (!_handlers.TryGetValue(type, out var request)) continue;
                 var requestTask = request.Execute(token, data);
                 if (requestTask.Exception is not null) throw requestTask.Exception;
             }
-            
+
             return Task.CompletedTask;
         }
     }

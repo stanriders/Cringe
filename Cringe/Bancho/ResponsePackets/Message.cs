@@ -7,15 +7,15 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class Message : ResponsePacket
     {
-        public string Content { get; }
-        public string Sender { get; }
-
         private Message(string message, string who, string receiver)
         {
             Content = message;
             Sender = who;
             Receiver = receiver;
         }
+
+        public string Content { get; }
+        public string Sender { get; }
 
         public string Receiver { get; }
 

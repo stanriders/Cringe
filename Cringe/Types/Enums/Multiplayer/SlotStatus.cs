@@ -3,7 +3,7 @@
 namespace Cringe.Types.Enums.Multiplayer
 {
     [Flags]
-    public enum SlotStatus : byte 
+    public enum SlotStatus : byte
     {
         open = 1,
         locked = 2,

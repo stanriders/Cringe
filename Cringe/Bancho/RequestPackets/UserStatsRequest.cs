@@ -23,13 +23,11 @@ namespace Cringe.Bancho.RequestPackets
             var tokenService = Token;
             var players = await Task.WhenAll(playerIds.Select(x => tokenService.GetPlayerWithoutScores(x)));
             foreach (var player in players.Where(x => x is not null))
-            {
                 Pool.ActionOn(token.PlayerId, queue =>
                 {
                     queue.EnqueuePacket(new UserStats(player.Stats));
                     queue.EnqueuePacket(new UserPresence(player.Presence));
                 });
-            }
         }
     }
 }

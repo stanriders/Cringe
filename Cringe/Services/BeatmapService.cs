@@ -51,7 +51,8 @@ namespace Cringe.Services
                     if (addedMaps % 10000 == 0)
                         _dbContext.SaveChanges();
 
-                    if (!File.ReadLines(beatmapPath).First().StartsWith("osu file format"))
+                    var firstLine = File.ReadLines(beatmapPath).FirstOrDefault();
+                    if (string.IsNullOrEmpty(firstLine) || !firstLine.StartsWith("osu file format"))
                         continue;
 
                     var beatmapModel = ParseBeatmap(beatmapPath);
@@ -90,6 +91,7 @@ namespace Cringe.Services
             }
 
             _dbContext.SaveChanges();
+            Console.WriteLine($"Beatmap seeding finished! Added {addedMaps} maps");
         }
 
         private Beatmap ParseBeatmap(string beatmapPath)

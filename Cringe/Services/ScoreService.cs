@@ -127,7 +127,7 @@ namespace Cringe.Services
 
                 // send score as a notif to confirm submission
                 var queue = _banchoServicePool.GetFromPool(player.Id);
-                queue.EnqueuePacket(new Notification($"{submittedScore.Pp}pp"));
+                queue.EnqueuePacket(new Notification($"{Math.Round(submittedScore.Pp, 2)} pp"));
 
                 return submittedScore;
             }

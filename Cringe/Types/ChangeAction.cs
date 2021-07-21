@@ -23,7 +23,6 @@ namespace Cringe.Types
         {
             var reader = new BinaryReader(new MemoryStream(bytes));
             var action = new ChangeAction();
-            reader.ReadBytes(7);
             action.ActionId = reader.ReadByte();
             action.ActionText = RequestPacket.ReadString(reader.BaseStream);
             action.ActionMd5 = RequestPacket.ReadString(reader.BaseStream);

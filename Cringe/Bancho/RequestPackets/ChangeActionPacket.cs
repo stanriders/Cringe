@@ -22,8 +22,11 @@ namespace Cringe.Bancho.RequestPackets
             pl.Action = action;
             Stats.SetUpdates(token.PlayerId, pl);
             var pool = Pool;
-            pool.ActionOn(token.PlayerId, queue => queue.EnqueuePacket(new UserStats(pl)));
-            pool.ActionOn(token.PlayerId, queue => queue.EnqueuePacket(new UserPresence(player.Presence)));
+            pool.ActionOn(token.PlayerId, queue =>
+            {
+                queue.EnqueuePacket(new UserStats(pl));
+                queue.EnqueuePacket(new UserPresence(player.Presence));
+            });
         }
     }
 }

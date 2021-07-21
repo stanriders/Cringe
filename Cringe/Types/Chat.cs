@@ -16,5 +16,7 @@ namespace Cringe.Types
         public string Description { get; set; }
         public bool AutoJoin { get; }
         public HashSet<int> Users { get; }
+
+        public static Chat Lobby = new Chat("#lobby", "JUGAMA MULTIPLAYER");
     }
 }

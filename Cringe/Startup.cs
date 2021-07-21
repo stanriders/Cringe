@@ -29,6 +29,7 @@ namespace Cringe
             services.AddSingleton<ChatServicePool>();
             services.AddSingleton<StatsService>();
             services.AddTransient<InvokeService>();
+            services.AddTransient<MultiplayerService>();
             services.AddTransient<TokenService>();
             services.AddTransient<ScoreService>();
             services.AddTransient<BeatmapService>();

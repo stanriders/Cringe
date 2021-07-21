@@ -18,7 +18,7 @@ namespace Cringe.Bancho.RequestPackets
 
         public override async Task Execute(UserToken token, byte[] data)
         {
-            var dest = data[9..];
+            var dest = data[2..];
             var message = await Message.Parse(dest, token.Username);
             await using var players = new PlayerDatabaseContext();
             var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == message.Receiver);

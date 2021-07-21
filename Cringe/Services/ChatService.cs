@@ -25,6 +25,7 @@ namespace Cringe.Services
             _chatPool.Add(announce.Name, announce);
             _chatPool.Add(admin.Name, admin);
             _chatPool.Add(russian.Name, russian);
+            _chatPool.Add(Chat.Lobby.Name, Chat.Lobby);
         }
 
         public void AutoJoinOrPackInfo(int user, string channelName)

@@ -40,7 +40,7 @@ namespace Cringe.Services
                 _pool.ActionOn(userId, queue =>
                 { 
                     queue.EnqueuePacket(new MatchJoinFail());
-                    queue.EnqueuePacket(new Notification("Ебать братан тебя вштырило)"));
+                    queue.EnqueuePacket(new Notification("AYE LOBBI DOES NOT EXIST"));
                 });
                 return;
             }
@@ -50,7 +50,7 @@ namespace Cringe.Services
                 _pool.ActionOn(userId, queue =>
                 {
                     queue.EnqueuePacket(new MatchJoinFail());
-                    queue.EnqueuePacket(new Notification("циферки правильные набери"));
+                    queue.EnqueuePacket(new Notification("WRONG NUMBERS"));
                 });
                 return;
             }
@@ -61,10 +61,11 @@ namespace Cringe.Services
                 _pool.ActionOn(userId, queue =>
                 {
                     queue.EnqueuePacket(new MatchJoinFail());
-                    queue.EnqueuePacket(new Notification("матч забит"));
+                    queue.EnqueuePacket(new Notification("DOUBLE SHTAK LOBBI FULL"));
                 });
                 return;
             }
+            _pool.ActionOn(lobby.Players.Select(x => x.Id), queue => queue.EnqueuePacket(new UpdateMatch(lobby)));
             _pool.ActionOn(userId, queue =>
             {
                 queue.EnqueuePacket(new MatchJoinSuccess(lobby));

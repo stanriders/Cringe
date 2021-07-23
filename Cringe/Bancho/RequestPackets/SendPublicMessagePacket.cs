@@ -18,7 +18,7 @@ namespace Cringe.Bancho.RequestPackets
         {
             var dest = data[2..];
             var message = await Message.Parse(dest, session.Token.Username);
-            Chats.SendPrivateMessage(message);
+            Chats.SendGlobalMessage(message);
         }
     }
 }

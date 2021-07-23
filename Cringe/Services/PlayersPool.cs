@@ -54,7 +54,12 @@ namespace Cringe.Services
 
         public IEnumerable<int> GetPlayersId()
         {
-            return Players.Select(x => x.Value.Token.PlayerId);
+            return GetPlayerSessions().Select(x => x.Token.PlayerId);
+        }
+
+        public IEnumerable<PlayerSession> GetPlayerSessions()
+        {
+            return Players.Select(x => x.Value);
         }
 
         public PlayerSession GetPlayer(int id)

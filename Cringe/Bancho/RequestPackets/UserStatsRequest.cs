@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.ResponsePackets;
 using Cringe.Types;
@@ -18,13 +19,14 @@ namespace Cringe.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));
-            var playerIds = ReadI32(reader);
+            var playerIds = ReadI32(reader).Where(x => x != session.Token.PlayerId);
             var pool = Pool;
             foreach (var playerId in playerIds)
             {
                 var player = pool.GetPlayer(playerId);
+                if(player is null) continue;
+                
                 session.Queue.EnqueuePacket(new UserStats(player.Player.Stats));
-                session.Queue.EnqueuePacket(new UserPresence(player.Player.Presence));
             }
 
             return Task.CompletedTask;

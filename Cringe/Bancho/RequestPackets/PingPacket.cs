@@ -13,7 +13,7 @@ namespace Cringe.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.Ping;
 
-        public override Task Execute(UserToken token, byte[] data)
+        public override Task Execute(PlayerSession session, byte[] data)
         {
             return Task.CompletedTask;
         }

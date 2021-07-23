@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;
 
@@ -14,11 +15,12 @@ namespace Cringe.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.ChannelJoin;
 
-        public override Task Execute(UserToken token, byte[] data)
+        public override Task Execute(PlayerSession session, byte[] data)
         {
             using var stream = new MemoryStream(data);
             var str = ReadString(stream);
-            Chats.Connect(token.PlayerId, str);
+            var chat = ChatService.GetChat(str);
+            chat?.Connect(session);
             return Task.CompletedTask;
         }
     }

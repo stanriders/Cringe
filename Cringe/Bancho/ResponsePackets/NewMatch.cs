@@ -7,13 +7,13 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class NewMatch : ResponsePacket
     {
-        public NewMatch(Lobby match)
+        public NewMatch(Match match)
         {
             Match = match;
         }
 
         public override ServerPacketType Type => ServerPacketType.NewMatch;
-        public Lobby Match { get; }
+        public Match Match { get; }
 
         public override byte[] GetBytes()
         {
@@ -30,7 +30,7 @@ namespace Cringe.Bancho.ResponsePackets
                 new byte[] {0},
                 PackData(mods),
                 PackData(Match.Name),
-                Match.Password != "" ? PackData("") : new byte[]{0},
+                Match.Password != "" ? PackData("") : new byte[] {0},
                 PackData(Match.MapName),
                 PackData(Match.MapId),
                 PackData(Match.MapMd5),

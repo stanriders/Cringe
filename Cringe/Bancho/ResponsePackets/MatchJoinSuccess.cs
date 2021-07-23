@@ -7,12 +7,12 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class MatchJoinSuccess : ResponsePacket
     {
-        public MatchJoinSuccess(Lobby match)
+        public MatchJoinSuccess(Match match)
         {
             Match = match;
         }
 
-        public Lobby Match { get; }
+        public Match Match { get; }
         public override ServerPacketType Type => ServerPacketType.MatchJoinSuccess;
 
         public override byte[] GetBytes()

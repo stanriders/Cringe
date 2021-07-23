@@ -14,10 +14,10 @@ namespace Cringe.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.RequestStatusUpdate;
 
-        public override async Task Execute(UserToken token, byte[] data)
+        public override Task Execute(PlayerSession session, byte[] data)
         {
-            var player = await Token.GetPlayerWithoutScores(token.PlayerId);
-            Pool.ActionOn(token.PlayerId, queue => queue.EnqueuePacket(new UserStats(player.Stats)));
+            session.Queue.EnqueuePacket(new UserStats(session.Player.Stats));
+            return Task.CompletedTask;
         }
     }
 }

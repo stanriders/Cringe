@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Cringe.Bancho.ResponsePackets;
-using Cringe.Database;
 using Cringe.Types;
 using Cringe.Types.Enums;
-using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Bancho.RequestPackets
 {
@@ -16,13 +14,11 @@ namespace Cringe.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.SendPrivateMessage;
 
-        public override async Task Execute(UserToken token, byte[] data)
+        public override async Task Execute(PlayerSession session, byte[] data)
         {
             var dest = data[2..];
-            var message = await Message.Parse(dest, token.Username);
-            await using var players = new PlayerDatabaseContext();
-            var receivePlayer = await players.Players.FirstOrDefaultAsync(x => x.Username == message.Receiver);
-            Pool.ActionOn(receivePlayer.Id, x => x.EnqueuePacket(message));
+            var message = await Message.Parse(dest, session.Token.Username);
+            Chats.SendPrivateMessage(message);
         }
     }
 }

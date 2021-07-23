@@ -14,14 +14,11 @@ namespace Cringe.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.SendPublicMessage;
 
-        public override async Task Execute(UserToken token, byte[] data)
+        public override async Task Execute(PlayerSession session, byte[] data)
         {
             var dest = data[2..];
-            var message = await Message.Parse(dest, token.Username);
-            if (message.Receiver == "#multiplayer")
-                Multiplayer.SendMessage(message);
-            else
-                Pool.ActionMapFilter(x => x.EnqueuePacket(message), id => id != token.PlayerId);
+            var message = await Message.Parse(dest, session.Token.Username);
+            Chats.SendPrivateMessage(message);
         }
     }
 }

@@ -17,19 +17,19 @@ namespace Cringe.Services
 {
     public class ScoreService
     {
-        private readonly BanchoServicePool _banchoServicePool;
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly PlayerDatabaseContext _playerContext;
+        private readonly PlayersPool _pool;
         private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly PpService _ppService;
         private readonly PlayerRankCache _rankCache;
         private readonly ScoreDatabaseContext _scoreContext;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
-            BeatmapDatabaseContext beatmapContext, PpService ppService, BanchoServicePool banchoServicePool,
+            BeatmapDatabaseContext beatmapContext, PpService ppService, PlayersPool pool,
             PlayerTopscoreStatsCache ppCache, PlayerRankCache rankCache)
         {
-            _banchoServicePool = banchoServicePool;
+            _pool = pool;
             _scoreContext = scoreContext;
             _playerContext = playerContext;
             _beatmapContext = beatmapContext;
@@ -126,7 +126,7 @@ namespace Cringe.Services
                 await _playerContext.SaveChangesAsync();
 
                 // send score as a notif to confirm submission
-                var queue = _banchoServicePool.GetFromPool(player.Id);
+                var queue = _pool.GetPlayer(player.Id).Queue;
                 queue.EnqueuePacket(new Notification($"{Math.Round(submittedScore.Pp, 2)} pp"));
 
                 return submittedScore;

@@ -5,10 +5,10 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class DisposeMatch : MatchJoinSuccess
     {
-        public override ServerPacketType Type => ServerPacketType.DisposeMatch;
-
-        public DisposeMatch(Lobby match) : base(match)
+        public DisposeMatch(Match match) : base(match)
         {
         }
+
+        public override ServerPacketType Type => ServerPacketType.DisposeMatch;
     }
 }

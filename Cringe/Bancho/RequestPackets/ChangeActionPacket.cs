@@ -15,19 +15,15 @@ namespace Cringe.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.ChangeAction;
 
-        public override async Task Execute(UserToken token, byte[] data)
+        public override Task Execute(PlayerSession session, byte[] data)
         {
             var action = ChangeAction.Parse(data);
-            var player = await Token.GetPlayerWithoutScores(token.PlayerId);
-            var pl = player.Stats;
+            var pl = session.Player.Stats;
             pl.Action = action;
-            Stats.SetUpdates(token.PlayerId, pl);
-            var pool = Pool;
-            pool.ActionOn(token.PlayerId, queue =>
-            {
-                queue.EnqueuePacket(new UserStats(pl));
-                queue.EnqueuePacket(new UserPresence(player.Presence));
-            });
+            Stats.SetUpdates(session.Token.PlayerId, pl);
+            session.Queue.EnqueuePacket(new UserStats(pl));
+            session.Queue.EnqueuePacket(new UserPresence(session.Player.Presence));
+            return Task.CompletedTask;
         }
     }
 }

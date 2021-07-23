@@ -12,9 +12,9 @@ namespace Cringe.Services
 {
     public class OsuApiWrapper
     {
+        private static AccessToken AccessToken;
         private readonly HttpClient _client;
         private readonly IConfiguration _configuration;
-        private static AccessToken AccessToken;
 
         public OsuApiWrapper(HttpClient client, IConfiguration configuration)
         {
@@ -36,7 +36,7 @@ namespace Cringe.Services
         {
             return MakeApiRequest<Beatmap>($"beatmaps/{beatmapId}");
         }
-        
+
         private async Task<T> MakeApiRequest<T>(string request)
         {
             if (AccessToken == null || AccessToken.Expired)
@@ -54,23 +54,22 @@ namespace Cringe.Services
                 {
                     var response = await authJson.Content.ReadAsStringAsync();
                     AccessToken = JsonConvert.DeserializeObject<AccessToken>(response);
-                    
                 }
             }
 
             if (AccessToken != null)
-            {
                 try
                 {
-                    string json = await DownloadString($"https://osu.ppy.sh/api/v2/{request}", AccessToken.Token);
+                    var json = await DownloadString($"https://osu.ppy.sh/api/v2/{request}", AccessToken.Token);
 
-                    return JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Utc });
+                    return JsonConvert.DeserializeObject<T>(json,
+                        new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Utc});
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
-            }
+
             return default;
         }
 

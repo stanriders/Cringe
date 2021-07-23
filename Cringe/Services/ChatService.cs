@@ -1,91 +1,81 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cringe.Bancho.ResponsePackets;
-using Cringe.Types.Bancho;
-using Microsoft.Extensions.Logging;
+using Cringe.Types;
+using Cringe.Types.Enums;
 
 namespace Cringe.Services
 {
-    public class ChatServicePool
+    public class ChatService
     {
-        private readonly Dictionary<string, Chat> _chatPool;
-        private readonly ILogger<ChatServicePool> _logger;
-        private readonly BanchoServicePool _pool;
+        public const string LobbyName = "#lobby";
 
-        public ChatServicePool(ILogger<ChatServicePool> logger, BanchoServicePool pool)
+        public static readonly List<GlobalChat> GlobalChats = new()
         {
-            _logger = logger;
-            _pool = pool;
-            _chatPool = new Dictionary<string, Chat>();
-            logger.LogInformation("Creating default chats");
-            var osu = new Chat("#osu", "AYE NIGGEROVIDZE", true);
-            var announce = new Chat("#announce", "shitpost your scores here", true);
-            var russian = new Chat("#russian", "RUSSIAN");
-            var admin = new Chat("#vacman", "aye only admin chat", true);
-            _chatPool.Add(osu.Name, osu);
-            _chatPool.Add(announce.Name, announce);
-            _chatPool.Add(admin.Name, admin);
-            _chatPool.Add(russian.Name, russian);
-            _chatPool.Add(Chat.Lobby.Name, Chat.Lobby);
+            new GlobalChat("#osu", "THIS GAME SUCKS QOQ", true),
+            new GlobalChat("#announce", "Shitpost your 300pp here", true),
+            new GlobalChat("#vacman", "Admin only secret chat"),
+            new GlobalChat(LobbyName, "LOBESHNIQ")
+        };
+
+        private readonly Action<Message> _sendPrivateMessage;
+
+        public ChatService(PlayersPool pool)
+        {
+            _sendPrivateMessage = message => pool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
         }
 
-        public HashSet<int> GetLobbyUsers()
+        public async Task Initialize(PlayerSession player)
         {
-            return _chatPool[Chat.Lobby.Name].Users;
-        }
-        public void Create(Chat chat)
-        {
-            if (_chatPool.ContainsKey(chat.KvName)) return;
-            _chatPool.Add(chat.KvName, chat);
-        }
-
-        public void AutoJoinOrPackInfo(int user, string channelName)
-        {
-            var success = _chatPool.TryGetValue(channelName, out var chat);
-            if (!success)
-                return;
-            if (chat.AutoJoin)
+            var rank = player.Player.UserRank;
+            foreach (var globalChat in GlobalChats.Where(globalChat => IsAllowed(rank, globalChat.Accessibility)))
             {
-                chat.Users.Add(user);
-                _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelAutoJoin(chat)));
-                _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelJoinSuccess(chat)));
-            }
-            else
-            {
-                _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelInfo(chat)));
+                globalChat.StatusUpdated += player.ChatInfo;
+                if (globalChat.AutoConnect)
+                    await globalChat.Connect(player);
             }
         }
 
-        public void Connect(int user, string channelName)
+        public static GlobalChat GetChat(string name)
         {
-            if (!_chatPool.TryGetValue(channelName, out var chat))
-                return;
-            chat.Users.Add(user);
-            _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelJoinSuccess(chat)));
-            _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelInfo(chat)));
+            return GlobalChats.FirstOrDefault(x => x.Name == name);
         }
 
-        public void Disconnect(int user, string channelName)
+        public bool Purge(PlayerSession player)
         {
-            if (!_chatPool.TryGetValue(channelName, out var chat))
-                return;
-            chat.Users.Remove(user);
-            _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelKick(chat)));
-            _pool.ActionMap(queue => queue.EnqueuePacket(new ChannelInfo(chat)));
+            var rank = player.Player.UserRank;
+            foreach (var globalChat in GlobalChats.Where(globalChat => IsAllowed(rank, globalChat.Accessibility)))
+                globalChat.Disconnect(player);
+
+            return true;
         }
 
-        public void NukeUserFromPrivateChat(int user, string channelName)
+        public bool SendGlobalMessage(Message message)
         {
-            if (!_chatPool.TryGetValue(channelName, out var chat))
-                return;
-            chat.Users.Remove(user);
-            _pool.ActionOn(user, queue => queue.EnqueuePacket(new ChannelKick(chat)));
-            if (chat.Users.Count == 0)
-                _chatPool.Remove(channelName);
+            var chat = GlobalChats.FirstOrDefault(x => x.Name == message.Receiver);
+            if (chat is null) return false;
+            if (!IsAllowed(message.Sender.UserRank, chat.Accessibility)) return false;
+
+            chat.OnSendMessage(message);
+            return true;
         }
 
-        public void NukeUser(int user)
+        public void SendPrivateMessage(Message message)
         {
-            foreach (var chat in _chatPool) Disconnect(user, chat.Key);
+            _sendPrivateMessage(message);
+        }
+
+        /// <summary>
+        ///     If player is not allowed to even see this channel 0_0
+        /// </summary>
+        /// <param name="userRanks">The rank of user</param>
+        /// <param name="chatRanks">The accessibility level of chat</param>
+        /// <returns></returns>
+        private static bool IsAllowed(UserRanks userRanks, UserRanks chatRanks)
+        {
+            return chatRanks == UserRanks.Normal || (userRanks & chatRanks) != 0;
         }
     }
 }

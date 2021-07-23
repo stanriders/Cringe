@@ -1,25 +1,23 @@
-﻿
-using System;
+﻿using System;
 using Newtonsoft.Json;
 
 namespace Cringe.Types.OsuApi
 {
-	public class AccessToken
-	{
-		[JsonProperty("token_type")]
-		public string Type { get; set; }
+    public class AccessToken
+    {
+        private DateTime expireDate;
 
-		private DateTime expireDate;
-		[JsonProperty("expires_in")]
-		public long ExpiresIn
-		{
-			get => expireDate.Ticks;
-			set => expireDate = DateTime.Now.AddSeconds(value);
-		}
+        [JsonProperty("token_type")] public string Type { get; set; }
 
-		public bool Expired => expireDate < DateTime.Now;
+        [JsonProperty("expires_in")]
+        public long ExpiresIn
+        {
+            get => expireDate.Ticks;
+            set => expireDate = DateTime.Now.AddSeconds(value);
+        }
 
-		[JsonProperty("access_token")]
-		public string Token { get; set; }
-	}
+        public bool Expired => expireDate < DateTime.Now;
+
+        [JsonProperty("access_token")] public string Token { get; set; }
+    }
 }

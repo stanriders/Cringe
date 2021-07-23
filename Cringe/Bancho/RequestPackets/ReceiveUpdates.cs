@@ -12,6 +12,7 @@ namespace Cringe.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.ReceiveUpdates;
+
         public override Task Execute(PlayerSession session, byte[] data)
         {
             return Task.CompletedTask;

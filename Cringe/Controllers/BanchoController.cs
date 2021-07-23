@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Cringe.Bancho;
 using Cringe.Bancho.ResponsePackets;
 using Cringe.Services;
 using Cringe.Types;
-using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -17,11 +15,11 @@ namespace Cringe.Controllers
     public class BanchoController : ControllerBase
     {
         private const uint protocol_version = 19;
-        private readonly PlayersPool _playersPool;
         private readonly ChatService _chat;
-        private readonly InvokeService _invoke;
         private readonly IConfiguration _config;
+        private readonly InvokeService _invoke;
         private readonly ILogger<BanchoController> _logger;
+        private readonly PlayersPool _playersPool;
         private readonly TokenService _tokenService;
 
         public BanchoController(IConfiguration config, ILogger<BanchoController> logger, TokenService tokenService,
@@ -64,10 +62,8 @@ namespace Cringe.Controllers
             var token = await _tokenService.AddToken(loginData[0].Trim());
             if (token == null)
                 return null;
-            if (!await _playersPool.Connect(token))
-            {
-                return null;
-            };
+            if (!await _playersPool.Connect(token)) return null;
+            ;
             var session = _playersPool.GetPlayer(token.PlayerId);
             if (session == null) return null;
 
@@ -86,17 +82,17 @@ namespace Cringe.Controllers
             if (!string.IsNullOrEmpty(_config["LoginMessage"]))
                 queue.EnqueuePacket(new Notification(_config["LoginMessage"]));
             queue.EnqueuePacket(new SilenceEnd(0));
-            
+
             queue.EnqueuePacket(new UserPresence(session.Player.Presence));
             queue.EnqueuePacket(new UserStats(session.Player.Stats));
-            
+
             queue.EnqueuePacket(new ChannelInfoEnd());
-            
+
             queue.EnqueuePacket(new FriendsList(new[] {2}));
-            
+
             if (!string.IsNullOrEmpty(_config["MainMenuBanner"]))
                 queue.EnqueuePacket(new MainMenuIcon(_config["MainMenuBanner"]));
-            
+
             queue.EnqueuePacket(new UserPresence(session.Player.Presence));
             await _chat.Initialize(session);
         }

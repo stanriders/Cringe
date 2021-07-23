@@ -10,11 +10,12 @@ namespace Cringe.Pages.Players
 {
     public class DetailsModel : PageModel
     {
+        private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly PlayerDatabaseContext _context;
         private readonly ScoreDatabaseContext _scoreContext;
-        private readonly BeatmapDatabaseContext _beatmapContext;
 
-        public DetailsModel(PlayerDatabaseContext context, ScoreDatabaseContext scoreContext, BeatmapDatabaseContext beatmapContext)
+        public DetailsModel(PlayerDatabaseContext context, ScoreDatabaseContext scoreContext,
+            BeatmapDatabaseContext beatmapContext)
         {
             _context = context;
             _scoreContext = scoreContext;
@@ -40,11 +41,9 @@ namespace Cringe.Pages.Players
                 .ToArrayAsync();
 
             foreach (var score in Scores)
-            {
                 score.Beatmap = await _beatmapContext.Beatmaps.Where(x => x.Id == score.BeatmapId)
-                    .Select(x => new Beatmap { Artist = x.Artist, Title = x.Title, DifficultyName = x.DifficultyName })
+                    .Select(x => new Beatmap {Artist = x.Artist, Title = x.Title, DifficultyName = x.DifficultyName})
                     .FirstOrDefaultAsync();
-            }
 
             return Page();
         }

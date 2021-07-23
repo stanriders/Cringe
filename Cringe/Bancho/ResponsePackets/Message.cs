@@ -36,7 +36,7 @@ namespace Cringe.Bancho.ResponsePackets
             await using var stream = new MemoryStream(data);
             var text = RequestPacket.ReadString(stream);
             var receiver = RequestPacket.ReadString(stream);
-            return new Message(text, new Player{Username = username, UserRank = UserRanks.Normal}, receiver);
+            return new Message(text, new Player {Username = username, UserRank = UserRanks.Normal}, receiver);
         }
     }
 }

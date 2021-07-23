@@ -30,7 +30,7 @@ namespace Cringe.Bancho.ResponsePackets
                 new byte[] {0},
                 PackData(mods),
                 PackData(Match.Name),
-                Match.Password != "" ? PackData("") : new byte[]{0},
+                Match.Password != "" ? PackData("") : new byte[] {0},
                 PackData(Match.MapName),
                 PackData(Match.MapId),
                 PackData(Match.MapMd5),

@@ -7,7 +7,6 @@ using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;
 using Cringe.Utils;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Cringe.Bancho
@@ -35,7 +34,7 @@ namespace Cringe.Bancho
             stream.Read(buffer, 0, len);
             return Encoding.Latin1.GetString(buffer);
         }
-        
+
         protected static int ReadInt(byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));

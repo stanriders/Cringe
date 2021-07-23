@@ -45,7 +45,6 @@ namespace Cringe.Services
             var addedMaps = 0;
 
             foreach (var beatmapPath in Directory.EnumerateFiles(cachePath, "*.osu").AsParallel())
-            {
                 try
                 {
                     if (addedMaps % 10000 == 0)
@@ -60,8 +59,8 @@ namespace Cringe.Services
                     // some people just want everything to break (see /b/2269460)
                     var nans = beatmapModel.GetType()
                         .GetProperties()
-                        .Where(x => x.PropertyType == typeof(double) && double.IsNaN((double)x.GetValue(beatmapModel)))
-                        .Select(x=> x.Name).ToArray();
+                        .Where(x => x.PropertyType == typeof(double) && double.IsNaN((double) x.GetValue(beatmapModel)))
+                        .Select(x => x.Name).ToArray();
 
                     if (nans.Length > 0)
                     {
@@ -88,7 +87,6 @@ namespace Cringe.Services
                 {
                     Console.WriteLine($"Beatmap seeding failed for {beatmapPath}: {e}");
                 }
-            }
 
             _dbContext.SaveChanges();
             Console.WriteLine($"Beatmap seeding finished! Added {addedMaps} maps");
@@ -107,8 +105,8 @@ namespace Cringe.Services
             var parsingTimingPoints = false;
             var parsingHitObjects = false;
 
-            int firstHitObjectTime = 0;
-            int previousHitObjectTime = 0;
+            var firstHitObjectTime = 0;
+            var previousHitObjectTime = 0;
 
             foreach (var line in File.ReadLines(beatmapPath))
             {

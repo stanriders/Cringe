@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Cringe.Bancho.ResponsePackets;
 using Cringe.Types;
 
 namespace Cringe.Services
 {
     public class LobbyService : ISocial
     {
-        private event Action<Match> NewMatch;
-        private event Action<Match> DisposeMatch;
         public Task<bool> Connect(PlayerSession player)
         {
             NewMatch += player.NewMatch;
@@ -22,6 +19,9 @@ namespace Cringe.Services
             DisposeMatch -= player.DisposeMatch;
             return true;
         }
+
+        private event Action<Match> NewMatch;
+        private event Action<Match> DisposeMatch;
 
         protected virtual void OnNewMatch(Match obj)
         {

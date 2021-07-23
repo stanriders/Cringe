@@ -17,9 +17,9 @@ namespace Cringe.Services
 {
     public class ScoreService
     {
-        private readonly PlayersPool _pool;
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly PlayerDatabaseContext _playerContext;
+        private readonly PlayersPool _pool;
         private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly PpService _ppService;
         private readonly PlayerRankCache _rankCache;

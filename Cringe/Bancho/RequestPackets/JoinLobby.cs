@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Cringe.Services;
 using Cringe.Types;
-using Cringe.Types.Bancho;
 using Cringe.Types.Enums;
 
 namespace Cringe.Bancho.RequestPackets

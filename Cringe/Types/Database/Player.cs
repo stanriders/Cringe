@@ -12,6 +12,7 @@ namespace Cringe.Types.Database
 
         [DisplayFormat(DataFormatString = "{0:P2}")]
         public float Accuracy { get; set; }
+
         public uint Playcount { get; set; }
         public ulong TotalScore { get; set; }
         public uint Rank { get; set; }

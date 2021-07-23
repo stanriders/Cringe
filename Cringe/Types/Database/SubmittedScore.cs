@@ -55,7 +55,8 @@ namespace Cringe.Types.Database
         }
 
         [NotMapped]
-        public string BeatmapTitle => string.IsNullOrEmpty(Beatmap?.FullTitle) ? BeatmapId.ToString() : Beatmap?.FullTitle;
+        public string BeatmapTitle =>
+            string.IsNullOrEmpty(Beatmap?.FullTitle) ? BeatmapId.ToString() : Beatmap?.FullTitle;
 
         public override string ToString()
         {

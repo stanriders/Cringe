@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.ResponsePackets;
 using Cringe.Types;
@@ -27,7 +26,7 @@ namespace Cringe.Bancho.RequestPackets
                 session.Queue.EnqueuePacket(new UserStats(player.Player.Stats));
                 session.Queue.EnqueuePacket(new UserPresence(player.Player.Presence));
             }
-            
+
             return Task.CompletedTask;
         }
     }

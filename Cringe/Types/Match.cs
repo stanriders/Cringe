@@ -42,7 +42,7 @@ namespace Cringe.Types
         {
             Players.Remove(player.Id);
             var slot = Slots.FirstOrDefault(x => x.Player.Id == player.Id);
-            if(slot is null) return;
+            if (slot is null) return;
             slot.Mods = Mods.None;
             slot.Player = null;
             slot.Status = SlotStatus.open;

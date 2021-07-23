@@ -10,13 +10,8 @@ namespace Cringe.Services
 {
     public class ChatService
     {
-        private readonly Action<Message> _sendPrivateMessage;
-        public ChatService(PlayersPool pool)
-        {
-            _sendPrivateMessage = message => pool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
-        }
-
         public const string LobbyName = "#lobby";
+
         public static readonly List<GlobalChat> GlobalChats = new()
         {
             new GlobalChat("#osu", "THIS GAME SUCKS QOQ", true),
@@ -24,6 +19,13 @@ namespace Cringe.Services
             new GlobalChat("#vacman", "Admin only secret chat"),
             new GlobalChat(LobbyName, "LOBESHNIQ")
         };
+
+        private readonly Action<Message> _sendPrivateMessage;
+
+        public ChatService(PlayersPool pool)
+        {
+            _sendPrivateMessage = message => pool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
+        }
 
         public async Task Initialize(PlayerSession player)
         {
@@ -40,6 +42,7 @@ namespace Cringe.Services
         {
             return GlobalChats.FirstOrDefault(x => x.Name == name);
         }
+
         public bool Purge(PlayerSession player)
         {
             var rank = player.Player.UserRank;
@@ -54,7 +57,7 @@ namespace Cringe.Services
             var chat = GlobalChats.FirstOrDefault(x => x.Name == message.Receiver);
             if (chat is null) return false;
             if (!IsAllowed(message.Sender.UserRank, chat.Accessibility)) return false;
-        
+
             chat.OnSendMessage(message);
             return true;
         }
@@ -63,6 +66,7 @@ namespace Cringe.Services
         {
             _sendPrivateMessage(message);
         }
+
         /// <summary>
         ///     If player is not allowed to even see this channel 0_0
         /// </summary>

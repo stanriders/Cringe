@@ -25,11 +25,9 @@ namespace Cringe.Pages
         {
             Scores = await _scoreContext.Scores.OrderByDescending(x => x.Pp).Take(50).ToListAsync();
             foreach (var score in Scores)
-            {
                 score.Beatmap = await _beatmapContext.Beatmaps.Where(x => x.Id == score.BeatmapId)
                     .Select(x => new Beatmap {Artist = x.Artist, Title = x.Title, DifficultyName = x.DifficultyName})
                     .FirstOrDefaultAsync();
-            }
         }
     }
 }

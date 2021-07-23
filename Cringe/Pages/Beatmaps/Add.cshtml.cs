@@ -1,4 +1,3 @@
-
 using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
@@ -21,8 +20,7 @@ namespace Cringe.Pages.Beatmaps
             _osuApiWrapper = osuApiWrapper;
         }
 
-        [BindProperty]
-        public int? BeatmapId { get; set; }
+        [BindProperty] public int? BeatmapId { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -49,14 +47,14 @@ namespace Cringe.Pages.Beatmaps
                     CircleSize = apiMap.CS,
                     OverallDifficulty = apiMap.OD,
                     ApproachRate = apiMap.AR,
-                    Length = (int)apiMap.DrainLength
+                    Length = (int) apiMap.DrainLength
                 });
 
                 if (addedMap != null)
                 {
                     await _osuApiWrapper.DownloadBeatmap(BeatmapId.Value);
                     await _context.SaveChangesAsync();
-                    return Redirect(Url.Page("Index", new { id = BeatmapId.Value }));
+                    return Redirect(Url.Page("Index", new {id = BeatmapId.Value}));
                 }
             }
 

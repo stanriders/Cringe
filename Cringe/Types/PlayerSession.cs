@@ -1,6 +1,5 @@
 ﻿using Cringe.Bancho;
 using Cringe.Bancho.ResponsePackets;
-using Cringe.Types.Bancho;
 using Cringe.Types.Database;
 
 namespace Cringe.Types
@@ -24,6 +23,7 @@ namespace Cringe.Types
         }
 
         #endregion
+
         #region Lobby
 
         public void NewMatch(Match match)
@@ -35,6 +35,7 @@ namespace Cringe.Types
         {
             Queue.EnqueuePacket(new DisposeMatch(match));
         }
+
         #endregion
 
         #region Messages and Chats
@@ -53,17 +54,18 @@ namespace Cringe.Types
         {
             Queue.EnqueuePacket(new ChannelKick(chat));
         }
+
         public void ChatAutoJoin(GlobalChat chat)
         {
             Queue.EnqueuePacket(new ChannelAutoJoin(chat));
         }
+
         public void ReceiveMessage(Message message)
         {
-            if(message.Sender.Username != Token.Username)
+            if (message.Sender.Username != Token.Username)
                 Queue.EnqueuePacket(message);
         }
 
         #endregion
-        
     }
 }

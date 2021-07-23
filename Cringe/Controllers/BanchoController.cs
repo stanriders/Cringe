@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho;
 using Cringe.Bancho.ResponsePackets;
@@ -75,26 +76,40 @@ namespace Cringe.Controllers
         private async Task Login(PlayerSession session)
         {
             var queue = session.Queue;
+            queue.EnqueuePacket(new SilenceEnd(0));
+            var bundle = _playersPool.GetPlayersId().Where(x => x != session.Token.PlayerId).ToArray();
+
+            if (bundle.Length != 0)
+                queue.EnqueuePacket(new UserPresenceBundle(bundle));
+
             queue.EnqueuePacket(new ProtocolVersion(protocol_version));
             queue.EnqueuePacket(new UserId(session.Token.PlayerId));
-            queue.EnqueuePacket(new UserPresenceBundle(_playersPool.GetPlayersId()));
             queue.EnqueuePacket(new Supporter(session.Player.UserRank));
-            if (!string.IsNullOrEmpty(_config["LoginMessage"]))
-                queue.EnqueuePacket(new Notification(_config["LoginMessage"]));
-            queue.EnqueuePacket(new SilenceEnd(0));
-
-            queue.EnqueuePacket(new UserPresence(session.Player.Presence));
-            queue.EnqueuePacket(new UserStats(session.Player.Stats));
-
-            queue.EnqueuePacket(new ChannelInfoEnd());
-
-            queue.EnqueuePacket(new FriendsList(new[] {2}));
 
             if (!string.IsNullOrEmpty(_config["MainMenuBanner"]))
                 queue.EnqueuePacket(new MainMenuIcon(_config["MainMenuBanner"]));
 
-            queue.EnqueuePacket(new UserPresence(session.Player.Presence));
+            queue.EnqueuePacket(new FriendsList(new[] {2}));
+
+            if (!string.IsNullOrEmpty(_config["LoginMessage"]))
+                queue.EnqueuePacket(new Notification(_config["LoginMessage"]));
+
+            var myPresence = new UserPresence(session.Player.Presence);
+            var myStats = new UserStats(session.Player.Stats);
+            queue.EnqueuePacket(myPresence);
+            queue.EnqueuePacket(myStats);
+
             await _chat.Initialize(session);
+            queue.EnqueuePacket(new ChannelInfoEnd());
+
+            foreach (var sessions in _playersPool.GetPlayerSessions()
+                .Where(x => x.Token.PlayerId != session.Token.PlayerId))
+            {
+                queue.EnqueuePacket(new UserStats(sessions.Player.Stats));
+                queue.EnqueuePacket(new UserPresence(sessions.Player.Presence));
+                sessions.Queue.EnqueuePacket(myStats);
+                sessions.Queue.EnqueuePacket(myPresence);
+            }
         }
 
         private async Task<PacketQueue> HandleIncomingPackets()

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Cringe.Types;
 using Cringe.Types.Bancho;
 using Cringe.Types.Enums;
 
@@ -6,9 +7,9 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class ChannelInfo : ResponsePacket
     {
-        private readonly Chat _chat;
+        private readonly GlobalChat _chat;
 
-        public ChannelInfo(Chat chat)
+        public ChannelInfo(GlobalChat chat)
         {
             _chat = chat;
         }
@@ -19,7 +20,7 @@ namespace Cringe.Bancho.ResponsePackets
         {
             var data = PackData(_chat.Name)
                 .Concat(PackData(_chat.Description))
-                .Concat(PackData(_chat.Users.Count));
+                .Concat(PackData(_chat.Count));
             return data.ToArray();
         }
     }

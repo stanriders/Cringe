@@ -13,9 +13,9 @@ namespace Cringe.Controllers
     public class UsersController : ControllerBase
     {
         private readonly PlayerDatabaseContext _playerDatabaseContext;
-        private readonly BanchoServicePool _pool;
+        private readonly PlayersPool _pool;
 
-        public UsersController(BanchoServicePool pool, PlayerDatabaseContext playerDatabaseContext)
+        public UsersController(PlayersPool pool, PlayerDatabaseContext playerDatabaseContext)
         {
             _pool = pool;
             _playerDatabaseContext = playerDatabaseContext;
@@ -35,7 +35,7 @@ namespace Cringe.Controllers
             await _playerDatabaseContext.Players.AddAsync(player);
             await _playerDatabaseContext.SaveChangesAsync();
 
-            var queue = _pool.GetFromPool(player.Id);
+            var queue = _pool.GetPlayer(player.Id).Queue;
 
             return queue.GetResult();
         }

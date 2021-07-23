@@ -5,7 +5,7 @@ namespace Cringe.Bancho.ResponsePackets
 {
     public class UpdateMatch : MatchJoinSuccess
     {
-        public UpdateMatch(Lobby match) : base(match)
+        public UpdateMatch(Match match) : base(match)
         {
         }
 

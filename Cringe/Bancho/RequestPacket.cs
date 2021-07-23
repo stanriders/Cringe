@@ -21,14 +21,11 @@ namespace Cringe.Bancho
             _serviceProvider = serviceProvider;
         }
 
-        protected MultiplayerService Multiplayer => _serviceProvider.GetService<MultiplayerService>();
-        protected BanchoServicePool Pool => _serviceProvider.GetService<BanchoServicePool>();
-        protected TokenService Token => _serviceProvider.GetService<TokenService>();
-        protected ChatServicePool Chats => _serviceProvider.GetService<ChatServicePool>();
+        protected PlayersPool Pool => _serviceProvider.GetService<PlayersPool>();
+        protected ChatService Chats => _serviceProvider.GetService<ChatService>();
         protected StatsService Stats => _serviceProvider.GetService<StatsService>();
-        protected IConfiguration Configuration => _serviceProvider.GetService<IConfiguration>();
         public abstract ClientPacketType Type { get; }
-        public abstract Task Execute(UserToken token, byte[] data);
+        public abstract Task Execute(PlayerSession session, byte[] data);
 
         public static string ReadString(Stream stream)
         {
@@ -45,8 +42,9 @@ namespace Cringe.Bancho
             return reader.ReadInt32();
         }
 
-        protected static IEnumerable<int> ReadI32(BinaryReader reader, int length)
+        protected static IEnumerable<int> ReadI32(BinaryReader reader)
         {
+            var length = reader.ReadInt16();
             var buffer = new int[length];
             for (var i = 0; i < length; i++) buffer[i] = reader.ReadInt32();
             return buffer;

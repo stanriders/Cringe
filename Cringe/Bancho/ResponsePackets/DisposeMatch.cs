@@ -7,7 +7,7 @@ namespace Cringe.Bancho.ResponsePackets
     {
         public override ServerPacketType Type => ServerPacketType.DisposeMatch;
 
-        public DisposeMatch(Lobby match) : base(match)
+        public DisposeMatch(Match match) : base(match)
         {
         }
     }

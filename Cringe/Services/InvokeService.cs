@@ -21,18 +21,9 @@ namespace Cringe.Services
                 new ChangeActionPacket(serviceProvider),
                 new ChannelJoinPacket(serviceProvider),
                 new ChannelPart(serviceProvider),
-                new CreateMatch(serviceProvider),
                 new JoinLobby(serviceProvider),
-                new JoinMatch(serviceProvider),
-                new LoginPacket(serviceProvider),
                 new LogoutPacket(serviceProvider),
-                new MatchChangeSlot(serviceProvider),
-                new MatchChangeMods(serviceProvider),
-                new MatchChangeSettings(serviceProvider),
-                new MatchNotReady(serviceProvider),
-                new MatchReady(serviceProvider),
                 new PartLobby(serviceProvider),
-                new PartMatch(serviceProvider),
                 new PingPacket(serviceProvider),
                 new RequestStatusUpdatePacket(serviceProvider),
                 new SendPrivateMessagePacket(serviceProvider),
@@ -47,12 +38,7 @@ namespace Cringe.Services
             return _handlers.TryGetValue(packetType, out var request) ? request : null;
         }
 
-        public Task InvokeOne(ClientPacketType packetType, UserToken token, byte[] body)
-        {
-            return _handlers.TryGetValue(packetType, out var request) ? request.Execute(token, body) : null;
-        }
-
-        public Task Invoke(UserToken token, byte[] body)
+        public Task Invoke(PlayerSession session, byte[] body)
         {
             using var reader = new BinaryReader(new MemoryStream(body));
             var packets = new List<(ClientPacketType type, byte[] data)>();
@@ -68,7 +54,7 @@ namespace Cringe.Services
             foreach (var (type, data) in packets)
             {
                 if (!_handlers.TryGetValue(type, out var request)) continue;
-                var requestTask = request.Execute(token, data);
+                var requestTask = request.Execute(session, data);
                 if (requestTask.Exception is not null) throw requestTask.Exception;
             }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Bancho;
 using Cringe.Types.Enums;
@@ -14,10 +15,9 @@ namespace Cringe.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.PartLobby;
 
-        public override Task Execute(UserToken token, byte[] data)
+        public override Task Execute(PlayerSession session, byte[] data)
         {
-            var lobby = Chat.Lobby;
-            Chats.Disconnect(token.PlayerId, lobby.Name);
+            ChatService.GetChat(ChatService.LobbyName)?.Disconnect(session);
             return Task.CompletedTask;
         }
     }

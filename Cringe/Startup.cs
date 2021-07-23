@@ -24,9 +24,8 @@ namespace Cringe
             services.AddDbContext<ScoreDatabaseContext>();
             services.AddDbContext<BeatmapDatabaseContext>();
 
-            services.AddSingleton<BanchoServicePool>();
-            services.AddSingleton<ChatServicePool>();
-            services.AddSingleton<MultiplayerService>();
+            services.AddTransient<PlayersPool>();
+            services.AddTransient<ChatService>();
             services.AddSingleton<StatsService>();
             services.AddTransient<InvokeService>();
             services.AddTransient<TokenService>();

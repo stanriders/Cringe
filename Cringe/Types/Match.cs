@@ -8,7 +8,7 @@ using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Types
 {
-    public class Lobby
+    public class Match
     {
         public short Id { get; set; }
         public string Name { get; set; }
@@ -49,7 +49,7 @@ namespace Cringe.Types
             slot.Team = MatchTeams.neutral;
         }
 
-        public static Lobby Parse(byte[] data)
+        public static Match Parse(byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));
             var id = reader.ReadInt16();
@@ -58,7 +58,7 @@ namespace Cringe.Types
             var mods = (Mods) reader.ReadInt32();
             var name = RequestPacket.ReadString(reader.BaseStream);
             var password = RequestPacket.ReadString(reader.BaseStream);
-            var lobby = new Lobby
+            var lobby = new Match
             {
                 Id = id,
                 Name = name,

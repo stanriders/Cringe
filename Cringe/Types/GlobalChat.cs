@@ -8,6 +8,8 @@ namespace Cringe.Types
 {
     public class GlobalChat : ISocial
     {
+        public PlayerEvent SendMessage = new();
+        public PlayerEvent ReceiveUpdates = new();
         public GlobalChat(string name, string description, bool autoConnect = false,
             UserRanks accessibility = UserRanks.Normal)
         {
@@ -25,26 +27,27 @@ namespace Cringe.Types
 
         public Task<bool> Connect(PlayerSession player)
         {
-            SendMessage += player.ReceiveMessage;
-            Count++;
+            SendMessage += player;
+            Count = SendMessage.Count;
+            
             if (AutoConnect)
                 player.ChatAutoJoin(this);
+            
             player.ChatConnected(this);
-            OnStatusUpdated(this);
+            OnStatusUpdated();
             return Task.FromResult(true);
         }
 
         public bool Disconnect(PlayerSession player)
         {
-            SendMessage -= player.ReceiveMessage;
-            Count--;
+            SendMessage -= player;
+            Count = SendMessage.Count;
+            
             player.ChatKick(this);
-            OnStatusUpdated(this);
+            OnStatusUpdated();
             return true;
         }
 
-        public event Action<Message> SendMessage;
-        public event Action<GlobalChat> StatusUpdated;
 
         public void OnSendMessage(Player sender, string content)
         {
@@ -53,12 +56,12 @@ namespace Cringe.Types
 
         public virtual void OnSendMessage(Message obj)
         {
-            SendMessage?.Invoke(obj);
+            SendMessage.Invoke(x => x.ReceiveMessage(obj));
         }
 
-        protected virtual void OnStatusUpdated(GlobalChat obj)
+        public virtual void OnStatusUpdated()
         {
-            StatusUpdated?.Invoke(obj);
+            ReceiveUpdates.Invoke(x => x.ChatInfo(this));
         }
     }
 }

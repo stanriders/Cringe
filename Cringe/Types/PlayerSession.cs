@@ -14,6 +14,8 @@ namespace Cringe.Types
 
         public void PlayerLoggedIn(Player player)
         {
+            Queue.EnqueuePacket(new UserStats(player.Stats));
+            Queue.EnqueuePacket(new UserPresence(player.Presence));
             //TODO: Green message on friend login
         }
 

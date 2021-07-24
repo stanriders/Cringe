@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Cringe.Types.OsuApi;
 using Microsoft.Extensions.Configuration;
@@ -48,11 +49,11 @@ namespace Cringe.Services
                     scope = "public"
                 };
 
-                //var authJson = await _client.PostAsJsonAsync("https://osu.ppy.sh/oauth/token", authRequest);
-                //if (authJson.IsSuccessStatusCode)
+                var authJson = await _client.PostAsync("https://osu.ppy.sh/oauth/token", new StringContent(JsonConvert.SerializeObject(authRequest), Encoding.UTF8, "application/json"));
+                if (authJson.IsSuccessStatusCode)
                 {
-                //    var response = await authJson.Content.ReadAsStringAsync();
-                //    AccessToken = JsonConvert.DeserializeObject<AccessToken>(response);
+                    var response = await authJson.Content.ReadAsStringAsync();
+                    AccessToken = JsonConvert.DeserializeObject<AccessToken>(response);
                 }
             }
 

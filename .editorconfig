@@ -54,7 +54,7 @@ csharp_space_between_method_declaration_parameter_list_parentheses = false
 
 #Formatting - wrapping options
 csharp_preserve_single_line_blocks = true
-csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_statements = false:warning
 
 csharp_style_prefer_not_pattern = true:warning
 csharp_style_prefer_pattern_matching = true:warning
@@ -127,3 +127,19 @@ csharp_prefer_simple_using_statement = true:silent
 csharp_style_prefer_index_operator = true:warning
 csharp_style_prefer_range_operator = true:warning
 csharp_style_prefer_switch_expression = false:none
+
+# resharper/rider
+csharp_place_attribute_on_same_line = false
+csharp_place_simple_embedded_statement_on_same_line = false
+csharp_place_simple_case_statement_on_same_line = false
+csharp_place_simple_embedded_block_on_same_line = false
+csharp_place_simple_blocks_on_single_line = false
+
+csharp_blank_lines_around_region = 1
+csharp_blank_lines_inside_region = 0
+csharp_blank_lines_before_single_line_comment = 1
+csharp_remove_blank_lines_near_braces_in_declarations = true
+csharp_blank_lines_after_start_comment = 0
+csharp_blank_lines_before_control_transfer_statements = 1
+csharp_blank_lines_before_block_statements = 0
+csharp_blank_lines_after_block_statements = 1

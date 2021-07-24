@@ -137,9 +137,12 @@ csharp_place_simple_blocks_on_single_line = false
 
 csharp_blank_lines_around_region = 1
 csharp_blank_lines_inside_region = 0
-csharp_blank_lines_before_single_line_comment = 1
-csharp_remove_blank_lines_near_braces_in_declarations = true
+
 csharp_blank_lines_after_start_comment = 0
+
+csharp_remove_blank_lines_near_braces_in_declarations = true
 csharp_blank_lines_before_control_transfer_statements = 1
+csharp_blank_lines_after_control_transfer_statements = 1
+
 csharp_blank_lines_before_block_statements = 0
 csharp_blank_lines_after_block_statements = 1

@@ -18,6 +18,14 @@ namespace Cringe.Bancho.RequestPackets
         {
             var dest = data[2..];
             var message = await Message.Parse(dest, session.Token.Username);
+            if (message.Receiver == "#multiplayer")
+            {
+                if (session.MatchSession is not null)
+                {
+                    foreach (var slot in session.MatchSession.Match.Slots)
+                        slot.Player?.ReceiveMessage(message);
+                }
+            }
             Chats.SendGlobalMessage(message);
         }
     }

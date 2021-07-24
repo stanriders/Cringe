@@ -22,32 +22,9 @@ namespace Cringe.Types
         public MatchWinConditions WinConditions { get; set; }
         public MatchTeamTypes TeamTypes { get; set; } = MatchTeamTypes.head_to_head;
         public bool InProgress { get; set; }
-        public Slot[] Slots { get; set; } = new Slot[16];
+        public List<Slot> Slots { get; set; } = new int[16].Select(_ => new Slot()).ToList();
 
-        public HashSet<int> Players { get; } = new();
         public Mods Mods { get; set; }
-
-        public bool Connect(Player player)
-        {
-            var slot = Slots.OrderBy(x => x.Index).FirstOrDefault(x => x.Player is null);
-            if (slot is null) return false;
-
-            Players.Add(player.Id);
-            slot.Player = player;
-            slot.Status = SlotStatus.not_ready;
-            return true;
-        }
-
-        public void Disconnect(Player player)
-        {
-            Players.Remove(player.Id);
-            var slot = Slots.FirstOrDefault(x => x.Player.Id == player.Id);
-            if (slot is null) return;
-            slot.Mods = Mods.None;
-            slot.Player = null;
-            slot.Status = SlotStatus.open;
-            slot.Team = MatchTeams.neutral;
-        }
 
         public static Match Parse(byte[] data)
         {
@@ -69,14 +46,13 @@ namespace Cringe.Types
                 MapId = reader.ReadInt32(),
                 MapMd5 = RequestPacket.ReadString(reader.BaseStream)
             };
-            for (var i = 0; i < lobby.Slots.Length; i++)
-                lobby.Slots[i] = new Slot {Index = i, Status = (SlotStatus) reader.ReadByte()};
+            for (var i = 0; i < 16; i++)
+                lobby.Slots[i] = new Slot {Status = (SlotStatus) reader.ReadByte()};
 
             foreach (var slot in lobby.Slots) slot.Team = (MatchTeams) reader.ReadByte();
 
-            foreach (var slot in lobby.Slots)
-                if ((byte) (slot.Status & SlotStatus.has_player) != 0) //If slot is not empty
-                    reader.ReadInt32();
+            foreach (var slot in lobby.Slots.Where(slot => (byte) (slot.Status & SlotStatus.has_player) != 0))
+                reader.ReadInt32();
 
             lobby.Host = reader.ReadInt32();
             lobby.Mode = (GameModes) reader.ReadByte();

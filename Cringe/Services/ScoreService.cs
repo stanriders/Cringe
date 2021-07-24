@@ -126,7 +126,7 @@ namespace Cringe.Services
                 await _playerContext.SaveChangesAsync();
 
                 // send score as a notif to confirm submission
-                var queue = _pool.GetPlayer(player.Id).Queue;
+                var queue = PlayersPool.GetPlayer(player.Id).Queue;
                 queue.EnqueuePacket(new Notification($"{Math.Round(submittedScore.Pp, 2)} pp"));
 
                 return submittedScore;

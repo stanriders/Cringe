@@ -16,7 +16,8 @@ namespace Cringe.Services
         {
             new GlobalChat("#osu", "THIS GAME SUCKS QOQ", true),
             new GlobalChat("#announce", "Shitpost your 300pp here", true),
-            new GlobalChat("#vacman", "Admin only secret chat"),
+            new GlobalChat("#vacman", "Admin only secret chat", false, UserRanks.Admin),
+            new GlobalChat("#russian", "KRYM NASH!!! :DDD"),
             new GlobalChat(LobbyName, "LOBESHNIQ")
         };
 
@@ -24,7 +25,7 @@ namespace Cringe.Services
 
         public ChatService(PlayersPool pool)
         {
-            _sendPrivateMessage = message => pool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
+            _sendPrivateMessage = message => PlayersPool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
         }
 
         public async Task Initialize(PlayerSession player)
@@ -32,7 +33,8 @@ namespace Cringe.Services
             var rank = player.Player.UserRank;
             foreach (var globalChat in GlobalChats.Where(globalChat => IsAllowed(rank, globalChat.Accessibility)))
             {
-                globalChat.StatusUpdated += player.ChatInfo;
+                globalChat.ReceiveUpdates += player;
+                globalChat.OnStatusUpdated();
                 if (globalChat.AutoConnect)
                     await globalChat.Connect(player);
             }

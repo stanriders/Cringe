@@ -2,6 +2,7 @@
 using System.Linq;
 using Cringe.Types;
 using Cringe.Types.Enums;
+using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Bancho.ResponsePackets
 {
@@ -17,11 +18,11 @@ namespace Cringe.Bancho.ResponsePackets
 
         public override byte[] GetBytes()
         {
-            var slots = Match.Slots.OrderBy(x => x.Index).ToArray();
+            var slots = Match.Slots.ToArray();
             var status = slots.Select(x => (byte) x.Status);
             var teams = slots.Select(x => (byte) x.Team);
             var host = Match.Host;
-            var players = Match.Players.Select(PackData).SelectMany(x => x).ToArray();
+            var players = Match.Slots.Select(x => (x.Status & SlotStatus.has_player) != 0 ? PackData(x.Player.Token.PlayerId) : Array.Empty<byte>()).SelectMany(x => x).ToArray();
             var playerMods = Match.FreeMode ? Match.Slots.Select(x => (byte) x.Mods).ToArray() : Array.Empty<byte>();
             var mods = (int) Match.Mods;
             return ConcatData(

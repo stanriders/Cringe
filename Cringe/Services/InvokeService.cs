@@ -21,15 +21,21 @@ namespace Cringe.Services
                 new ChangeActionPacket(serviceProvider),
                 new ChannelJoinPacket(serviceProvider),
                 new ChannelPart(serviceProvider),
+                new CreateMatch(serviceProvider),
                 new JoinLobby(serviceProvider),
+                new JoinMatch(serviceProvider),
                 new LogoutPacket(serviceProvider),
+                new MatchChangeSettings(serviceProvider),
+                new MatchChangeSlot(serviceProvider),
+                new MatchLock(serviceProvider),
                 new PartLobby(serviceProvider),
+                new PartMatch(serviceProvider),
                 new PingPacket(serviceProvider),
-                new RequestStatusUpdatePacket(serviceProvider),
+                new RequestStatusUpdate(serviceProvider),
                 new SendPrivateMessagePacket(serviceProvider),
                 new SendPublicMessagePacket(serviceProvider),
                 new UserStatsRequest(serviceProvider),
-                new UserPresenceRequestPacket(serviceProvider)
+                new UserPresenceRequest(serviceProvider)
             }.ToDictionary(x => x.Type);
         }
 

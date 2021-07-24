@@ -65,7 +65,7 @@ namespace Cringe.Controllers
                 return null;
             if (!await _playersPool.Connect(token)) return null;
             ;
-            var session = _playersPool.GetPlayer(token.PlayerId);
+            var session = PlayersPool.GetPlayer(token.PlayerId);
             if (session == null) return null;
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
@@ -76,11 +76,6 @@ namespace Cringe.Controllers
         private async Task Login(PlayerSession session)
         {
             var queue = session.Queue;
-            queue.EnqueuePacket(new SilenceEnd(0));
-            var bundle = _playersPool.GetPlayersId().Where(x => x != session.Token.PlayerId).ToArray();
-
-            if (bundle.Length != 0)
-                queue.EnqueuePacket(new UserPresenceBundle(bundle));
 
             queue.EnqueuePacket(new ProtocolVersion(protocol_version));
             queue.EnqueuePacket(new UserId(session.Token.PlayerId));
@@ -94,22 +89,25 @@ namespace Cringe.Controllers
             if (!string.IsNullOrEmpty(_config["LoginMessage"]))
                 queue.EnqueuePacket(new Notification(_config["LoginMessage"]));
 
+            queue.EnqueuePacket(new SilenceEnd(0));
             var myPresence = new UserPresence(session.Player.Presence);
             var myStats = new UserStats(session.Player.Stats);
             queue.EnqueuePacket(myPresence);
             queue.EnqueuePacket(myStats);
 
+            var bundle = _playersPool.GetPlayersId().Where(x => x != session.Token.PlayerId).ToArray();
+
+            foreach (var i in bundle)
+            {
+                var player = PlayersPool.GetPlayer(i);
+                player.Queue.EnqueuePacket(myPresence);
+                player.Queue.EnqueuePacket(myStats);
+                queue.EnqueuePacket(new UserPresence(player.Player.Presence));
+                queue.EnqueuePacket(new UserStats(player.Player.Stats));
+            }
+            
             await _chat.Initialize(session);
             queue.EnqueuePacket(new ChannelInfoEnd());
-
-            foreach (var sessions in _playersPool.GetPlayerSessions()
-                .Where(x => x.Token.PlayerId != session.Token.PlayerId))
-            {
-                queue.EnqueuePacket(new UserStats(sessions.Player.Stats));
-                queue.EnqueuePacket(new UserPresence(sessions.Player.Presence));
-                sessions.Queue.EnqueuePacket(myStats);
-                sessions.Queue.EnqueuePacket(myPresence);
-            }
         }
 
         private async Task<PacketQueue> HandleIncomingPackets()
@@ -119,7 +117,7 @@ namespace Cringe.Controllers
                 // force update login
                 return PacketQueue.NullUser();
             HttpContext.Response.Headers.Add("cho-token", token.Token);
-            var session = _playersPool.GetPlayer(token.PlayerId);
+            var session = PlayersPool.GetPlayer(token.PlayerId);
 
             await using var inStream = new MemoryStream();
             await Request.Body.CopyToAsync(inStream);

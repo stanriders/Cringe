@@ -14,10 +14,10 @@ namespace Cringe.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.JoinLobby;
 
-        public override Task Execute(PlayerSession session, byte[] data)
+        public override async Task Execute(PlayerSession session, byte[] data)
         {
             ChatService.GetChat(ChatService.LobbyName)?.Connect(session);
-            return Task.CompletedTask;
+            await Lobby.Connect(session);
         }
     }
 }

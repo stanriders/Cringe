@@ -17,6 +17,7 @@ namespace Cringe.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             ChatService.GetChat(ChatService.LobbyName)?.Disconnect(session);
+            Lobby.Disconnect(session);
             return Task.CompletedTask;
         }
     }

@@ -6,9 +6,9 @@ using Cringe.Types.Enums;
 
 namespace Cringe.Bancho.RequestPackets
 {
-    public class RequestStatusUpdatePacket : RequestPacket
+    public class RequestStatusUpdate : RequestPacket
     {
-        public RequestStatusUpdatePacket(IServiceProvider serviceProvider) : base(serviceProvider)
+        public RequestStatusUpdate(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 

@@ -18,7 +18,16 @@ namespace Cringe.Services
             _database = database;
         }
 
-        public static Dictionary<int, PlayerSession> Players { get; } = new();
+        private static Player TestPlayer()
+        {
+            var player = Player.Generate("TEST_SUBJECT228", "1234");
+            player.Id = 2;
+            return player;
+        }
+        public static Dictionary<int, PlayerSession> Players { get; } = new()
+        {
+            {2, new PlayerSession{Player = TestPlayer(), Token = new UserToken{ Token = "123", Username = "TEST_SUBJECT228", PlayerId = 2}}}
+        };
 
         public async Task<bool> Connect(UserToken token)
         {

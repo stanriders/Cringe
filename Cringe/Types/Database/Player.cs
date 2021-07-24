@@ -63,7 +63,7 @@ namespace Cringe.Types.Database
             Rank = 1,
             Pp = 0,
             UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff |
-                       UserRanks.Peppy
+                       UserRanks.Admin
         };
 
         public static Player Generate(string username, string password)

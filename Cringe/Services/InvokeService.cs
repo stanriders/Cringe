@@ -25,11 +25,11 @@ namespace Cringe.Services
                 new LogoutPacket(serviceProvider),
                 new PartLobby(serviceProvider),
                 new PingPacket(serviceProvider),
-                new RequestStatusUpdatePacket(serviceProvider),
+                new RequestStatusUpdate(serviceProvider),
                 new SendPrivateMessagePacket(serviceProvider),
                 new SendPublicMessagePacket(serviceProvider),
                 new UserStatsRequest(serviceProvider),
-                new UserPresenceRequestPacket(serviceProvider)
+                new UserPresenceRequest(serviceProvider)
             }.ToDictionary(x => x.Type);
         }
 

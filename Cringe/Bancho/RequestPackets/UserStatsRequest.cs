@@ -19,10 +19,12 @@ namespace Cringe.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));
-            var playerIds = ReadI32(reader).Where(x => x != session.Token.PlayerId);
+            var playerIds = ReadI32(reader);
             var pool = Pool;
             foreach (var playerId in playerIds)
             {
+                if(playerId == session.Token.PlayerId) continue;
+                
                 var player = pool.GetPlayer(playerId);
                 if (player is null) continue;
 

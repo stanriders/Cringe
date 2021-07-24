@@ -16,7 +16,7 @@ namespace Cringe.Services
         {
             new GlobalChat("#osu", "THIS GAME SUCKS QOQ", true),
             new GlobalChat("#announce", "Shitpost your 300pp here", true),
-            new GlobalChat("#vacman", "Admin only secret chat", false, UserRanks.Peppy),
+            new GlobalChat("#vacman", "Admin only secret chat", false, UserRanks.Admin),
             new GlobalChat("#russian", "KRYM NASH!!! :DDD"),
             new GlobalChat(LobbyName, "LOBESHNIQ")
         };

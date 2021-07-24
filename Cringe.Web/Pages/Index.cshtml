@@ -1,0 +1,62 @@
+﻿@page
+@model Cringe.Web.Pages.IndexModel
+@{
+    ViewData["Title"] = "Hello";
+}
+
+<h1>Biggest Cringe</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Beatmap</th>
+        <th>Username</th>
+        <th>Accuracy</th>
+        <th>Combo</th>
+        <th>Rank</th>
+        <th>Mods</th>
+        <th>Game Mode</th>
+        <th>Date</th>
+        <th>CRINGE POINTS</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @for (var i = 0; i < Model.Scores.Count; i++)
+    {
+        <tr>
+            <td>
+                @(i + 1)
+            </td>
+            <td>
+                <a asp-page="./Beatmaps/Index" asp-route-id="@Model.Scores[i].BeatmapId">@Model.Scores[i].BeatmapTitle</a>
+            </td>
+            <td>
+                <a asp-page="./Players/Index" asp-route-id="@Model.Scores[i].PlayerId">@Model.Scores[i].PlayerUsername</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => Model.Scores[i].Accuracy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => Model.Scores[i].MaxCombo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => Model.Scores[i].Rank)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => Model.Scores[i].Mods)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => Model.Scores[i].GameMode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => Model.Scores[i].PlayDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => Model.Scores[i].Pp)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

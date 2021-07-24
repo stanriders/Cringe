@@ -1,0 +1,57 @@
+﻿@page
+@model Cringe.Web.Pages.Beatmaps.IndexModel
+
+@{
+    ViewData["Title"] = "Beatmap Listing";
+}
+
+<h1>Beatmaps</h1>
+
+<h4>
+    <form method="post">
+        <input type="submit" value="Seed database (SLOW)" class="btn btn-default" />
+        <a asp-page="./Add" class="btn btn-default">Rank a beatmap</a>
+    </form>
+</h4>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th></th>
+        <th>
+            @Html.DisplayNameFor(model => model.Beatmap[0].Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Beatmap[0].Title)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Beatmap)
+    {
+        <tr>
+            <td>
+                @if (item.BeatmapSetId != null)
+                {
+                    <img src="https://assets.ppy.sh/beatmaps/@item.BeatmapSetId/covers/list.jpg" width="64px"/>
+                }
+                else
+                {
+                    <img src="https://a.stanr.info/default.png" width="64px"/>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                <a asp-page="./Index" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Artist) - @Html.DisplayFor(modelItem => item.Title) [@Html.DisplayFor(modelItem => item.DifficultyName)]</a>
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

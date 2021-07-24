@@ -1,0 +1,105 @@
+﻿@page "{id?}"
+@model Cringe.Web.Pages.Players.DetailsModel
+
+@{
+    ViewData["Title"] = Model.Player.Username;
+}
+
+<div>
+    <h4>@Model.Player.Username</h4>
+    <hr/>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Player.Username)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Player.Username)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Player.Accuracy)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Player.Accuracy)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Player.Playcount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Player.Playcount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Player.TotalScore)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Player.TotalScore)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Player.Rank)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Player.Rank)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Player.Pp)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Player.Pp)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Player.UserRank)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Player.UserRank)
+        </dd>
+    </dl>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Beatmap</th>
+            <th>Accuracy</th>
+            <th>Combo</th>
+            <th>Mods</th>
+            <th>Game Mode</th>
+            <th>Date</th>
+            <th>CRINGE POINTS</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Scores)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rank)
+                </td>
+                <td>
+                    <a asp-page="./Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Accuracy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxCombo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mods)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameMode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlayDateTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pp)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Player.Id">Edit</a> |
+    <a asp-page="./Listing">Back to List</a>
+</div>

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Cringe.Types.Bancho;
 using Cringe.Types.Enums;
 
 namespace Cringe.Types.Database
@@ -19,41 +18,6 @@ namespace Cringe.Types.Database
         public ushort Pp { get; set; }
         public UserRanks UserRank { get; set; }
         public string Password { get; set; }
-
-        public Presence Presence =>
-            new()
-            {
-                UserId = Id,
-                Username = Username,
-                Timezone = 0x3, //Moscow UTC
-                Country = 0x1F, //Brazil Code
-                UserRank = UserRank,
-                Longitude = 0.0f,
-                Latitude = 0.0f,
-                GameRank = Rank
-            };
-
-        public Stats Stats =>
-            new()
-            {
-                UserId = (uint) Id,
-                Action = new ChangeAction
-                {
-                    ActionId = 0,
-                    ActionText = "",
-                    ActionMd5 = "",
-                    ActionMods = 0,
-                    GameMode = 0,
-                    BeatmapId = 0
-                },
-                RankedScore = TotalScore,
-                Accuracy = Accuracy,
-                Playcount = Playcount,
-                TotalScore = TotalScore,
-                GameRank = Rank,
-                Pp = Pp
-            };
-
 
         public static Player DummyPlayer => new()
         {

@@ -62,13 +62,13 @@ namespace Cringe.Services
             return Players.Select(x => x.Value);
         }
 
-        public PlayerSession GetPlayer(int id)
+        public static PlayerSession GetPlayer(int id)
         {
             Players.TryGetValue(id, out var session);
             return session;
         }
 
-        public PlayerSession GetPlayer(string username)
+        public static PlayerSession GetPlayer(string username)
         {
             return Players.FirstOrDefault(x => x.Value.Player.Username == username).Value;
         }

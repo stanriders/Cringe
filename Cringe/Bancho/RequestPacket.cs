@@ -21,6 +21,7 @@ namespace Cringe.Bancho
         }
 
         protected PlayersPool Pool => _serviceProvider.GetService<PlayersPool>();
+        protected LobbyService Lobby => _serviceProvider.GetService<LobbyService>();
         protected ChatService Chats => _serviceProvider.GetService<ChatService>();
         protected StatsService Stats => _serviceProvider.GetService<StatsService>();
         public abstract ClientPacketType Type { get; }

@@ -25,7 +25,7 @@ namespace Cringe.Services
 
         public ChatService(PlayersPool pool)
         {
-            _sendPrivateMessage = message => pool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
+            _sendPrivateMessage = message => PlayersPool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
         }
 
         public async Task Initialize(PlayerSession player)

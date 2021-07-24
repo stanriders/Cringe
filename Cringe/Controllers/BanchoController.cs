@@ -65,7 +65,7 @@ namespace Cringe.Controllers
                 return null;
             if (!await _playersPool.Connect(token)) return null;
             ;
-            var session = _playersPool.GetPlayer(token.PlayerId);
+            var session = PlayersPool.GetPlayer(token.PlayerId);
             if (session == null) return null;
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
@@ -99,7 +99,7 @@ namespace Cringe.Controllers
 
             foreach (var i in bundle)
             {
-                var player = _playersPool.GetPlayer(i);
+                var player = PlayersPool.GetPlayer(i);
                 player.Queue.EnqueuePacket(myPresence);
                 player.Queue.EnqueuePacket(myStats);
                 queue.EnqueuePacket(new UserPresence(player.Player.Presence));
@@ -117,7 +117,7 @@ namespace Cringe.Controllers
                 // force update login
                 return PacketQueue.NullUser();
             HttpContext.Response.Headers.Add("cho-token", token.Token);
-            var session = _playersPool.GetPlayer(token.PlayerId);
+            var session = PlayersPool.GetPlayer(token.PlayerId);
 
             await using var inStream = new MemoryStream();
             await Request.Body.CopyToAsync(inStream);

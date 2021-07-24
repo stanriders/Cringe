@@ -10,6 +10,7 @@ namespace Cringe.Types
     {
         public PlayerEvent SendMessage = new();
         public PlayerEvent ReceiveUpdates = new();
+        public static GlobalChat Multiplayer => new GlobalChat("#multiplayer", "/a/");
         public GlobalChat(string name, string description, bool autoConnect = false,
             UserRanks accessibility = UserRanks.Normal)
         {

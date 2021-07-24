@@ -35,7 +35,7 @@ namespace Cringe.Controllers
             await _playerDatabaseContext.Players.AddAsync(player);
             await _playerDatabaseContext.SaveChangesAsync();
 
-            var queue = _pool.GetPlayer(player.Id).Queue;
+            var queue = PlayersPool.GetPlayer(player.Id).Queue;
 
             return queue.GetResult();
         }

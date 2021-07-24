@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.ResponsePackets;
+using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;
 
@@ -25,7 +26,7 @@ namespace Cringe.Bancho.RequestPackets
             {
                 if(playerId == session.Token.PlayerId) continue;
                 
-                var player = pool.GetPlayer(playerId);
+                var player = PlayersPool.GetPlayer(playerId);
                 if (player is null) continue;
 
                 session.Queue.EnqueuePacket(new UserStats(player.Player.Stats));

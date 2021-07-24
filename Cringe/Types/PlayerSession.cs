@@ -9,6 +9,7 @@ namespace Cringe.Types
         public Player Player { get; set; }
         public UserToken Token { get; set; }
         public PacketQueue Queue { get; } = new();
+        public MatchSession MatchSession { get; set; }
 
         #region Login / Logout triggers
 
@@ -36,6 +37,11 @@ namespace Cringe.Types
         public void DisposeMatch(Match match)
         {
             Queue.EnqueuePacket(new DisposeMatch(match));
+        }
+        
+        public void UpdateMatch(Match match)
+        {
+            Queue.EnqueuePacket(new UpdateMatch(match));
         }
 
         #endregion
@@ -69,5 +75,6 @@ namespace Cringe.Types
         }
 
         #endregion
+
     }
 }

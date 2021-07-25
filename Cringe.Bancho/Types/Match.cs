@@ -58,7 +58,9 @@ namespace Cringe.Bancho.Types
             lobby.WinConditions = (MatchWinConditions) reader.ReadByte();
             lobby.TeamTypes = (MatchTeamTypes) reader.ReadByte();
             lobby.FreeMode = reader.ReadByte() == 1;
+
             if (!lobby.FreeMode) return lobby;
+
             foreach (var slot in lobby.Slots)
                 slot.Mods = (Mods) reader.ReadByte();
 

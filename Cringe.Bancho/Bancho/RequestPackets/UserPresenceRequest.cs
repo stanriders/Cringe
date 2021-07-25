@@ -26,6 +26,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 var user = PlayersPool.GetPlayer(id);
                 session.Queue.EnqueuePacket(new UserPresence(user.GetPresence()));
             }
+
             return Task.CompletedTask;
         }
     }

@@ -57,10 +57,12 @@ namespace Cringe.Bancho.Services
         public bool SendGlobalMessage(Message message)
         {
             var chat = GlobalChats.FirstOrDefault(x => x.Name == message.Receiver);
+
             if (chat is null) return false;
             if (!IsAllowed(message.Sender.UserRank, chat.Accessibility)) return false;
 
             chat.OnSendMessage(message);
+
             return true;
         }
 

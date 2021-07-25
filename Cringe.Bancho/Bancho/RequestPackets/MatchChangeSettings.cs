@@ -12,15 +12,17 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.MatchChangeSettings;
+
         public override Task Execute(PlayerSession session, byte[] data)
         {
             if (session.MatchSession is null)
                 return Task.CompletedTask;
-            
+
             if (session.MatchSession.Match.Host != session.Token.PlayerId)
                 return Task.CompletedTask;
-            
+
             session.MatchSession.Update(Match.Parse(data));
+
             return Task.CompletedTask;
         }
     }

@@ -33,12 +33,14 @@ namespace Cringe.Bancho.Bancho
             var len = (int) stream.ReadLEB128Unsigned();
             var buffer = new byte[len];
             stream.Read(buffer, 0, len);
+
             return Encoding.Latin1.GetString(buffer);
         }
 
         protected static int ReadInt(byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));
+
             return reader.ReadInt32();
         }
 
@@ -47,6 +49,7 @@ namespace Cringe.Bancho.Bancho
             var length = reader.ReadInt16();
             var buffer = new int[length];
             for (var i = 0; i < length; i++) buffer[i] = reader.ReadInt32();
+
             return buffer;
         }
     }

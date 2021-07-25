@@ -14,6 +14,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.JoinMatch;
+
         public override Task Execute(PlayerSession session, byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));
@@ -22,10 +23,13 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             {
                 session.Queue.EnqueuePacket(new MatchJoinFail());
                 session.Queue.EnqueuePacket(new Notification("Sory bro server slomalsya :D"));
+
                 return Task.CompletedTask;
             }
+
             var match = Lobby.GetSession(id);
             match.Connect(session);
+
             return Task.CompletedTask;
         }
     }

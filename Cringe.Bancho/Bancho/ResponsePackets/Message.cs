@@ -28,6 +28,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
             var data = PackData(Sender.Username).AsEnumerable();
             data = data.Concat(PackData(Content));
             data = data.Concat(PackData(Receiver));
+
             return data.ToArray();
         }
 
@@ -36,6 +37,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
             await using var stream = new MemoryStream(data);
             var text = RequestPacket.ReadString(stream);
             var receiver = RequestPacket.ReadString(stream);
+
             return new Message(text, new Player {Username = username, UserRank = UserRanks.Normal}, receiver);
         }
     }

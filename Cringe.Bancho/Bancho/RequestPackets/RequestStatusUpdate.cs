@@ -17,6 +17,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             session.Queue.EnqueuePacket(new UserStats(session.GetStats()));
+
             return Task.CompletedTask;
         }
     }

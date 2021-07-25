@@ -20,6 +20,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             using var stream = new MemoryStream(data);
             var server = ReadString(stream);
             ChatService.GetChat(server)?.Disconnect(session);
+
             return Task.CompletedTask;
         }
     }

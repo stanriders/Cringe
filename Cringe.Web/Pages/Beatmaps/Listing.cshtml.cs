@@ -40,6 +40,7 @@ namespace Cringe.Web.Pages.Beatmaps
             }
 
             _beatmapService.SeedDatabse();
+
             return Page();
         }
     }

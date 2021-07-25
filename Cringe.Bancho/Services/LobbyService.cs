@@ -9,15 +9,14 @@ namespace Cringe.Bancho.Services
     public class LobbyService : ISocial
     {
         public Dictionary<int, MatchSession> Sessions { get; set; } = new();
+
         public Task<bool> Connect(PlayerSession player)
         {
             NewMatch += player.NewMatch;
             DisposeMatch += player.DisposeMatch;
             UpdateMatch += player.UpdateMatch;
             foreach (var session in Sessions.Values)
-            {
                 player.NewMatch(session.Match);
-            }
 
             return Task.FromResult(true);
         }
@@ -27,12 +26,14 @@ namespace Cringe.Bancho.Services
             NewMatch -= player.NewMatch;
             DisposeMatch -= player.DisposeMatch;
             UpdateMatch -= player.UpdateMatch;
+
             return true;
         }
 
         public MatchSession GetSession(int id)
         {
             Sessions.TryGetValue(id, out var res);
+
             return res;
         }
 
@@ -44,7 +45,7 @@ namespace Cringe.Bancho.Services
             matchSession.Connect(session);
             session.Queue.EnqueuePacket(new MatchTransferHost());
             session.MatchSession = matchSession;
-            
+
             OnNewMatch(matchSession.Match);
             matchSession.UpdateMatch += OnUpdateMatch;
         }

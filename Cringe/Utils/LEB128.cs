@@ -82,6 +82,7 @@ namespace Cringe.Utils
             while (more)
             {
                 var next = stream.ReadByte();
+
                 if (next < 0) throw new InvalidOperationException("Unexpected end of stream");
 
                 var b = (byte) next;
@@ -119,6 +120,7 @@ namespace Cringe.Utils
             while (more)
             {
                 var next = stream.ReadByte();
+
                 if (next < 0) throw new InvalidOperationException("Unexpected end of stream");
 
                 var b = (byte) next;

@@ -21,6 +21,7 @@ namespace Cringe.Services
         public Stream GetReplay(int scoreId)
         {
             var filePath = Path.Combine(_cachePath, scoreId.ToString());
+
             if (!File.Exists(filePath))
                 return null;
 

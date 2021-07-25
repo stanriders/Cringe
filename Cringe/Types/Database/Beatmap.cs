@@ -6,7 +6,8 @@ namespace Cringe.Types.Database
 {
     public class Beatmap
     {
-        [Key] public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         public int? BeatmapSetId { get; set; }
 
@@ -36,6 +37,7 @@ namespace Cringe.Types.Database
 
         public int Length { get; set; }
 
-        [NotMapped] public string FullTitle => $"{Artist} - {Title} [{DifficultyName}]";
+        [NotMapped]
+        public string FullTitle => $"{Artist} - {Title} [{DifficultyName}]";
     }
 }

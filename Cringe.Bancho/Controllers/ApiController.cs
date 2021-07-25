@@ -1,5 +1,4 @@
-﻿
-using Cringe.Bancho.Bancho.ResponsePackets;
+﻿using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +14,7 @@ namespace Cringe.Bancho.Controllers
             if (queue is not null)
             {
                 queue.EnqueuePacket(new Notification(text));
+
                 return Ok();
             }
 

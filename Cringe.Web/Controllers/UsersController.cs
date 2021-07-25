@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types;
 using Cringe.Types.Database;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Web.Controllers
 {

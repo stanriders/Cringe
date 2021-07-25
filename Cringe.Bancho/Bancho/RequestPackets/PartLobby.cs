@@ -18,6 +18,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             ChatService.GetChat(ChatService.LobbyName)?.Disconnect(session);
             Lobby.Disconnect(session);
+
             return Task.CompletedTask;
         }
     }

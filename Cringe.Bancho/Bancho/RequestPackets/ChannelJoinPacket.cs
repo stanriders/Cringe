@@ -21,6 +21,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             var str = ReadString(stream);
             var chat = ChatService.GetChat(str);
             chat?.Connect(session);
+
             return Task.CompletedTask;
         }
     }

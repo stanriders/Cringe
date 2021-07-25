@@ -1,4 +1,3 @@
-
 using Cringe.Bancho.Services;
 using Cringe.Database;
 using Cringe.Services;
@@ -33,7 +32,7 @@ namespace Cringe.Bancho
             services.AddTransient<TokenService>();
             services.AddTransient<PlayerTopscoreStatsCache>();
             services.AddTransient<PlayerRankCache>();
-            
+
             services.AddMemoryCache();
 
             services.AddControllers();

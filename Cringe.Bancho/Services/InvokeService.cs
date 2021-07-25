@@ -60,7 +60,9 @@ namespace Cringe.Bancho.Services
             foreach (var (type, data) in packets)
             {
                 if (!_handlers.TryGetValue(type, out var request)) continue;
+
                 var requestTask = request.Execute(session, data);
+
                 if (requestTask.Exception is not null) throw requestTask.Exception;
             }
 

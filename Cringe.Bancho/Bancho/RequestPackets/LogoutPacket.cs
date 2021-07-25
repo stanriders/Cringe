@@ -17,6 +17,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             Pool.Disconnect(session.Token.PlayerId);
             Chats.Purge(session);
+
             return Task.CompletedTask;
         }
     }

@@ -22,6 +22,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             Stats.SetUpdates(session.Token.PlayerId, pl);
             session.Queue.EnqueuePacket(new UserStats(pl));
             session.Queue.EnqueuePacket(new UserPresence(session.GetPresence()));
+
             return Task.CompletedTask;
         }
     }

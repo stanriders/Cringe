@@ -7,7 +7,8 @@ namespace Cringe.Types.Database
 {
     public class SubmittedScore
     {
-        [Key] public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         public int Count300 { get; set; }
         public int Count100 { get; set; }
@@ -34,13 +35,17 @@ namespace Cringe.Types.Database
         public int PlayerId { get; set; }
         public string PlayerUsername { get; set; }
 
-        [NotMapped] public int LeaderboardPosition { get; set; }
+        [NotMapped]
+        public int LeaderboardPosition { get; set; }
 
-        [NotMapped] public Beatmap Beatmap { get; set; }
+        [NotMapped]
+        public Beatmap Beatmap { get; set; }
 
-        [NotMapped] public Player Player { get; set; }
+        [NotMapped]
+        public Player Player { get; set; }
 
-        [NotMapped] public SubmittedScore PreviousScore { get; set; }
+        [NotMapped]
+        public SubmittedScore PreviousScore { get; set; }
 
         [NotMapped]
         [DisplayFormat(DataFormatString = "{0:N2}%")]
@@ -50,6 +55,7 @@ namespace Cringe.Types.Database
             {
                 double totalPoints = Count50 * 50 + Count100 * 100 + Count300 * 300;
                 double totalHits = CountMiss + Count50 + Count100 + Count300;
+
                 return totalPoints / (totalHits * 300) * 100;
             }
         }

@@ -19,6 +19,7 @@ namespace Cringe.Bancho.Services
             if (!_stats.TryGetValue(id, out var value)) return null;
 
             _stats.Remove(id);
+
             return value;
         }
 

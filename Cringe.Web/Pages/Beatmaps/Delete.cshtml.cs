@@ -16,7 +16,8 @@ namespace Cringe.Web.Pages.Beatmaps
             _context = context;
         }
 
-        [BindProperty] public Beatmap Beatmap { get; set; }
+        [BindProperty]
+        public Beatmap Beatmap { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -25,6 +26,7 @@ namespace Cringe.Web.Pages.Beatmaps
             Beatmap = await _context.Beatmaps.FirstOrDefaultAsync(m => m.Id == id);
 
             if (Beatmap == null) return NotFound();
+
             return Page();
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
+using Cringe.Types;
 
 namespace Cringe.Bancho.Services
 {
@@ -37,7 +38,7 @@ namespace Cringe.Bancho.Services
             return res;
         }
 
-        public void CreateMatch(PlayerSession session, Match match)
+        public MatchSession CreateMatch(PlayerSession session, Match match)
         {
             var id = (short) (Sessions.Count + 1);
             var matchSession = new MatchSession(id, session, match, OnDisposeMatch);
@@ -48,6 +49,8 @@ namespace Cringe.Bancho.Services
 
             OnNewMatch(matchSession.Match);
             matchSession.UpdateMatch += OnUpdateMatch;
+
+            return matchSession;
         }
 
 

@@ -8,6 +8,7 @@ using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Cringe.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho
 {
@@ -18,8 +19,10 @@ namespace Cringe.Bancho.Bancho
         protected RequestPacket(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            Logger = _serviceProvider.GetService<ILogger<RequestPacket>>(); //TODO: idk if it works
         }
 
+        protected readonly ILogger Logger;
         protected PlayersPool Pool => _serviceProvider.GetService<PlayersPool>();
         protected LobbyService Lobby => _serviceProvider.GetService<LobbyService>();
         protected ChatService Chats => _serviceProvider.GetService<ChatService>();

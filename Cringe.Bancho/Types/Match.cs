@@ -66,5 +66,11 @@ namespace Cringe.Bancho.Types
 
             return lobby;
         }
+
+        public override string ToString()
+        {
+            return
+                $"{Id}|{Name}|{Password}|{Host}|{MapId}|{MapName}|{MapMd5}|{Mode}|{FreeMode}|{WinConditions}|{TeamTypes}|{InProgress}|{string.Join(",", Slots)}|{Mods}";
+        }
     }
 }

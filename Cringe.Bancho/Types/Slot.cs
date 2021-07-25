@@ -19,5 +19,10 @@ namespace Cringe.Bancho.Types
             Team = MatchTeams.neutral;
             Mods = Mods.None;
         }
+
+        public override string ToString()
+        {
+            return $"{Player.Player.Id}|{Status}|{Team}|{Mods}|{Loaded}|{Skipped}";
+        }
     }
 }

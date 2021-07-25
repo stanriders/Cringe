@@ -40,5 +40,10 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
 
             return new Message(text, new Player {Username = username, UserRank = UserRanks.Normal}, receiver);
         }
+
+        public override string ToString()
+        {
+            return $"{Sender.Id}|{Receiver}|{Content}";
+        }
     }
 }

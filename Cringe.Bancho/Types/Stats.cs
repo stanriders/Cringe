@@ -10,5 +10,10 @@
         public ulong TotalScore { get; set; }
         public uint GameRank { get; set; }
         public ushort Pp { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Action}|{RankedScore}|{Accuracy}|{Playcount}|{TotalScore}|{GameRank}|{Pp}";
+        }
     }
 }

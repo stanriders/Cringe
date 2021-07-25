@@ -71,6 +71,7 @@ namespace Cringe.Bancho.Controllers
 
             if (token == null)
                 return null;
+
             if (!await _playersPool.Connect(token)) return null;
 
             var session = PlayersPool.GetPlayer(token.PlayerId);
@@ -85,6 +86,7 @@ namespace Cringe.Bancho.Controllers
 
         private async Task Login(PlayerSession session)
         {
+            _logger.LogDebug("{Token} | Logging in", session.Token);
             var queue = session.Queue;
 
             queue.EnqueuePacket(new ProtocolVersion(protocol_version));
@@ -105,7 +107,7 @@ namespace Cringe.Bancho.Controllers
             queue.EnqueuePacket(myPresence);
             queue.EnqueuePacket(myStats);
 
-            var bundle = _playersPool.GetPlayersId().Where(x => x != session.Token.PlayerId).ToArray();
+            var bundle = PlayersPool.GetPlayersId().Where(x => x != session.Token.PlayerId).ToArray();
 
             foreach (var i in bundle)
             {
@@ -127,6 +129,8 @@ namespace Cringe.Bancho.Controllers
             if (token == null)
                 // force update login
                 return PacketQueue.NullUser();
+
+            _logger.LogDebug("{Token} | HandlePacket request", token);
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
             var session = PlayersPool.GetPlayer(token.PlayerId);

@@ -6,16 +6,19 @@ using Cringe.Bancho.Types;
 using Cringe.Database;
 using Cringe.Types;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Services
 {
-    public class PlayersPool : IConnectable<UserToken, int>
+    public class PlayersPool : IConnectable<UserToken, UserToken>
     {
         private readonly PlayerDatabaseContext _database;
+        private readonly ILogger<PlayersPool> _logger;
 
-        public PlayersPool(PlayerDatabaseContext database)
+        public PlayersPool(PlayerDatabaseContext database, ILogger<PlayersPool> logger)
         {
             _database = database;
+            _logger = logger;
         }
 
         public static Dictionary<int, PlayerSession> Players { get; } = new();
@@ -36,30 +39,33 @@ namespace Cringe.Bancho.Services
             PlayerLoggedOut += session.PlayerLoggedOut;
             Players.Add(token.PlayerId, session);
 
+            _logger.LogDebug("{Token} | Connected to PlayersPool", token);
+            _logger.LogDebug("Currently connected players:\n{Dump}", string.Join("|", GetPlayersId()));
             return true;
         }
 
-        public bool Disconnect(int player)
+        public bool Disconnect(UserToken token)
         {
-            if (!Players.TryGetValue(player, out var playerSession)) return false;
+            if (!Players.TryGetValue(token.PlayerId, out var playerSession)) return false;
 
             PlayerLoggedIn -= playerSession.PlayerLoggedIn;
             PlayerLoggedOut -= playerSession.PlayerLoggedOut;
             OnPlayerLoggedOut(playerSession);
-            Players.Remove(player);
-
+            Players.Remove(token.PlayerId);
+            _logger.LogDebug("{Token} | Disconnected from PlayersPool", token);
+            _logger.LogDebug("Currently connected players:\n{Dump}", string.Join("|", GetPlayersId()));
             return true;
         }
 
         public event Action<PlayerSession> PlayerLoggedIn;
         public event Action<PlayerSession> PlayerLoggedOut;
 
-        public IEnumerable<int> GetPlayersId()
+        public static IEnumerable<int> GetPlayersId()
         {
             return GetPlayerSessions().Select(x => x.Token.PlayerId);
         }
 
-        public IEnumerable<PlayerSession> GetPlayerSessions()
+        public static IEnumerable<PlayerSession> GetPlayerSessions()
         {
             return Players.Select(x => x.Value);
         }

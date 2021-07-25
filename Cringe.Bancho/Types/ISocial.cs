@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Cringe.Types;
 
 namespace Cringe.Bancho.Types
 {
@@ -9,6 +10,6 @@ namespace Cringe.Bancho.Types
     public interface IConnectable<in TC, in TD>
     {
         Task<bool> Connect(TC player);
-        bool Disconnect(TD player);
+        bool Disconnect(TD token);
     }
 }

@@ -25,10 +25,12 @@ namespace Cringe.Bancho.Services
         public async Task<UserToken> AddToken(string username)
         {
             var existingToken = Tokens.FirstOrDefault(x => x.Username == username);
+
             if (existingToken != null)
                 return existingToken;
 
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Username == username);
+
             if (player == null)
                 return null;
 
@@ -51,6 +53,7 @@ namespace Cringe.Bancho.Services
         public async Task<Player> GetPlayer(string token)
         {
             var tokenData = Tokens.FirstOrDefault(x => x.Token == token);
+
             if (tokenData == null)
                 return null;
 
@@ -70,10 +73,12 @@ namespace Cringe.Bancho.Services
                 return null;
 
             var tokenData = Tokens.FirstOrDefault(x => x.PlayerId == id);
+
             if (tokenData is null)
                 return null;
 
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == tokenData.PlayerId);
+
             return player;
         }
     }

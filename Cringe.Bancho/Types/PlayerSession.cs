@@ -2,6 +2,7 @@
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Types;
 using Cringe.Types.Database;
+
 namespace Cringe.Bancho.Types
 {
     public class PlayerSession
@@ -12,7 +13,6 @@ namespace Cringe.Bancho.Types
         public MatchSession MatchSession { get; set; }
 
         #region Login / Logout triggers
-
         public void PlayerLoggedIn(PlayerSession player)
         {
             Queue.EnqueuePacket(new UserStats(player.GetStats()));
@@ -24,11 +24,9 @@ namespace Cringe.Bancho.Types
         {
             //TODO: Red message on friend logout
         }
-
         #endregion
 
         #region Lobby
-
         public void NewMatch(Match match)
         {
             Queue.EnqueuePacket(new NewMatch(match));
@@ -38,16 +36,14 @@ namespace Cringe.Bancho.Types
         {
             Queue.EnqueuePacket(new DisposeMatch(match));
         }
-        
+
         public void UpdateMatch(Match match)
         {
             Queue.EnqueuePacket(new UpdateMatch(match));
         }
-
         #endregion
 
         #region Messages and Chats
-
         public void ChatInfo(GlobalChat chat)
         {
             Queue.EnqueuePacket(new ChannelInfo(chat));
@@ -73,11 +69,9 @@ namespace Cringe.Bancho.Types
             if (message.Sender.Username != Token.Username)
                 Queue.EnqueuePacket(message);
         }
-
         #endregion
 
         #region Presence
-
         public Presence GetPresence()
         {
             return new()
@@ -97,7 +91,7 @@ namespace Cringe.Bancho.Types
         {
             return new()
             {
-                UserId = (uint)Player.Id,
+                UserId = (uint) Player.Id,
                 Action = new ChangeAction
                 {
                     ActionId = 0,
@@ -115,8 +109,6 @@ namespace Cringe.Bancho.Types
                 Pp = Player.Pp
             };
         }
-
         #endregion
-
     }
 }

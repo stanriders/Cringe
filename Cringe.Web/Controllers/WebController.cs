@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Cringe.Types;
 using Cringe.Database;
 using Cringe.Services;
+using Cringe.Types;
 using Cringe.Types.Enums;
 using Cringe.Web.Services;
 using Microsoft.AspNetCore.Http;
@@ -45,7 +45,7 @@ namespace Cringe.Web.Controllers
         public IActionResult Connect(string u, string h)
         {
             // TODO: login here
-            return new OkObjectResult("63"); // ripple outputs player's country here, we output brazil
+            return new OkObjectResult("BR"); // ripple outputs player's country here, we output brazil
         }
 
         [HttpPost("osu-submit-modular-selector.php")]
@@ -57,6 +57,7 @@ namespace Cringe.Web.Controllers
             [FromForm(Name = "score")] IFormFile replay)
         {
             var submittedScore = await _scoreService.SubmitScore(score, iv, osuver, quit == "1", failed == "1");
+
             if (submittedScore == null)
                 return new OkResult();
 
@@ -110,6 +111,7 @@ namespace Cringe.Web.Controllers
             // TODO: check username/password
 
             var beatmap = await _beatmapContext.Beatmaps.FirstOrDefaultAsync(x => x.Md5 == md5);
+
             if (beatmap is null)
                 return new OkObjectResult($"{(int) RankedStatus.NotSubmitted}|false");
 
@@ -143,6 +145,7 @@ namespace Cringe.Web.Controllers
             // TODO: check username/password
 
             await using var replayData = _replayStorage.GetReplay(scoreId);
+
             if (replayData is not null)
                 return File(replayData, "application/octet-stream");
 

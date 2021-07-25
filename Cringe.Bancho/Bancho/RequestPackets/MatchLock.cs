@@ -14,9 +14,10 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.MatchLock;
+
         public override Task Execute(PlayerSession session, byte[] data)
         {
-            if(session.MatchSession is null || session.MatchSession.Match.Host != session.Player.Id) 
+            if (session.MatchSession is null || session.MatchSession.Match.Host != session.Player.Id)
                 return Task.CompletedTask;
 
             using var reader = new BinaryReader(new MemoryStream(data));
@@ -28,16 +29,17 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
             else
             {
-                if(lockedSlot.Player is not null && lockedSlot.Player == session) 
+                if (lockedSlot.Player is not null && lockedSlot.Player == session)
                     return Task.CompletedTask;
-                            
+
                 if (lockedSlot.Player is not null)
                     session.MatchSession.Disconnect(lockedSlot.Player);
-                
+
                 lockedSlot.Status = SlotStatus.locked;
             }
-            
+
             session.MatchSession.OnUpdateMatch();
+
             return Task.CompletedTask;
         }
     }

@@ -20,6 +20,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
             var data = PackData(_chat.Name)
                 .Concat(PackData(_chat.Description))
                 .Concat(PackData(_chat.Count));
+
             return data.ToArray();
         }
     }

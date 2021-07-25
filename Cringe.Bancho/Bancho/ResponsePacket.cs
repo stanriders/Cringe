@@ -64,6 +64,7 @@ namespace Cringe.Bancho.Bancho
             using var stream = new MemoryStream();
             stream.Write(BitConverter.GetBytes((uint) data.Length));
             foreach (var integer in data) stream.Write(BitConverter.GetBytes(integer));
+
             return stream.ToArray();
         }
 

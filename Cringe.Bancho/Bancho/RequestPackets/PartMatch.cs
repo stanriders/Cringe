@@ -12,15 +12,18 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.PartMatch;
+
         public override Task Execute(PlayerSession session, byte[] data)
         {
             if (session.MatchSession is null)
             {
                 session.MatchSession = null;
+
                 throw new Exception($"{session.Player.Id} tries to leave the match while not being assigned to it");
             }
 
             session.MatchSession.Disconnect(session);
+
             return Task.CompletedTask;
         }
     }

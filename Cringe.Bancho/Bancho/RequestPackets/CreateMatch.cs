@@ -12,11 +12,13 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.CreateMatch;
+
         public override Task Execute(PlayerSession session, byte[] data)
         {
             session.MatchSession = null;
             var match = Match.Parse(data);
             Lobby.CreateMatch(session, match);
+
             return Task.CompletedTask;
         }
     }

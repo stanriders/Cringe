@@ -7,9 +7,9 @@ namespace Cringe.Bancho.Types
 {
     public class GlobalChat : ISocial
     {
-        public PlayerEvent SendMessage = new();
         public PlayerEvent ReceiveUpdates = new();
-        public static GlobalChat Multiplayer => new GlobalChat("#multiplayer", "/a/");
+        public PlayerEvent SendMessage = new();
+
         public GlobalChat(string name, string description, bool autoConnect = false,
             UserRanks accessibility = UserRanks.Normal)
         {
@@ -18,6 +18,8 @@ namespace Cringe.Bancho.Types
             AutoConnect = autoConnect;
             Accessibility = accessibility;
         }
+
+        public static GlobalChat Multiplayer => new("#multiplayer", "/a/");
 
         public string Name { get; }
         public string Description { get; }
@@ -29,12 +31,13 @@ namespace Cringe.Bancho.Types
         {
             SendMessage += player;
             Count = SendMessage.Count;
-            
+
             if (AutoConnect)
                 player.ChatAutoJoin(this);
-            
+
             player.ChatConnected(this);
             OnStatusUpdated();
+
             return Task.FromResult(true);
         }
 
@@ -42,9 +45,10 @@ namespace Cringe.Bancho.Types
         {
             SendMessage -= player;
             Count = SendMessage.Count;
-            
+
             player.ChatKick(this);
             OnStatusUpdated();
+
             return true;
         }
 

@@ -59,6 +59,7 @@ namespace Cringe.Bancho.Controllers
         private IActionResult Fail(byte[] data)
         {
             HttpContext.Response.Headers.Add("cho-token", " ");
+
             return new FileContentResult(data, "application/octet-stream; charset=UTF-8");
         }
 
@@ -67,15 +68,18 @@ namespace Cringe.Bancho.Controllers
             var loginData = (await new StreamReader(Request.Body).ReadToEndAsync()).Split('\n');
 
             var token = await _tokenService.AddToken(loginData[0].Trim());
+
             if (token == null)
                 return null;
             if (!await _playersPool.Connect(token)) return null;
-            ;
+
             var session = PlayersPool.GetPlayer(token.PlayerId);
+
             if (session == null) return null;
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
             await Login(session);
+
             return session.Queue;
         }
 
@@ -111,7 +115,7 @@ namespace Cringe.Bancho.Controllers
                 queue.EnqueuePacket(new UserPresence(player.GetPresence()));
                 queue.EnqueuePacket(new UserStats(player.GetStats()));
             }
-            
+
             await _chat.Initialize(session);
             queue.EnqueuePacket(new ChannelInfoEnd());
         }
@@ -119,9 +123,11 @@ namespace Cringe.Bancho.Controllers
         private async Task<PacketQueue> HandleIncomingPackets()
         {
             var token = _tokenService.GetToken(HttpContext.Request.Headers["osu-token"][0]);
+
             if (token == null)
                 // force update login
                 return PacketQueue.NullUser();
+
             HttpContext.Response.Headers.Add("cho-token", token.Token);
             var session = PlayersPool.GetPlayer(token.PlayerId);
 
@@ -130,6 +136,7 @@ namespace Cringe.Bancho.Controllers
             var data = inStream.ToArray();
 
             await _invoke.Invoke(session, data);
+
             return session.Queue;
         }
     }

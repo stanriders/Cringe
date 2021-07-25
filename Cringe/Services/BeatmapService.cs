@@ -51,6 +51,7 @@ namespace Cringe.Services
                         _dbContext.SaveChanges();
 
                     var firstLine = File.ReadLines(beatmapPath).FirstOrDefault();
+
                     if (string.IsNullOrEmpty(firstLine) || !firstLine.StartsWith("osu file format"))
                         continue;
 
@@ -65,6 +66,7 @@ namespace Cringe.Services
                     if (nans.Length > 0)
                     {
                         Console.WriteLine($"Map {beatmapPath} contains NaN on fields: {string.Join(' ', nans)}");
+
                         continue;
                     }
 
@@ -81,6 +83,7 @@ namespace Cringe.Services
                 catch (DbUpdateException ioEx)
                 {
                     Console.WriteLine($"Failed to save: {ioEx}");
+
                     return;
                 }
                 catch (Exception e)

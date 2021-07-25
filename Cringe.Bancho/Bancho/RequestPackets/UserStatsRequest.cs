@@ -23,9 +23,10 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             var pool = Pool;
             foreach (var playerId in playerIds)
             {
-                if(playerId == session.Token.PlayerId) continue;
-                
+                if (playerId == session.Token.PlayerId) continue;
+
                 var player = PlayersPool.GetPlayer(playerId);
+
                 if (player is null) continue;
 
                 session.Queue.EnqueuePacket(new UserStats(player.GetStats()));

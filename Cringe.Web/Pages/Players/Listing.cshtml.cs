@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types.Database;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Web.Pages.Players

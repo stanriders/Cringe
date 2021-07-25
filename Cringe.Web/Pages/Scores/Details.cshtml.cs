@@ -25,6 +25,7 @@ namespace Cringe.Web.Pages.Scores
             SubmittedScore = await _context.Scores.FirstOrDefaultAsync(m => m.Id == id);
 
             if (SubmittedScore == null) return NotFound();
+
             return Page();
         }
     }

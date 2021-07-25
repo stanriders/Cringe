@@ -29,6 +29,7 @@ namespace Cringe.Bancho.Types
             action.ActionMods = reader.ReadUInt32();
             action.GameMode = reader.ReadByte();
             action.BeatmapId = reader.ReadInt32();
+
             return action;
         }
     }

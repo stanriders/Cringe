@@ -35,6 +35,7 @@ namespace Cringe.Bancho.Services
             PlayerLoggedIn += session.PlayerLoggedIn;
             PlayerLoggedOut += session.PlayerLoggedOut;
             Players.Add(token.PlayerId, session);
+
             return true;
         }
 
@@ -46,6 +47,7 @@ namespace Cringe.Bancho.Services
             PlayerLoggedOut -= playerSession.PlayerLoggedOut;
             OnPlayerLoggedOut(playerSession);
             Players.Remove(player);
+
             return true;
         }
 
@@ -65,6 +67,7 @@ namespace Cringe.Bancho.Services
         public static PlayerSession GetPlayer(int id)
         {
             Players.TryGetValue(id, out var session);
+
             return session;
         }
 

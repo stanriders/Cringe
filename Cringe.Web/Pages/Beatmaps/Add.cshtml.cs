@@ -20,7 +20,8 @@ namespace Cringe.Web.Pages.Beatmaps
             _osuApiWrapper = osuApiWrapper;
         }
 
-        [BindProperty] public int? BeatmapId { get; set; }
+        [BindProperty]
+        public int? BeatmapId { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -54,6 +55,7 @@ namespace Cringe.Web.Pages.Beatmaps
                 {
                     await _osuApiWrapper.DownloadBeatmap(BeatmapId.Value);
                     await _context.SaveChangesAsync();
+
                     return Redirect(Url.Page("Index", new {id = BeatmapId.Value}));
                 }
             }

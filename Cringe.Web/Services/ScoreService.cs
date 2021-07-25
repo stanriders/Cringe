@@ -18,7 +18,9 @@ namespace Cringe.Web.Services
     public class ScoreService
     {
         private readonly BeatmapDatabaseContext _beatmapContext;
+
         private readonly PlayerDatabaseContext _playerContext;
+
         //private readonly PlayersPool _pool;
         private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly PpService _ppService;
@@ -58,10 +60,12 @@ namespace Cringe.Web.Services
                 var username = scoreData[1].Trim();
 
                 var player = await _playerContext.Players.FirstOrDefaultAsync(x => x.Username == username);
+
                 if (player is null)
                     return null;
 
                 var beatmap = await _beatmapContext.Beatmaps.FirstOrDefaultAsync(x => x.Md5 == scoreData[0]);
+
                 if (beatmap is null)
                     return null;
 

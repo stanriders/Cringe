@@ -5,7 +5,8 @@ namespace Cringe.Types.Database
 {
     public class Player
     {
-        [Key] public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         public string Username { get; set; }
 
@@ -37,6 +38,7 @@ namespace Cringe.Types.Database
 
             //TODO: crypt the password 
             player.Password = password;
+
             return player;
         }
     }

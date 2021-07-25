@@ -16,7 +16,8 @@ namespace Cringe.Web.Pages.Players
             _context = context;
         }
 
-        [BindProperty] public Player Player { get; set; }
+        [BindProperty]
+        public Player Player { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -25,6 +26,7 @@ namespace Cringe.Web.Pages.Players
             Player = await _context.Players.FirstOrDefaultAsync(m => m.Id == id);
 
             if (Player == null) return NotFound();
+
             return Page();
         }
 

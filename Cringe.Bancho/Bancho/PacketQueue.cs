@@ -41,6 +41,7 @@ namespace Cringe.Bancho.Bancho
             stream.Write(data);
 
             queue.Enqueue(stream.ToArray());
+
             return this;
         }
 

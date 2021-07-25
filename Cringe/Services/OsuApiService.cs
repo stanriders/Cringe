@@ -49,7 +49,8 @@ namespace Cringe.Services
                     scope = "public"
                 };
 
-                var authJson = await _client.PostAsync("https://osu.ppy.sh/oauth/token", new StringContent(JsonConvert.SerializeObject(authRequest), Encoding.UTF8, "application/json"));
+                var authJson = await _client.PostAsync("https://osu.ppy.sh/oauth/token",
+                    new StringContent(JsonConvert.SerializeObject(authRequest), Encoding.UTF8, "application/json"));
                 if (authJson.IsSuccessStatusCode)
                 {
                     var response = await authJson.Content.ReadAsStringAsync();
@@ -86,6 +87,7 @@ namespace Cringe.Services
             };
 
             var response = await _client.SendAsync(request);
+
             if (response.IsSuccessStatusCode)
                 return await response.Content.ReadAsStringAsync();
 
@@ -102,6 +104,7 @@ namespace Cringe.Services
                 };
 
                 response = await _client.SendAsync(request);
+
                 if (response.IsSuccessStatusCode)
                     return await response.Content.ReadAsStringAsync();
             }

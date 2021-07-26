@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
@@ -19,6 +20,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             using var stream = new MemoryStream(data);
             var str = ReadString(stream);
+            Logger.LogDebug("{Token} | Connecting to the {Chat} chat", session.Token, str);
             var chat = ChatService.GetChat(str);
             chat?.Connect(session);
 

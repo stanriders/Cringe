@@ -7,15 +7,18 @@ using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.RequestPackets;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Services
 {
     public class InvokeService
     {
+        private readonly ILogger<InvokeService> _logger;
         private readonly Dictionary<ClientPacketType, RequestPacket> _handlers;
 
-        public InvokeService(IServiceProvider serviceProvider)
+        public InvokeService(IServiceProvider serviceProvider, ILogger<InvokeService> logger)
         {
+            _logger = logger;
             _handlers = new RequestPacket[]
             {
                 new ChangeActionPacket(serviceProvider),
@@ -56,6 +59,8 @@ namespace Cringe.Bancho.Services
                 var packetData = reader.ReadBytes(length);
                 packets.Add((type, packetData));
             }
+
+            _logger.LogDebug("{Token} | Invokes these packets\n{Packets}", session.Token, packets.Select(x => x.type));
 
             foreach (var (type, data) in packets)
             {

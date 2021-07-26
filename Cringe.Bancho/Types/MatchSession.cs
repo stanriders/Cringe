@@ -105,8 +105,15 @@ namespace Cringe.Bancho.Types
 
         public void Update(Match match)
         {
+            var oldMatch = Match;
+            match.Slots = oldMatch.Slots;
             Match = match;
             OnUpdateMatch();
+        }
+
+        public override string ToString()
+        {
+            return Match.ToString();
         }
     }
 }

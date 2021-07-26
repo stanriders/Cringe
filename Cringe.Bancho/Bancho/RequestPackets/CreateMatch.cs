@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
@@ -17,8 +18,15 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             session.MatchSession = null;
             var match = Match.Parse(data);
-            Lobby.CreateMatch(session, match);
+            var matchSession = Lobby.CreateMatch(session, match);
 
+            if (session.MatchSession is null)
+            {
+                Logger.LogCritical("{Token} | the host's matchSession after creating a match is null\nShould be: {Match}", session.Token, matchSession.Match);
+                throw new Exception("The host's matchSession after creating a match is null");
+            }
+
+            Logger.LogInformation("{Token} | Created a match ({@Match})", session.Token, session.MatchSession.Match);
             return Task.CompletedTask;
         }
     }

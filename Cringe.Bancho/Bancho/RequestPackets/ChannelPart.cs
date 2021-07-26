@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
@@ -18,8 +19,9 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             using var stream = new MemoryStream(data);
-            var server = ReadString(stream);
-            ChatService.GetChat(server)?.Disconnect(session);
+            var chat = ReadString(stream);
+            Logger.LogDebug("{Token} | Leaves the {Chat} chat", session.Token, chat);
+            ChatService.GetChat(chat)?.Disconnect(session);
 
             return Task.CompletedTask;
         }

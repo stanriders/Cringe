@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
@@ -18,10 +19,18 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             var dest = data[2..];
             var message = await Message.Parse(dest, session.Token.Username);
+            Logger.LogInformation("{Token} | Sends message {Message}", session.Token, message);
             if (message.Receiver == "#multiplayer")
+            {
                 if (session.MatchSession is not null)
+                {
                     foreach (var slot in session.MatchSession.Match.Slots)
                         slot.Player?.ReceiveMessage(message);
+                }
+                else
+                    Logger.LogError("{Token} | Sends message to #multiplayer while his MatchSession is null", session.Token);
+            }
+
             Chats.SendGlobalMessage(message);
         }
     }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
@@ -15,8 +17,10 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
         public override Task Execute(PlayerSession session, byte[] data)
         {
-            Pool.Disconnect(session.Token.PlayerId);
+            Pool.Disconnect(session.Token);
             Chats.Purge(session);
+
+            Logger.LogDebug("{Token} | User logged out.\nConnected users are\n{Users}", session.Token, string.Join(",", PlayersPool.GetPlayersId()));
 
             return Task.CompletedTask;
         }

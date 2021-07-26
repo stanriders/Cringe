@@ -7,5 +7,9 @@
         public int PlayerId { get; set; }
 
         public string Username { get; set; }
+        public override string ToString()
+        {
+            return $"{PlayerId} | {Username}";
+        }
     }
 }

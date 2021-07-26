@@ -32,5 +32,10 @@ namespace Cringe.Bancho.Types
 
             return action;
         }
+
+        public override string ToString()
+        {
+            return $"Action {ActionId}|{ActionText}|{ActionMd5}|{ActionMods}|{GameMode}|{BeatmapId}";
+        }
     }
 }

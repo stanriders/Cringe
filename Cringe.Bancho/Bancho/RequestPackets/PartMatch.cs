@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
@@ -17,13 +18,12 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             if (session.MatchSession is null)
             {
-                session.MatchSession = null;
-
-                throw new Exception($"{session.Player.Id} tries to leave the match while not being assigned to it");
+                Logger.LogCritical("{Token} | User leaves the match while not being in a match", session.Token);
+                return Task.CompletedTask;
             }
 
             session.MatchSession.Disconnect(session);
-
+            Logger.LogDebug("{Token} | User leaves a match", session.Token);
             return Task.CompletedTask;
         }
     }

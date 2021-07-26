@@ -13,7 +13,7 @@
 
         public override string ToString()
         {
-            return $"{Action}|{RankedScore}|{Accuracy}|{Playcount}|{TotalScore}|{GameRank}|{Pp}";
+            return $"{Action} {RankedScore}|{Accuracy}|{Playcount}|{TotalScore}|{GameRank}|{Pp}";
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Cringe.Bancho.Types
 
         public override string ToString()
         {
-            return $"{Player.Player.Id}|{Status}|{Team}|{Mods}|{Loaded}|{Skipped}";
+            return $"{Player?.Player.Id.ToString() ?? "NO USER"}|{Status}|{Team}|{Mods}|{Loaded}|{Skipped}";
         }
     }
 }

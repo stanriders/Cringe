@@ -55,7 +55,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
 
             session.MatchSession.OnUpdateMatch();
-            Logger.LogDebug("{Token} | User locks a slot. Match info: {@Match}", session.Token, session.MatchSession);
+            Logger.LogDebug("{Token} | User locks a slot. Match info: {@Match}", session.Token, session.MatchSession.Match);
             return Task.CompletedTask;
         }
     }

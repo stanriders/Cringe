@@ -4,12 +4,19 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
 using Cringe.Types;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Services
 {
     public class LobbyService : ISocial
     {
         public Dictionary<int, MatchSession> Sessions { get; set; } = new();
+        private readonly ILogger<LobbyService> _logger;
+
+        public LobbyService(ILogger<LobbyService> logger)
+        {
+            _logger = logger;
+        }
 
         public Task<bool> Connect(PlayerSession player)
         {
@@ -46,7 +53,10 @@ namespace Cringe.Bancho.Services
             matchSession.Connect(session);
             session.Queue.EnqueuePacket(new MatchTransferHost());
             session.MatchSession = matchSession;
-
+            if (matchSession.Match.Slots[0].Player != session)
+            {
+                _logger.LogCritical("{Token} | Host doesn't been properly assigned to the first slot. Match info: {Match}", session.Token, matchSession.Match);
+            }
             OnNewMatch(matchSession.Match);
             matchSession.UpdateMatch += OnUpdateMatch;
 

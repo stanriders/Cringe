@@ -8,4 +8,10 @@
       <ProjectReference Include="..\Cringe\Cringe.csproj" />
     </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Sentry.Serilog" Version="3.8.3" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.1-dev-00229" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
+
 </Project>

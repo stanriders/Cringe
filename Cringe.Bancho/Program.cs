@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using Serilog.Sinks.Datadog;
 
 namespace Cringe.Bancho
 {
@@ -49,6 +50,7 @@ namespace Cringe.Bancho
                         .Enrich.FromLogContext()
                         .WriteTo.Sentry(o => o.Dsn = services.GetService<IConfiguration>()?["SentryKey"])
                         .WriteTo.Console()
+                        .WriteTo.Datadog(new DatadogConfiguration("127.0.0.1", null, "main", System.Array.Empty<string>()))
                         .WriteTo.File("log.txt", rollingInterval: RollingInterval.Month))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

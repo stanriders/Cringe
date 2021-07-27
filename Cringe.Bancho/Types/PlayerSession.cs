@@ -1,9 +1,9 @@
-﻿using Cringe.Bancho.Bancho;
+﻿using System.Text.Json.Serialization;
+using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Types;
 using Cringe.Types.Database;
 using Destructurama.Attributed;
-using System.Text.Json.Serialization;
 
 namespace Cringe.Bancho.Types
 {

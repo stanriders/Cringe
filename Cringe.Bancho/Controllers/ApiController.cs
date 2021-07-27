@@ -24,6 +24,7 @@ namespace Cringe.Bancho.Controllers
             if (queue is null) return BadRequest();
 
             queue.EnqueuePacket(new Notification(text));
+
             return Ok();
         }
 

@@ -13,6 +13,7 @@ namespace Cringe.Bancho.Controllers
 {
     [ApiController]
     [Route("/")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class BanchoController : ControllerBase
     {
         private const uint protocol_version = 19;

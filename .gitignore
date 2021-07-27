@@ -337,4 +337,4 @@ top.db
 
 replays/
 beatmapcache/
-**/*.txt #logs ;/
+*.txt #logs ;/

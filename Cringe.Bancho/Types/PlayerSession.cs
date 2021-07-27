@@ -3,6 +3,7 @@ using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Types;
 using Cringe.Types.Database;
 using Destructurama.Attributed;
+using System.Text.Json.Serialization;
 
 namespace Cringe.Bancho.Types
 {
@@ -16,6 +17,7 @@ namespace Cringe.Bancho.Types
         [NotLogged]
         public PacketQueue Queue { get; } = new();
 
+        [JsonIgnore]
         [NotLogged]
         public MatchSession MatchSession { get; set; }
 

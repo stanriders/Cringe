@@ -1,3 +1,4 @@
+using Destructurama;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,7 @@ namespace Cringe.Bancho
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
                 .MinimumLevel.Override("Default", LogEventLevel.Debug)
+                .Destructure.UsingAttributes()
                 .WriteTo.Console()
                 .WriteTo.File("log.txt", rollingInterval: RollingInterval.Month)
                 .CreateBootstrapLogger();
@@ -30,6 +32,7 @@ namespace Cringe.Bancho
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                         .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
                         .MinimumLevel.Debug()
+                        .Destructure.UsingAttributes()
                         .ReadFrom.Services(services)
                         .Enrich.FromLogContext()
                         .WriteTo.Sentry(o => o.Dsn = services.GetService<IConfiguration>()?["SentryKey"])

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Microsoft.Extensions.Logging;
@@ -31,7 +32,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                     Logger.LogError("{Token} | Sends message to #multiplayer while his MatchSession is null", session.Token);
             }
 
-            Chats.SendGlobalMessage(message);
+            ChatService.SendGlobalMessage(message);
         }
     }
 }

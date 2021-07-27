@@ -21,7 +21,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             var stats = session.GetStats();
             stats.Action = action;
 
-            Logger.LogDebug("{Token} | Changes stats to {@Stats}", session.Token, stats);
+            Logger.LogInformation("{Token} | Changes stats to {@Stats}", session.Token, stats);
 
             Stats.SetUpdates(session.Token.PlayerId, stats);
             session.Queue.EnqueuePacket(new UserStats(stats));

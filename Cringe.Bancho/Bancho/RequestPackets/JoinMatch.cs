@@ -31,7 +31,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             var match = Lobby.GetSession(id);
             match.Connect(session);
 
-            Logger.LogDebug("{Token} | Connected to the match | {@Match}", session.Token, match);
+            Logger.LogInformation("{Token} | Connected to the match | {@Match}", session.Token, match);
             return Task.CompletedTask;
         }
     }

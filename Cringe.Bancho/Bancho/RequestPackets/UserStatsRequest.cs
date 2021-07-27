@@ -23,15 +23,16 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             using var reader = new BinaryReader(new MemoryStream(data));
             var playerIds = ReadI32(reader).ToArray();
             Logger.LogDebug("{Token} | Receive stats for these players: {Ids}", session.Token, string.Join(",", playerIds));
+            var statsService = Stats;
             foreach (var playerId in playerIds)
             {
                 if (playerId == session.Token.PlayerId) continue;
 
-                var player = PlayersPool.GetPlayer(playerId);
+                var stats = statsService.GetUpdates(playerId);
 
-                if (player is null) continue;
+                if (stats is null) continue;
 
-                session.Queue.EnqueuePacket(new UserStats(player.GetStats()));
+                session.Queue.EnqueuePacket(new UserStats(stats));
             }
 
             return Task.CompletedTask;

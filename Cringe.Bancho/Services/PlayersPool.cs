@@ -40,7 +40,7 @@ namespace Cringe.Bancho.Services
             Players.Add(token.PlayerId, session);
 
             _logger.LogDebug("{Token} | Connected to PlayersPool", token);
-            _logger.LogDebug("Currently connected players:\n{Dump}", string.Join("|", GetPlayersId()));
+            _logger.LogDebug("Currently connected players:\n{Dump}", GetPlayersId());
             return true;
         }
 

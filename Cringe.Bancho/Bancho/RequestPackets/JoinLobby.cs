@@ -17,7 +17,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
         public override async Task Execute(PlayerSession session, byte[] data)
         {
-            Logger.LogDebug("{Token} | Logged in the lobby", session.Token);
+            Logger.LogInformation("{Token} | Logged in the lobby", session.Token);
             ChatService.GetChat(ChatService.LobbyName)?.Connect(session);
             await Lobby.Connect(session);
         }

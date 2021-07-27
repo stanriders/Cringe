@@ -1,3 +1,4 @@
+using System;
 using Destructurama;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
@@ -13,15 +14,26 @@ namespace Cringe.Bancho
     {
         public static void Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
-                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-                .MinimumLevel.Override("Default", LogEventLevel.Debug)
-                .Destructure.UsingAttributes()
-                .WriteTo.Console()
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Month)
-                .CreateBootstrapLogger();
-            CreateHostBuilder(args).Build().Run();
+            try
+            {
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+                    .MinimumLevel.Override("Default", LogEventLevel.Debug)
+                    .Destructure.UsingAttributes()
+                    .WriteTo.Console()
+                    .WriteTo.File("log.txt", rollingInterval: RollingInterval.Month)
+                    .CreateBootstrapLogger();
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal("Howizi????? {Ex}", ex.Message);
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)

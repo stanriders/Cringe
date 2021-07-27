@@ -1,4 +1,5 @@
-﻿using Cringe.Bancho.Bancho;
+﻿using System.Text.Json.Serialization;
+using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Types;
 using Cringe.Types.Database;
@@ -16,6 +17,7 @@ namespace Cringe.Bancho.Types
         [NotLogged]
         public PacketQueue Queue { get; } = new();
 
+        [JsonIgnore]
         [NotLogged]
         public MatchSession MatchSession { get; set; }
 

@@ -9,10 +9,13 @@ namespace Cringe.Bancho.Types
     public class PlayerSession
     {
         public Player Player { get; set; }
+
         [NotLogged]
         public UserToken Token { get; set; }
+
         [NotLogged]
         public PacketQueue Queue { get; } = new();
+
         [NotLogged]
         public MatchSession MatchSession { get; set; }
 

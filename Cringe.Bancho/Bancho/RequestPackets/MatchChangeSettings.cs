@@ -18,13 +18,17 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             if (session.MatchSession is null)
             {
-                Logger.LogError("{Token} | User tries to change match's settings while his MatchSession is null", session.Token);
+                Logger.LogError("{Token} | User tries to change match's settings while his MatchSession is null",
+                    session.Token);
+
                 return Task.CompletedTask;
             }
 
             if (session.MatchSession.Match.Host != session.Token.PlayerId)
             {
-                Logger.LogInformation("{Token} | User tries to change match's settings while not being a host", session.Token);
+                Logger.LogInformation("{Token} | User tries to change match's settings while not being a host",
+                    session.Token);
+
                 return Task.CompletedTask;
             }
 

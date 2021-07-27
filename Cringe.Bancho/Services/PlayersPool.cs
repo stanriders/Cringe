@@ -41,6 +41,7 @@ namespace Cringe.Bancho.Services
 
             _logger.LogDebug("{Token} | Connected to PlayersPool", token);
             _logger.LogDebug("Currently connected players:\n{Dump}", GetPlayersId());
+
             return true;
         }
 
@@ -54,6 +55,7 @@ namespace Cringe.Bancho.Services
             Players.Remove(token.PlayerId);
             _logger.LogDebug("{Token} | Disconnected from PlayersPool", token);
             _logger.LogDebug("Currently connected players:\n{Dump}", string.Join("|", GetPlayersId()));
+
             return true;
         }
 

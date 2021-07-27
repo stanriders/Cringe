@@ -22,11 +22,15 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
             if (session.MatchSession is null)
             {
-                Logger.LogCritical("{Token} | the host's matchSession after creating a match is null\nShould be: {Match}", session.Token, matchSession.Match);
+                Logger.LogCritical(
+                    "{Token} | the host's matchSession after creating a match is null\nShould be: {Match}",
+                    session.Token, matchSession.Match);
+
                 throw new Exception("The host's matchSession after creating a match is null");
             }
 
             Logger.LogInformation("{Token} | Created a match ({@Match})", session.Token, session.MatchSession.Match);
+
             return Task.CompletedTask;
         }
     }

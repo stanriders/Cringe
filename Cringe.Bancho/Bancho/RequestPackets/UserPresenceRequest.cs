@@ -22,7 +22,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             using var reader = new BinaryReader(new MemoryStream(data));
             var ids = ReadI32(reader).ToArray();
-            Logger.LogDebug("{Token} | Receive user presence for the players {Ids}", session.Token, string.Join(",", ids));
+            Logger.LogDebug("{Token} | Receive user presence for the players {Ids}", session.Token,
+                string.Join(",", ids));
             foreach (var id in ids)
             {
                 var user = PlayersPool.GetPlayer(id);

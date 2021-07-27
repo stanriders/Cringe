@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Cringe.Types;
 
 namespace Cringe.Bancho.Types
 {

@@ -11,7 +11,6 @@ namespace Cringe.Bancho.Services
 {
     public class ChatService
     {
-        private readonly ILogger<ChatService> _logger;
         public const string LobbyName = "#lobby";
 
         public static readonly List<GlobalChat> GlobalChats = new()
@@ -22,6 +21,8 @@ namespace Cringe.Bancho.Services
             new GlobalChat("#russian", "KRYM NASH!!! :DDD"),
             new GlobalChat(LobbyName, "LOBESHNIQ")
         };
+
+        private readonly ILogger<ChatService> _logger;
 
         private readonly Action<Message> _sendPrivateMessage;
 
@@ -37,9 +38,8 @@ namespace Cringe.Bancho.Services
             foreach (var globalChat in GlobalChats.Where(globalChat => IsAllowed(rank, globalChat.Accessibility)))
             {
                 if (globalChat.Accessibility != UserRanks.Normal)
-                {
-                    _logger.LogInformation("{Token} | Connected to a private chat {Name}", player.Token, globalChat.Name);
-                }
+                    _logger.LogInformation("{Token} | Connected to a private chat {Name}", player.Token,
+                        globalChat.Name);
                 globalChat.ReceiveUpdates += player;
                 globalChat.OnStatusUpdated();
                 if (globalChat.AutoConnect)

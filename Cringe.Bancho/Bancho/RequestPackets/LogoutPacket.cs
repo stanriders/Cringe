@@ -20,7 +20,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             Pool.Disconnect(session.Token);
             ChatService.Purge(session);
 
-            Logger.LogInformation("{Token} | User logged out.\nConnected users are\n{Users}", session.Token, string.Join(",", PlayersPool.GetPlayersId()));
+            Logger.LogInformation("{Token} | User logged out.\nConnected users are\n{Users}", session.Token,
+                string.Join(",", PlayersPool.GetPlayersId()));
 
             return Task.CompletedTask;
         }

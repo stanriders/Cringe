@@ -22,13 +22,12 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (session.MatchSession is null)
             {
                 Logger.LogError("{Token} | User tries to lock slot while his MatchSession is null", session.Token);
+
                 return Task.CompletedTask;
             }
 
             if (session.MatchSession.Match.Host != session.Player.Id)
-            {
                 Logger.LogInformation("{Token} | User tries to lock slot while not being a host", session.Token);
-            }
             using var reader = new BinaryReader(new MemoryStream(data));
             var toLock = reader.ReadInt32();
             var lockedSlot = session.MatchSession.Match.Slots[toLock];
@@ -41,12 +40,14 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 if (lockedSlot.Player is not null && lockedSlot.Player == session)
                 {
                     Logger.LogInformation("{Token} | User tries to kill himself with a lock xd", session.Token);
+
                     return Task.CompletedTask;
                 }
 
                 if (lockedSlot.Player is not null)
                 {
-                    Logger.LogInformation("{Token} | User kicks {KickedPlayerId} with a lock", session.Token, lockedSlot.Player.Player.Id);
+                    Logger.LogInformation("{Token} | User kicks {KickedPlayerId} with a lock", session.Token,
+                        lockedSlot.Player.Player.Id);
                     lockedSlot.Player.Queue.EnqueuePacket(new Notification("You've been killed with a fucking lock"));
                     session.MatchSession.Disconnect(lockedSlot.Player);
                 }
@@ -55,7 +56,9 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
 
             session.MatchSession.OnUpdateMatch();
-            Logger.LogDebug("{Token} | User locks a slot. Match info: {@Match}", session.Token, session.MatchSession.Match);
+            Logger.LogDebug("{Token} | User locks a slot. Match info: {@Match}", session.Token,
+                session.MatchSession.Match);
+
             return Task.CompletedTask;
         }
     }

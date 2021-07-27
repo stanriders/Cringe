@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
-using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Microsoft.Extensions.Logging;
@@ -22,7 +21,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             using var reader = new BinaryReader(new MemoryStream(data));
             var playerIds = ReadI32(reader).ToArray();
-            Logger.LogDebug("{Token} | Receive stats for these players: {Ids}", session.Token, string.Join(",", playerIds));
+            Logger.LogDebug("{Token} | Receive stats for these players: {Ids}", session.Token,
+                string.Join(",", playerIds));
             var statsService = Stats;
             foreach (var playerId in playerIds)
             {

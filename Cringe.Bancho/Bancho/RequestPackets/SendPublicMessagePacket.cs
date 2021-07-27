@@ -24,12 +24,11 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (message.Receiver == "#multiplayer")
             {
                 if (session.MatchSession is not null)
-                {
                     foreach (var slot in session.MatchSession.Match.Slots)
                         slot.Player?.ReceiveMessage(message);
-                }
                 else
-                    Logger.LogError("{Token} | Sends message to #multiplayer while his MatchSession is null", session.Token);
+                    Logger.LogError("{Token} | Sends message to #multiplayer while his MatchSession is null",
+                        session.Token);
             }
 
             ChatService.SendGlobalMessage(message);

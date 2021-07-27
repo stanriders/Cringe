@@ -16,13 +16,14 @@ namespace Cringe.Bancho.Bancho
     {
         private readonly IServiceProvider _serviceProvider;
 
+        protected readonly ILogger Logger;
+
         protected RequestPacket(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
             Logger = _serviceProvider.GetService<ILogger<RequestPacket>>(); //TODO: idk if it works
         }
 
-        protected readonly ILogger Logger;
         protected PlayersPool Pool => _serviceProvider.GetService<PlayersPool>();
         protected LobbyService Lobby => _serviceProvider.GetService<LobbyService>();
         protected ChatService Chats => _serviceProvider.GetService<ChatService>();

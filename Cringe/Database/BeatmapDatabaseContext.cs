@@ -1,14 +1,19 @@
-﻿using Cringe.Types.Database;
+﻿using System.IO;
+using Cringe.Types.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Cringe.Database
 {
     public sealed class BeatmapDatabaseContext : DbContext
     {
-        private const string connection_string = "Filename=./beatmaps.db";
+        private readonly string _connectionString;
 
-        public BeatmapDatabaseContext()
+        public BeatmapDatabaseContext(IConfiguration configuration)
         {
+            var dbPath = configuration["DbFolder"] ?? "./";
+            _connectionString = $"Filename={Path.Combine(dbPath, "beatmaps.db")}";
+
             Database.EnsureCreated();
         }
 
@@ -16,7 +21,7 @@ namespace Cringe.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite(connection_string);
+            optionsBuilder.UseSqlite(_connectionString);
         }
     }
 }

@@ -20,9 +20,9 @@ namespace Cringe.Bancho.Services
 
         public Task<bool> Connect(PlayerSession player)
         {
-            NewMatch += player.NewMatch;
-            DisposeMatch += player.DisposeMatch;
-            UpdateMatch += player.UpdateMatch;
+            _newMatch += player.NewMatch;
+            _disposeMatch += player.DisposeMatch;
+            _updateMatch += player.UpdateMatch;
             foreach (var session in Sessions.Values)
                 player.NewMatch(session.Match);
 
@@ -31,9 +31,9 @@ namespace Cringe.Bancho.Services
 
         public bool Disconnect(PlayerSession player)
         {
-            NewMatch -= player.NewMatch;
-            DisposeMatch -= player.DisposeMatch;
-            UpdateMatch -= player.UpdateMatch;
+            _newMatch -= player.NewMatch;
+            _disposeMatch -= player.DisposeMatch;
+            _updateMatch -= player.UpdateMatch;
 
             return true;
         }
@@ -53,10 +53,12 @@ namespace Cringe.Bancho.Services
             matchSession.Connect(session);
             session.Queue.EnqueuePacket(new MatchTransferHost());
             session.MatchSession = matchSession;
+
             if (matchSession.Match.Slots[0].Player != session)
             {
                 _logger.LogCritical("{Token} | Host doesn't been properly assigned to the first slot. Match info: {Match}", session.Token, matchSession.Match);
             }
+
             OnNewMatch(matchSession.Match);
             matchSession.UpdateMatch += OnUpdateMatch;
 
@@ -64,24 +66,24 @@ namespace Cringe.Bancho.Services
         }
 
 
-        private event Action<Match> NewMatch;
-        private event Action<Match> UpdateMatch;
-        private event Action<Match> DisposeMatch;
+        private event Action<Match> _newMatch;
+        private event Action<Match> _updateMatch;
+        private event Action<Match> _disposeMatch;
 
         protected virtual void OnNewMatch(Match obj)
         {
-            NewMatch?.Invoke(obj);
+            _newMatch?.Invoke(obj);
         }
 
         protected virtual void OnDisposeMatch(Match obj)
         {
             Sessions.Remove(obj.Id);
-            DisposeMatch?.Invoke(obj);
+            _disposeMatch?.Invoke(obj);
         }
 
         protected virtual void OnUpdateMatch(Match obj)
         {
-            UpdateMatch?.Invoke(obj);
+            _updateMatch?.Invoke(obj);
         }
     }
 }

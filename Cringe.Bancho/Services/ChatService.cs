@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Services
 {
@@ -21,10 +22,13 @@ namespace Cringe.Bancho.Services
             new GlobalChat(LobbyName, "LOBESHNIQ")
         };
 
+        private readonly ILogger<ChatService> _logger;
+
         private readonly Action<Message> _sendPrivateMessage;
 
-        public ChatService(PlayersPool pool)
+        public ChatService(ILogger<ChatService> logger)
         {
+            _logger = logger;
             _sendPrivateMessage = message => PlayersPool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
         }
 
@@ -33,6 +37,9 @@ namespace Cringe.Bancho.Services
             var rank = player.Player.UserRank;
             foreach (var globalChat in GlobalChats.Where(globalChat => IsAllowed(rank, globalChat.Accessibility)))
             {
+                if (globalChat.Accessibility != UserRanks.Normal)
+                    _logger.LogInformation("{Token} | Connected to a private chat {Name}", player.Token,
+                        globalChat.Name);
                 globalChat.ReceiveUpdates += player;
                 globalChat.OnStatusUpdated();
                 if (globalChat.AutoConnect)
@@ -45,7 +52,7 @@ namespace Cringe.Bancho.Services
             return GlobalChats.FirstOrDefault(x => x.Name == name);
         }
 
-        public bool Purge(PlayerSession player)
+        public static bool Purge(PlayerSession player)
         {
             var rank = player.Player.UserRank;
             foreach (var globalChat in GlobalChats.Where(globalChat => IsAllowed(rank, globalChat.Accessibility)))
@@ -54,7 +61,7 @@ namespace Cringe.Bancho.Services
             return true;
         }
 
-        public bool SendGlobalMessage(Message message)
+        public static bool SendGlobalMessage(Message message)
         {
             var chat = GlobalChats.FirstOrDefault(x => x.Name == message.Receiver);
 

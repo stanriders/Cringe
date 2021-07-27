@@ -19,11 +19,13 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (session.MatchSession is null)
             {
                 Logger.LogCritical("{Token} | User leaves the match while not being in a match", session.Token);
+
                 return Task.CompletedTask;
             }
 
             session.MatchSession.Disconnect(session);
             Logger.LogDebug("{Token} | User leaves a match", session.Token);
+
             return Task.CompletedTask;
         }
     }

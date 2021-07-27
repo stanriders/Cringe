@@ -13,8 +13,8 @@ namespace Cringe.Bancho.Services
 {
     public class InvokeService
     {
-        private readonly ILogger<InvokeService> _logger;
         private readonly Dictionary<ClientPacketType, RequestPacket> _handlers;
+        private readonly ILogger<InvokeService> _logger;
 
         public InvokeService(IServiceProvider serviceProvider, ILogger<InvokeService> logger)
         {

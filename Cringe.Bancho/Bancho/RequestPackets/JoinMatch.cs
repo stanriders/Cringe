@@ -24,14 +24,18 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             {
                 session.Queue.EnqueuePacket(new MatchJoinFail());
                 session.Queue.EnqueuePacket(new Notification("Sory bro server slomalsya :D"));
-                Logger.LogCritical("{Token} | User connecting to the match while his MatchSession is not null ({MatchId})", session.Token, id);
+                Logger.LogCritical(
+                    "{Token} | User connecting to the match while his MatchSession is not null ({MatchId})",
+                    session.Token, id);
+
                 return Task.CompletedTask;
             }
 
             var match = Lobby.GetSession(id);
             match.Connect(session);
 
-            Logger.LogDebug("{Token} | Connected to the match | {@Match}", session.Token, match);
+            Logger.LogInformation("{Token} | Connected to the match | {@Match}", session.Token, match);
+
             return Task.CompletedTask;
         }
     }

@@ -18,9 +18,10 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             Pool.Disconnect(session.Token);
-            Chats.Purge(session);
+            ChatService.Purge(session);
 
-            Logger.LogDebug("{Token} | User logged out.\nConnected users are\n{Users}", session.Token, string.Join(",", PlayersPool.GetPlayersId()));
+            Logger.LogInformation("{Token} | User logged out.\nConnected users are\n{Users}", session.Token,
+                string.Join(",", PlayersPool.GetPlayersId()));
 
             return Task.CompletedTask;
         }

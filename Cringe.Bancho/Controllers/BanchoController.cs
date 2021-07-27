@@ -130,8 +130,6 @@ namespace Cringe.Bancho.Controllers
                 // force update login
                 return PacketQueue.NullUser();
 
-            _logger.LogDebug("{Token} | HandlePacket request", token);
-
             HttpContext.Response.Headers.Add("cho-token", token.Token);
             var session = PlayersPool.GetPlayer(token.PlayerId);
 

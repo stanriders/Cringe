@@ -30,7 +30,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
             var match = Match.Parse(data);
             session.MatchSession.Update(match);
-            Logger.LogDebug("{Token} | User changes the settings of the match to {Match}", session.Token, match);
+            Logger.LogDebug("{Token} | User changes the settings of the match to {@Match}", session.Token, match);
 
             return Task.CompletedTask;
         }

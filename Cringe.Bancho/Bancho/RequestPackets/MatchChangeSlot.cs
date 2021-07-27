@@ -19,7 +19,9 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             if (session.MatchSession is null)
             {
-                Logger.LogError("{Token} | User tries to change the slot while his MatchSession is null", session.Token);
+                Logger.LogError("{Token} | User tries to change the slot while his MatchSession is null",
+                    session.Token);
+
                 return Task.CompletedTask;
             }
 
@@ -31,6 +33,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             match.ChangeSlot(session, slot);
 
             Logger.LogDebug("{Token} | User changes the slot. Match info: {@Match}", session.Token, match);
+
             return Task.CompletedTask;
         }
     }

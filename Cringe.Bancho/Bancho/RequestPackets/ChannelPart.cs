@@ -20,7 +20,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             using var stream = new MemoryStream(data);
             var chat = ReadString(stream);
-            Logger.LogDebug("{Token} | Leaves the {Chat} chat", session.Token, chat);
+            Logger.LogInformation("{Token} | Leaves the {Chat} chat", session.Token, chat);
             ChatService.GetChat(chat)?.Disconnect(session);
 
             return Task.CompletedTask;

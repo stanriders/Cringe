@@ -35,6 +35,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
 
             var embed = $"Zahodi pojugama: [{session.MatchSession.Match.Embed} {session.MatchSession.Match.Name}";
+            Logger.LogInformation("{Token} | Invited {UserName} to the match", session.Token, user.Player.Username);
             user.Queue.EnqueuePacket(new ResponsePackets.MatchInvite(session.Player, user.Player.Username, embed));
             return Task.CompletedTask;
         }

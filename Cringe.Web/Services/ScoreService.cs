@@ -38,47 +38,91 @@ namespace Cringe.Web.Services
             _banchoApiWrapper = banchoApiWrapper;
         }
 
-        public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit,
-            bool failed)
+        public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit, bool failed)
         {
             // TODO: recent scores
             if (quit || failed)
                 return null;
 
+            var score = await ProcessScoreData(DecryptScoreData(encodedData, iv, osuver));
+
+            if (score is null)
+                return null;
+
+            // don't submit if previous score has bigger score
+            if (score.PreviousScore?.Score > score.Score)
+                return null;
+
+            // this shouldn't happen since we check for quit & failed but it does
+            if (score.Rank == "F")
+                return null;
+
+            score.Quit = quit;
+            score.Failed = !quit && failed;
+            score.Pp = await _ppService.CalculatePp(score);
+
+            if (score.PreviousScore is not null)
+                _scoreContext.Scores.Remove(score.PreviousScore);
+
+            await _scoreContext.Scores.AddAsync(score);
+            await _scoreContext.SaveChangesAsync();
+
+            if (score.Passed)
+            {
+                score.Player.Playcount++;
+                await _ppCache.UpdatePlayerStats(score.Player);
+                await _rankCache.UpdatePlayerRank(score.Player);
+            }
+
+            score.Player.TotalScore += (ulong) score.Score;
+            await _playerContext.SaveChangesAsync();
+
+            // send score as a notif to confirm submission
+            await _banchoApiWrapper.SendNotification(score.Player.Id, $"{Math.Round(score.Pp, 2)} pp");
+
+            return score;
+        }
+
+        public string[] DecryptScoreData(string score, string iv, string osuver)
+        {
             var key = "h89f2-890h2h89b34g-h80g134n90133";
             if (!string.IsNullOrEmpty(osuver))
                 key = $"osu!-scoreburgr---------{osuver}";
 
-            var decodedData = Convert.FromBase64String(encodedData);
+            var keyBytes = Encoding.Default.GetBytes(key);
+
+            var decodedData = Convert.FromBase64String(score);
             var decodedIv = Convert.FromBase64String(iv);
 
-            var scoreData = DecryptScoreData(decodedData, decodedIv, Encoding.Default.GetBytes(key));
+            var engine = new RijndaelEngine(256);
+            var blockCipher = new CbcBlockCipher(engine);
+            var cipher = new PaddedBufferedBlockCipher(blockCipher, new ZeroBytePadding());
+            var keyParam = new KeyParameter(keyBytes);
+            var keyParamWithIv = new ParametersWithIV(keyParam, decodedIv, 0, 32);
+
+            cipher.Init(false, keyParamWithIv);
+            var comparisonBytes = new byte[cipher.GetOutputSize(decodedData.Length)];
+            var length = cipher.ProcessBytes(decodedData, comparisonBytes, 0);
+            cipher.DoFinal(comparisonBytes, length);
+
+            return Encoding.Default.GetString(comparisonBytes).Split(':');
+        }
+
+        private async Task<SubmittedScore> ProcessScoreData(string[] scoreData)
+        {
             if (scoreData.Length >= 16 && scoreData[0].Length == 32)
             {
-                var username = scoreData[1].Trim();
-
-                var player = await _playerContext.Players.FirstOrDefaultAsync(x => x.Username == username);
-
-                if (player is null)
-                    return null;
-
                 var beatmap = await _beatmapContext.Beatmaps.FirstOrDefaultAsync(x => x.Md5 == scoreData[0]);
-
                 if (beatmap is null)
                     return null;
 
-                // this shouldn't happen since we check for quit & failed but it does
-                if (scoreData[12] == "F")
+                var player = await _playerContext.Players.FirstOrDefaultAsync(x => x.Username == scoreData[1].Trim());
+                if (player is null)
                     return null;
-
-                var score = long.Parse(scoreData[9]);
 
                 var previousScore = await _scoreContext.Scores
                     .Where(x => x.PlayerId == player.Id && x.BeatmapId == beatmap.Id)
                     .FirstOrDefaultAsync();
-
-                if (previousScore?.Score > score)
-                    return null;
 
                 if (!DateTime.TryParseExact(scoreData[16], "yyMMddHHmmss", CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out var date))
@@ -92,7 +136,7 @@ namespace Cringe.Web.Services
                     CountGeki = int.Parse(scoreData[6]),
                     CountKatu = int.Parse(scoreData[7]),
                     CountMiss = int.Parse(scoreData[8]),
-                    Score = score,
+                    Score = long.Parse(scoreData[9]),
                     MaxCombo = int.Parse(scoreData[10]),
                     FullCombo = scoreData[11] == "True",
                     Rank = scoreData[12],
@@ -101,55 +145,20 @@ namespace Cringe.Web.Services
                     GameMode = (GameModes) Enum.Parse(typeof(GameModes), scoreData[15]),
                     PlayDateTime = date,
                     OsuVersion = scoreData[17].Trim(),
-                    Quit = quit,
-                    Failed = !quit && failed,
                     PlayerId = player.Id,
                     PlayerUsername = player.Username,
                     BeatmapId = beatmap.Id,
+
+                    // non-db models
                     Beatmap = beatmap,
                     Player = player,
                     PreviousScore = previousScore
                 };
-                submittedScore.Pp = await _ppService.CalculatePp(submittedScore);
-
-                if (previousScore is not null)
-                    _scoreContext.Scores.Remove(previousScore);
-                await _scoreContext.Scores.AddAsync(submittedScore);
-                await _scoreContext.SaveChangesAsync();
-
-                if (submittedScore.Passed)
-                {
-                    player.Playcount++;
-                    await _ppCache.UpdatePlayerStats(player);
-                    await _rankCache.UpdatePlayerRank(player);
-                }
-
-                player.TotalScore += (ulong) score;
-                await _playerContext.SaveChangesAsync();
-
-                // send score as a notif to confirm submission
-                await _banchoApiWrapper.SendNotification(player.Id, $"{Math.Round(submittedScore.Pp, 2)} pp");
 
                 return submittedScore;
             }
 
             return null;
-        }
-
-        public string[] DecryptScoreData(byte[] score, byte[] iv, byte[] key)
-        {
-            var engine = new RijndaelEngine(256);
-            var blockCipher = new CbcBlockCipher(engine);
-            var cipher = new PaddedBufferedBlockCipher(blockCipher, new ZeroBytePadding());
-            var keyParam = new KeyParameter(key);
-            var keyParamWithIv = new ParametersWithIV(keyParam, iv, 0, 32);
-
-            cipher.Init(false, keyParamWithIv);
-            var comparisonBytes = new byte[cipher.GetOutputSize(score.Length)];
-            var length = cipher.ProcessBytes(score, comparisonBytes, 0);
-            cipher.DoFinal(comparisonBytes, length);
-
-            return Encoding.Default.GetString(comparisonBytes).Split(':');
         }
     }
 }

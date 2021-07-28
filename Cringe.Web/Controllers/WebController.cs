@@ -58,7 +58,7 @@ namespace Cringe.Web.Controllers
         {
             var submittedScore = await _scoreService.SubmitScore(score, iv, osuver, quit == "1", failed == "1");
 
-            if (submittedScore == null)
+            if (submittedScore == null || submittedScore.Id == 0)
                 return new OkResult();
 
             await using var replayStream = replay.OpenReadStream();

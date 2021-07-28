@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
@@ -15,7 +16,7 @@ namespace Cringe.Bancho.Services
             _logger = logger;
         }
 
-        public Dictionary<int, MatchSession> Sessions { get; set; } = new();
+        public ConcurrentDictionary<int, MatchSession> Sessions { get; } = new();
 
         public void Connect(PlayerSession player)
         {
@@ -44,7 +45,7 @@ namespace Cringe.Bancho.Services
         {
             var id = (short) (Sessions.Count + 1);
             var matchSession = new MatchSession(id, session, match, OnDisposeMatch);
-            Sessions.Add(id, matchSession);
+            Sessions.TryAdd(id, matchSession);
             matchSession.Connect(session);
             session.Queue.EnqueuePacket(new MatchTransferHost());
             session.MatchSession = matchSession;
@@ -71,7 +72,7 @@ namespace Cringe.Bancho.Services
 
         protected virtual void OnDisposeMatch(Match obj)
         {
-            Sessions.Remove(obj.Id);
+            Sessions.Remove(obj.Id, out _);
             _disposeMatch?.Invoke(obj);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace Cringe.Bancho.Services
             _logger = logger;
         }
 
-        public static Dictionary<int, PlayerSession> Players { get; } = new();
+        public static ConcurrentDictionary<int, PlayerSession> Players { get; } = new();
 
         public async Task<bool> Connect(UserToken token)
         {
@@ -47,7 +48,10 @@ namespace Cringe.Bancho.Services
             OnPlayerLoggedIn(session);
             PlayerLoggedIn += session.PlayerLoggedIn;
             PlayerLoggedOut += session.PlayerLoggedOut;
-            Players.Add(token.PlayerId, session);
+            if (!Players.TryAdd(token.PlayerId, session))
+            {
+                _logger.LogCritical("{Token} | Unable to add to a concurrent dictionary of player sessions", token);
+            }
 
             _logger.LogDebug("{Token} | Connected to PlayersPool", token);
             _logger.LogDebug("Currently connected players:\n{Dump}", GetPlayersId());
@@ -62,7 +66,7 @@ namespace Cringe.Bancho.Services
             PlayerLoggedIn -= playerSession.PlayerLoggedIn;
             PlayerLoggedOut -= playerSession.PlayerLoggedOut;
             OnPlayerLoggedOut(playerSession);
-            Players.Remove(token.PlayerId);
+            Players.Remove(token.PlayerId, out _);
             _logger.LogDebug("{Token} | Disconnected from PlayersPool", token);
             _logger.LogDebug("Currently connected players:\n{Dump}", string.Join("|", GetPlayersId()));
 

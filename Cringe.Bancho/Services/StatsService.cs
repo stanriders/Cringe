@@ -1,24 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using Cringe.Bancho.Types;
-using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Services
 {
     public class StatsService
     {
-        private readonly ILogger<StatsService> _logger;
-        private readonly Dictionary<int, Stats> _stats = new();
-
-        public StatsService(ILogger<StatsService> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ConcurrentDictionary<int, Stats> _stats = new();
 
         public Stats GetUpdates(int id)
         {
             if (!_stats.TryGetValue(id, out var value)) return null;
 
-            _stats.Remove(id);
+            _stats.TryRemove(id, out _);
 
             return value;
         }

@@ -41,6 +41,8 @@ namespace Cringe.Bancho.Types
             Mods = Mods.None
         };
 
+        public string Embed => $"osump://{Id}/{Password}";
+
         public Slot GetHost()
         {
             return GetPlayer(Host);

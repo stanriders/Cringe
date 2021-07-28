@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
-    public class ChangeActionPacket : RequestPacket
+    public class ChangeAction : RequestPacket
     {
-        public ChangeActionPacket(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ChangeAction(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
@@ -17,7 +17,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
         public override Task Execute(PlayerSession session, byte[] data)
         {
-            var action = ChangeAction.Parse(data);
+            var action = Types.ChangeAction.Parse(data);
             var stats = session.GetStats();
             stats.Action = action;
 

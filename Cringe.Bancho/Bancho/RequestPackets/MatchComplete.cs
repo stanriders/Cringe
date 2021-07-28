@@ -15,10 +15,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
         }
 
-        public override ClientPacketType Type
-        {
-            get;
-        }
+        public override ClientPacketType Type => ClientPacketType.MatchComplete;
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

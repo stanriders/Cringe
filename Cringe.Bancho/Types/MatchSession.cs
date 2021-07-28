@@ -103,6 +103,7 @@ namespace Cringe.Bancho.Types
 
             Match.Slots[slotId] = Match.Slots[oldSlot];
             Match.Slots[oldSlot] = slot;
+            Match.Slots[oldSlot].Wipe();
             OnUpdateMatch(true);
         }
 

@@ -20,8 +20,6 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
             foreach (var player in session.MatchSession.Match.Players)
             {
-                if (player.Player == session) continue;
-
                 player.Player.Queue.EnqueuePacket(new ResponsePackets.MatchScoreUpdate(data));
             }
 

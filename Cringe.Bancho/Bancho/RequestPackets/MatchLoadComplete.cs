@@ -9,7 +9,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 {
     public class MatchLoadComplete : RequestPacket
     {
-        private object key = new object();
+        private object key = new();
         public MatchLoadComplete(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }

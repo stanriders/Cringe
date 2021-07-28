@@ -38,9 +38,9 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
             if (match.FreeMode != sessionMatch.FreeMode)
             {
+                sessionMatch.FreeMode = match.FreeMode;
                 if (match.FreeMode)
                 {
-                    sessionMatch.FreeMode = match.FreeMode;
                     foreach (var slot in sessionMatch.Players)
                         slot.Mods = sessionMatch.Mods & ~Mods.SpeedChangingMods;
 

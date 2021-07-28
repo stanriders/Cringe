@@ -48,7 +48,7 @@ namespace Cringe.Bancho.Types
 
         public Slot GetPlayer(int id)
         {
-            return Slots.FirstOrDefault(x => x.Player.Player.Id == id);
+            return Slots.FirstOrDefault(x => x.Player?.Player.Id == id);
         }
 
         public static Match Parse(byte[] data)

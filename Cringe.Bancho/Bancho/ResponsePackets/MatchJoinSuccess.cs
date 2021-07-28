@@ -24,7 +24,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
             var players = Match.Slots
                 .Select(x => x.Player is not null ? PackData(x.Player.Token.PlayerId) : Array.Empty<byte>())
                 .SelectMany(x => x).ToArray();
-            var playerMods = Match.FreeMode ? Match.Slots.Select(x => (byte) x.Mods).ToArray() : Array.Empty<byte>();
+            var playerMods = Match.Slots.Select(x => PackData((int) x.Mods)).SelectMany(x => x);
             var mods = (int) Match.Mods;
 
             return ConcatData(
@@ -46,7 +46,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
                     (byte) Match.Mode, (byte) Match.WinConditions, (byte) Match.TeamTypes,
                     (byte) (Match.FreeMode ? 1 : 0)
                 },
-                playerMods);
+                Match.FreeMode ? playerMods : Array.Empty<byte>());
         }
     }
 }

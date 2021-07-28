@@ -73,19 +73,23 @@ namespace Cringe.Bancho.Controllers
             if (token == null)
                 return null;
 
-            if (!await _playersPool.Connect(token)) return null;
+            if (!await _playersPool.Connect(token))
+            {
+                _logger.LogWarning("{Token} | Invalid login", token);
+                return null;
+            }
 
             var session = PlayersPool.GetPlayer(token.PlayerId);
 
             if (session == null) return null;
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
-            await Login(session);
+            Login(session);
 
             return session.Queue;
         }
 
-        private async Task Login(PlayerSession session)
+        private void Login(PlayerSession session)
         {
             _logger.LogDebug("{Token} | Logging in", session.Token);
             var queue = session.Queue;
@@ -119,13 +123,13 @@ namespace Cringe.Bancho.Controllers
                 queue.EnqueuePacket(new UserStats(player.GetStats()));
             }
 
-            await _chat.Initialize(session);
+            _chat.Initialize(session);
             queue.EnqueuePacket(new ChannelInfoEnd());
         }
 
         private async Task<PacketQueue> HandleIncomingPackets()
         {
-            var token = _tokenService.GetToken(HttpContext.Request.Headers["osu-token"][0]);
+            var token = TokenService.GetToken(HttpContext.Request.Headers["osu-token"][0]);
 
             if (token == null)
                 // force update login
@@ -138,7 +142,7 @@ namespace Cringe.Bancho.Controllers
             await Request.Body.CopyToAsync(inStream);
             var data = inStream.ToArray();
 
-            await _invoke.Invoke(session, data);
+            _invoke.Invoke(session, data);
 
             return session.Queue;
         }

@@ -5,7 +5,7 @@ using Cringe.Types.Enums;
 
 namespace Cringe.Bancho.Types
 {
-    public class GlobalChat : ISocial
+    public class GlobalChat
     {
         public PlayerEvent ReceiveUpdates = new();
         public PlayerEvent SendMessage = new();
@@ -27,7 +27,7 @@ namespace Cringe.Bancho.Types
         public int Count { get; private set; }
         public bool AutoConnect { get; }
 
-        public Task<bool> Connect(PlayerSession player)
+        public void Connect(PlayerSession player)
         {
             SendMessage += player;
             Count = SendMessage.Count;
@@ -37,25 +37,15 @@ namespace Cringe.Bancho.Types
 
             player.ChatConnected(this);
             OnStatusUpdated();
-
-            return Task.FromResult(true);
         }
 
-        public bool Disconnect(PlayerSession player)
+        public void Disconnect(PlayerSession player)
         {
             SendMessage -= player;
             Count = SendMessage.Count;
 
             player.ChatKick(this);
             OnStatusUpdated();
-
-            return true;
-        }
-
-
-        public void OnSendMessage(Player sender, string content)
-        {
-            OnSendMessage(new Message(content, sender, Name));
         }
 
         public virtual void OnSendMessage(Message obj)

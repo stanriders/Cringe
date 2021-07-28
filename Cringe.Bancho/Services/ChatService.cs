@@ -32,7 +32,7 @@ namespace Cringe.Bancho.Services
             _sendPrivateMessage = message => PlayersPool.GetPlayer(message.Receiver)?.ReceiveMessage(message);
         }
 
-        public async Task Initialize(PlayerSession player)
+        public void Initialize(PlayerSession player)
         {
             var rank = player.Player.UserRank;
             foreach (var globalChat in GlobalChats.Where(globalChat => IsAllowed(rank, globalChat.Accessibility)))
@@ -43,7 +43,7 @@ namespace Cringe.Bancho.Services
                 globalChat.ReceiveUpdates += player;
                 globalChat.OnStatusUpdated();
                 if (globalChat.AutoConnect)
-                    await globalChat.Connect(player);
+                    globalChat.Connect(player);
             }
         }
 
@@ -52,13 +52,11 @@ namespace Cringe.Bancho.Services
             return GlobalChats.FirstOrDefault(x => x.Name == name);
         }
 
-        public static bool Purge(PlayerSession player)
+        public static void Purge(PlayerSession player)
         {
             var rank = player.Player.UserRank;
             foreach (var globalChat in GlobalChats.Where(globalChat => IsAllowed(rank, globalChat.Accessibility)))
                 globalChat.Disconnect(player);
-
-            return true;
         }
 
         public static bool SendGlobalMessage(Message message)

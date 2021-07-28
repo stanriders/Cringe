@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Services
 {
-    public class LobbyService : ISocial
+    public class LobbyService
     {
         private readonly ILogger<LobbyService> _logger;
 
@@ -18,24 +18,20 @@ namespace Cringe.Bancho.Services
 
         public Dictionary<int, MatchSession> Sessions { get; set; } = new();
 
-        public Task<bool> Connect(PlayerSession player)
+        public void Connect(PlayerSession player)
         {
             _newMatch += player.NewMatch;
             _disposeMatch += player.DisposeMatch;
             _updateMatch += player.UpdateMatch;
             foreach (var session in Sessions.Values)
                 player.NewMatch(session.Match);
-
-            return Task.FromResult(true);
         }
 
-        public bool Disconnect(PlayerSession player)
+        public void Disconnect(PlayerSession player)
         {
             _newMatch -= player.NewMatch;
             _disposeMatch -= player.DisposeMatch;
             _updateMatch -= player.UpdateMatch;
-
-            return true;
         }
 
         public MatchSession GetSession(int id)
@@ -64,7 +60,6 @@ namespace Cringe.Bancho.Services
 
             return matchSession;
         }
-
 
         private event Action<Match> _newMatch;
         private event Action<Match> _updateMatch;

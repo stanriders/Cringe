@@ -4,20 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.Types;
 using Cringe.Database;
+using Cringe.Services;
 using Cringe.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Services
 {
-    public class PlayersPool : IConnectable<UserToken, UserToken>
+    public class PlayersPool
     {
         private readonly PlayerDatabaseContext _database;
+        private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly ILogger<PlayersPool> _logger;
 
-        public PlayersPool(PlayerDatabaseContext database, ILogger<PlayersPool> logger)
+        public PlayersPool(PlayerDatabaseContext database, PlayerTopscoreStatsCache ppCache, ILogger<PlayersPool> logger)
         {
             _database = database;
+            _ppCache = ppCache;
             _logger = logger;
         }
 
@@ -28,6 +31,12 @@ namespace Cringe.Bancho.Services
             if (Players.ContainsKey(token.PlayerId)) return false;
 
             var player = await _database.Players.FirstOrDefaultAsync(x => x.Id == token.PlayerId);
+
+            await _ppCache.UpdatePlayerStats(player); //TODO: probably we shouldn't do this
+            await _database.SaveChangesAsync();
+
+            if (player is null) return false;
+
             var session = new PlayerSession
             {
                 Player = player,

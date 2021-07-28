@@ -42,12 +42,7 @@ namespace Cringe.Bancho.Services
             }.ToDictionary(x => x.Type);
         }
 
-        public RequestPacket Get(ClientPacketType packetType)
-        {
-            return _handlers.TryGetValue(packetType, out var request) ? request : null;
-        }
-
-        public Task Invoke(PlayerSession session, byte[] body)
+        public void Invoke(PlayerSession session, byte[] body)
         {
             using var reader = new BinaryReader(new MemoryStream(body));
             var packets = new List<(ClientPacketType type, byte[] data)>();
@@ -70,8 +65,6 @@ namespace Cringe.Bancho.Services
 
                 if (requestTask.Exception is not null) throw requestTask.Exception;
             }
-
-            return Task.CompletedTask;
         }
     }
 }

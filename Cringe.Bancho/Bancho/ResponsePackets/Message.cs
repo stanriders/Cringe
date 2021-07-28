@@ -16,9 +16,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
         }
 
         public string Content { get; }
-        public Player Sender { get; }
-        public int SenderId { get; set; }
-
+        public Player Sender { get; set; }
         public string Receiver { get; }
 
         public override ServerPacketType Type => ServerPacketType.SendMessage;

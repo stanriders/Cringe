@@ -20,6 +20,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             var dest = data[2..];
             var message = await Message.Parse(dest, session.Token.Username);
+            message.Sender = session.Player;
+
             Logger.LogInformation("{Token} | Sends message {Message}", session.Token, message);
             if (message.Receiver == "#multiplayer")
             {
@@ -31,7 +33,10 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                         session.Token);
             }
 
-            ChatService.SendGlobalMessage(message);
+            if (!ChatService.SendGlobalMessage(message))
+            {
+                Logger.LogWarning("{Token} | User tries to send a message {Message}", session.Token, message);
+            }
         }
     }
 }

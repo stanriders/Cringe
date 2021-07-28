@@ -11,7 +11,7 @@ namespace Cringe.Services
 {
     public class PlayerTopscoreStatsCache
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IMemoryCache _memoryCache; //TODO: Maybe redis?
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
 
         public PlayerTopscoreStatsCache(IMemoryCache memoryCache, ScoreDatabaseContext scoreDatabaseContext)
@@ -53,20 +53,20 @@ namespace Cringe.Services
 
         private async Task<PlayerTopscoreStats> RefreshStats(int playerId)
         {
-            var topscores = await _scoreDatabaseContext.Scores
+            var topScores = await _scoreDatabaseContext.Scores
                 .Where(x => x.PlayerId == playerId)
                 .OrderByDescending(x => x.Pp)
                 .Select(x => new {x.Pp, x.Accuracy})
                 .Take(100)
                 .ToArrayAsync();
 
-            if (topscores.Length == 0)
+            if (topScores.Length == 0)
                 return new PlayerTopscoreStats();
 
             var index = 0;
-            var pp = topscores.Sum(play => Math.Pow(0.95, index++) * play.Pp);
+            var pp = topScores.Sum(play => Math.Pow(0.95, index++) * play.Pp);
 
-            var acc = topscores.Sum(play => play.Accuracy) / topscores.Length;
+            var acc = topScores.Sum(play => play.Accuracy) / topScores.Length;
 
             return new PlayerTopscoreStats
             {

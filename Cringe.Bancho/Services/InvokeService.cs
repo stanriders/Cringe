@@ -40,6 +40,7 @@ namespace Cringe.Bancho.Services
                 new MatchNotReady(serviceProvider),
                 new MatchReady(serviceProvider),
                 new MatchStart(serviceProvider),
+                new MatchTransferHost(serviceProvider),
                 new MatchScoreUpdate(serviceProvider),
                 new MatchComplete(serviceProvider),
                 new PartLobby(serviceProvider),

@@ -41,7 +41,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 player.Status = SlotStatus.playing;
             }
 
-            var response = new NewMatch(match);
+            var response = new ResponsePackets.MatchStart(match);
             foreach (var player in match.Players)
             {
                 if (player.Status != SlotStatus.playing) continue;

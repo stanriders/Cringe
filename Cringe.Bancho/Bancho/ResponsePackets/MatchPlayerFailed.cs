@@ -4,7 +4,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
 {
     public class MatchPlayerFailed : ResponsePacket
     {
-        private int _slot;
+        private readonly int _slot;
 
         public MatchPlayerFailed(int slot)
         {

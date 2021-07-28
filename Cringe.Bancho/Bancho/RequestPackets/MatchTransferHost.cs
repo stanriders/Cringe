@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
@@ -24,12 +23,14 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 return Task.CompletedTask;
 
             var slot = session.MatchSession?.Match.Slots[slotId];
+
             if (slot?.Player is null)
                 return Task.CompletedTask;
 
             session.MatchSession.Match.Host = slot.Player.Player.Id;
             slot.Player.Queue.EnqueuePacket(new ResponsePackets.MatchTransferHost());
             session.MatchSession.OnUpdateMatch(true);
+
             return Task.CompletedTask;
         }
     }

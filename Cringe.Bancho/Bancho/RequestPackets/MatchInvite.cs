@@ -24,6 +24,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (session.MatchSession is null)
             {
                 Logger.LogError("{Token} | Invite while not in match", session.Token);
+
                 return Task.CompletedTask;
             }
 
@@ -31,12 +32,14 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (user is null)
             {
                 session.Queue.EnqueuePacket(new Notification("User is not online"));
+
                 return Task.CompletedTask;
             }
 
             var embed = $"Zahodi pojugama: [{session.MatchSession.Match.Embed} {session.MatchSession.Match.Name}";
             Logger.LogInformation("{Token} | Invited {UserName} to the match", session.Token, user.Player.Username);
             user.Queue.EnqueuePacket(new ResponsePackets.MatchInvite(session.Player, user.Player.Username, embed));
+
             return Task.CompletedTask;
         }
     }

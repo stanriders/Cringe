@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
     public class MatchSkipRequest : RequestPacket
     {
-        private object key = new();
+        private readonly object key = new();
+
         public MatchSkipRequest(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
@@ -27,22 +27,17 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             var skipPacket = new MatchPlayerSkipped(match.GetPlayerPosition(session.Token.PlayerId));
 
             foreach (var player in match.PlayingPlayers)
-            {
                 player.Player.Queue.EnqueuePacket(skipPacket);
-            }
 
             lock (key)
             {
                 var players = match.PlayingPlayers.ToArray();
+
                 if (players.Any(player => !player.Skipped))
-                {
                     return Task.CompletedTask;
-                }
 
                 foreach (var player in match.PlayingPlayers)
-                {
                     player.Player.Queue.EnqueuePacket(new MatchSkip());
-                }
             }
 
             return Task.CompletedTask;

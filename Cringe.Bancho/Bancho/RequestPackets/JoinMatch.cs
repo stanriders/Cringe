@@ -38,13 +38,16 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             {
                 session.Queue.EnqueuePacket(new MatchJoinFail());
                 session.Queue.EnqueuePacket(new Notification("Lobbeshnika nema, on nyuknulsya D:"));
+
                 return Task.CompletedTask;
             }
 
-            if(match.ConnectWithPassword(session, password))
+            if (match.ConnectWithPassword(session, password))
                 Logger.LogInformation("{Token} | Connected to the match | {@Match}", session.Token, match);
             else
-                Logger.LogInformation("{Token} | Tried to connect to match with wrong password ({HisPassword}) ({RealPassword})", session.Token, password, match.Match.Password);
+                Logger.LogInformation(
+                    "{Token} | Tried to connect to match with wrong password ({HisPassword}) ({RealPassword})",
+                    session.Token, password, match.Match.Password);
 
             return Task.CompletedTask;
         }

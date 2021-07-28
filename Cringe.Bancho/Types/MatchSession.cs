@@ -19,6 +19,7 @@ namespace Cringe.Bancho.Types
 
         public Match Match { get; private set; }
 
+        public event Action<Match> LobbyUpdate;
         public event Action<Match> UpdateMatch;
 
         public void Connect(PlayerSession session)
@@ -26,7 +27,7 @@ namespace Cringe.Bancho.Types
             Register(session);
             session.Queue.EnqueuePacket(new MatchJoinSuccess(Match));
             session.Queue.EnqueuePacket(new ChannelJoinSuccess(GlobalChat.Multiplayer));
-            OnUpdateMatch();
+            OnUpdateMatch(true);
         }
 
         private void Register(PlayerSession session)
@@ -80,9 +81,11 @@ namespace Cringe.Bancho.Types
             OnUpdateMatch();
         }
 
-        public virtual void OnUpdateMatch()
+        public virtual void OnUpdateMatch(bool lobby = false)
         {
             UpdateMatch?.Invoke(Match);
+            if (lobby)
+                LobbyUpdate?.Invoke(Match);
         }
 
         public void ChangeSlot(PlayerSession session, int slotId)
@@ -100,7 +103,7 @@ namespace Cringe.Bancho.Types
 
             Match.Slots[slotId] = Match.Slots[oldSlot];
             Match.Slots[oldSlot] = slot;
-            OnUpdateMatch();
+            OnUpdateMatch(true);
         }
 
         public void Update(Match match)
@@ -108,7 +111,7 @@ namespace Cringe.Bancho.Types
             var oldMatch = Match;
             match.Slots = oldMatch.Slots;
             Match = match;
-            OnUpdateMatch();
+            OnUpdateMatch(true);
         }
 
         public override string ToString()

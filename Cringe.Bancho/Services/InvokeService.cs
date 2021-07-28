@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.RequestPackets;
 using Cringe.Bancho.Types;
@@ -31,7 +30,14 @@ namespace Cringe.Bancho.Services
                 new MatchChangeMods(serviceProvider),
                 new MatchChangeSettings(serviceProvider),
                 new MatchChangeSlot(serviceProvider),
+                new MatchHasBeatmap(serviceProvider),
                 new MatchLock(serviceProvider),
+                new MatchNoBeatmap(serviceProvider),
+                new MatchNotReady(serviceProvider),
+                new MatchReady(serviceProvider),
+                new MatchStart(serviceProvider),
+                new MatchScoreUpdate(serviceProvider),
+                new MatchComplete(serviceProvider),
                 new PartLobby(serviceProvider),
                 new PartMatch(serviceProvider),
                 new PingPacket(serviceProvider),

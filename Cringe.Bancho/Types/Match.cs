@@ -22,10 +22,11 @@ namespace Cringe.Bancho.Types
         public MatchTeamTypes TeamTypes { get; set; } = MatchTeamTypes.head_to_head;
         public bool InProgress { get; set; }
         public List<Slot> Slots { get; set; } = new int[16].Select(_ => new Slot()).ToList();
+        public IEnumerable<Slot> Players => Slots.Where(x => x.Player is not null);
 
         public Mods Mods { get; set; }
 
-        public static Match NullMatch => new Match
+        public static Match NullMatch => new()
         {
             Id = 0,
             Name = "",
@@ -39,6 +40,16 @@ namespace Cringe.Bancho.Types
             InProgress = false,
             Mods = Mods.None
         };
+
+        public Slot GetHost()
+        {
+            return GetPlayer(Host);
+        }
+
+        public Slot GetPlayer(int id)
+        {
+            return Slots.FirstOrDefault(x => x.Player.Player.Id == id);
+        }
 
         public static Match Parse(byte[] data)
         {

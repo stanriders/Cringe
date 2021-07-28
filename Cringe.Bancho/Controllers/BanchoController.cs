@@ -76,6 +76,7 @@ namespace Cringe.Bancho.Controllers
             if (!await _playersPool.Connect(token))
             {
                 _logger.LogWarning("{Token} | Invalid login", token);
+
                 return null;
             }
 

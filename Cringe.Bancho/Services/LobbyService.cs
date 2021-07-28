@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
 using Microsoft.Extensions.Logging;
@@ -56,7 +55,7 @@ namespace Cringe.Bancho.Services
                     session.Token, matchSession.Match);
 
             OnNewMatch(matchSession.Match);
-            matchSession.UpdateMatch += OnUpdateMatch;
+            matchSession.LobbyUpdate += OnUpdateMatch;
 
             return matchSession;
         }

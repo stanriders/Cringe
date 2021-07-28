@@ -35,7 +35,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
             if (slot is null)
             {
-                Logger.LogCritical("{Token} | User has MatchSession but not found in any slot of the match.\n{@Match}", session.Token, match);
+                Logger.LogCritical("{Token} | User has MatchSession but not found in any slot of the match.\n{@Match}",
+                    session.Token, match);
                 session.Queue.EnqueuePacket(new UpdateMatch(Match.NullMatch));
 
                 return Task.CompletedTask;
@@ -50,13 +51,15 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
             else
             {
-                if(match.Match.Host == session.Token.PlayerId)
+                if (match.Match.Host == session.Token.PlayerId)
                     match.Match.Mods = mods;
                 else
-                    Logger.LogInformation("{Token} | Attempted to change mods as non-host. The host is {Host}", session.Token, match.Match.Host);
+                    Logger.LogInformation("{Token} | Attempted to change mods as non-host. The host is {Host}",
+                        session.Token, match.Match.Host);
             }
 
             match.OnUpdateMatch();
+
             return Task.CompletedTask;
         }
     }

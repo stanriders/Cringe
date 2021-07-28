@@ -34,9 +34,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
 
             if (!ChatService.SendGlobalMessage(message))
-            {
                 Logger.LogWarning("{Token} | User tries to send a message {Message}", session.Token, message);
-            }
         }
     }
 }

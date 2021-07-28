@@ -144,12 +144,12 @@ namespace Cringe.Web.Controllers
         {
             // TODO: check username/password
 
-            await using var replayData = _replayStorage.GetReplay(scoreId);
+            var replayData = await _replayStorage.GetRawReplay(scoreId);
 
-            if (replayData is not null)
-                return File(replayData, "application/octet-stream");
+            if (replayData is null)
+                return NotFound();
 
-            return NotFound();
+            return new FileContentResult(replayData, "text/html; charset=UTF-8");
         }
     }
 }

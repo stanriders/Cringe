@@ -4,6 +4,7 @@ using Cringe.Database;
 using Cringe.Types;
 using Cringe.Types.Database;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Web.Controllers
 {
@@ -12,31 +13,34 @@ namespace Cringe.Web.Controllers
     public class UsersController : ControllerBase
     {
         private readonly PlayerDatabaseContext _playerDatabaseContext;
-        //private readonly PlayersPool _pool;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(PlayerDatabaseContext playerDatabaseContext)
+        public UsersController(PlayerDatabaseContext playerDatabaseContext, ILogger<UsersController> logger)
         {
-            //_pool = pool;
             _playerDatabaseContext = playerDatabaseContext;
+            _logger = logger;
         }
 
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] RegisterForm user, [FromForm] int check)
         {
+            _logger.LogDebug($"Trying to register player {user.username}");
+
             if (check == 0)
                 return Ok();
 
             if (_playerDatabaseContext.Players.Any(x => x.Username == user.username))
+            {
+                _logger.LogWarning($"Player {user.username} tried registering, but username has been taken!");
                 return BadRequest();
+            }
 
             var player = Player.Generate(user.username, user.password);
 
             await _playerDatabaseContext.Players.AddAsync(player);
             await _playerDatabaseContext.SaveChangesAsync();
 
-            // queue = PlayersPool.GetPlayer(player.Id).Queue;
-
-            //return queue.GetResult();
+            _logger.LogInformation($"Registered player {player.Username} with ID {player.Id}");
 
             return Ok();
         }

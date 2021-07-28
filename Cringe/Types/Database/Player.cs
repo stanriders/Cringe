@@ -22,10 +22,10 @@ namespace Cringe.Types.Database
 
         public static Player DummyPlayer => new()
         {
-            Accuracy = 1.0f,
+            Accuracy = 0.0f,
             Playcount = 0,
             TotalScore = 0,
-            Rank = 1,
+            Rank = 0,
             Pp = 0,
             UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff |
                        UserRanks.Admin

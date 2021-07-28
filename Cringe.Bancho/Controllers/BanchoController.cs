@@ -5,6 +5,7 @@ using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
+using Cringe.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,7 @@ namespace Cringe.Bancho.Controllers
     {
         private const uint protocol_version = 19;
         private readonly ChatService _chat;
+        private readonly PlayerDatabaseContext _database;
         private readonly IConfiguration _config;
         private readonly InvokeService _invoke;
         private readonly ILogger<BanchoController> _logger;
@@ -25,7 +27,7 @@ namespace Cringe.Bancho.Controllers
         private readonly TokenService _tokenService;
 
         public BanchoController(IConfiguration config, ILogger<BanchoController> logger, TokenService tokenService,
-            InvokeService invoke, PlayersPool playersPool, ChatService chat)
+            InvokeService invoke, PlayersPool playersPool, ChatService chat, PlayerDatabaseContext database)
         {
             _config = config;
             _logger = logger;
@@ -33,6 +35,7 @@ namespace Cringe.Bancho.Controllers
             _invoke = invoke;
             _playersPool = playersPool;
             _chat = chat;
+            _database = database;
         }
 
         [HttpGet]
@@ -102,7 +105,7 @@ namespace Cringe.Bancho.Controllers
             if (!string.IsNullOrEmpty(_config["MainMenuBanner"]))
                 queue.EnqueuePacket(new MainMenuIcon(_config["MainMenuBanner"]));
 
-            queue.EnqueuePacket(new FriendsList(new[] {2}));
+            queue.EnqueuePacket(new FriendsList(_database.Players.Select(x => x.Id).ToArray()));
 
             if (!string.IsNullOrEmpty(_config["LoginMessage"]))
                 queue.EnqueuePacket(new Notification(_config["LoginMessage"]));

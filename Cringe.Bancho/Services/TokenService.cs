@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
-using Cringe.Services;
 using Cringe.Types;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,13 +10,11 @@ namespace Cringe.Bancho.Services
 {
     public class TokenService
     {
-        private static readonly List<UserToken> _tokens = new();
+        private static readonly ConcurrentBag<UserToken> _tokens = new();
         private readonly PlayerDatabaseContext _playerDatabaseContext;
-        private readonly PlayerTopscoreStatsCache _ppCache;
 
-        public TokenService(PlayerTopscoreStatsCache ppCache, PlayerDatabaseContext playerDatabaseContext)
+        public TokenService(PlayerDatabaseContext playerDatabaseContext)
         {
-            _ppCache = ppCache;
             _playerDatabaseContext = playerDatabaseContext;
         }
 

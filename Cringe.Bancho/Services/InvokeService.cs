@@ -32,6 +32,7 @@ namespace Cringe.Bancho.Services
                 new MatchChangeMods(serviceProvider),
                 new MatchChangeSettings(serviceProvider),
                 new MatchChangeSlot(serviceProvider),
+                new MatchChangeTeam(serviceProvider),
                 new MatchHasBeatmap(serviceProvider),
                 new MatchLoadComplete(serviceProvider),
                 new MatchLock(serviceProvider),

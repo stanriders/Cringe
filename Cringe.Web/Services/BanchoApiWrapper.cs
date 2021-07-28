@@ -16,7 +16,11 @@ namespace Cringe.Web.Services
 
         public Task SendNotification(int playerId, string text)
         {
-            return _client.PostAsync("api/notification", new FormUrlEncodedContent(new []{ new KeyValuePair<string, string>(playerId.ToString(), text)}));
+            return _client.PostAsync("api/notification", new FormUrlEncodedContent(new []
+            {
+                new KeyValuePair<string, string>("playerId", playerId.ToString()),
+                new KeyValuePair<string, string>("text", text)
+            }));
         }
     }
 }

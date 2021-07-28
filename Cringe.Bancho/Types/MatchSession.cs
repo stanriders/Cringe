@@ -22,6 +22,20 @@ namespace Cringe.Bancho.Types
         public event Action<Match> LobbyUpdate;
         public event Action<Match> UpdateMatch;
 
+        public bool ConnectWithPassword(PlayerSession session, string password)
+        {
+             if (Match.Password != "" && password != Match.Password)
+             {
+                 session.Queue.EnqueuePacket(new MatchJoinFail());
+                 session.Queue.EnqueuePacket(new Notification("Wrong password"));
+
+                 return false;
+             }
+
+             Connect(session);
+
+             return true;
+        }
         public void Connect(PlayerSession session)
         {
             Register(session);

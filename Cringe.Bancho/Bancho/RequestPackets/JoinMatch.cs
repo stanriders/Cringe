@@ -41,16 +41,10 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 return Task.CompletedTask;
             }
 
-            if (match.Match.Password != "" && password != match.Match.Password)
-            {
-                session.Queue.EnqueuePacket(new MatchJoinFail());
-                session.Queue.EnqueuePacket(new Notification("Wrong password"));
-                return Task.CompletedTask;
-            }
-
-            match.Connect(session);
-
-            Logger.LogInformation("{Token} | Connected to the match | {@Match}", session.Token, match);
+            if(match.ConnectWithPassword(session, password))
+                Logger.LogInformation("{Token} | Connected to the match | {@Match}", session.Token, match);
+            else
+                Logger.LogInformation("{Token} | Tried to connect to match with wrong password ({HisPassword}) ({RealPassword})", session.Token, password, match.Match.Password);
 
             return Task.CompletedTask;
         }

@@ -40,6 +40,8 @@ namespace Cringe.Bancho.Services
                 new MatchNotReady(serviceProvider),
                 new MatchReady(serviceProvider),
                 new MatchStart(serviceProvider),
+                new MatchFailed(serviceProvider),
+                new MatchSkipRequest(serviceProvider),
                 new MatchTransferHost(serviceProvider),
                 new MatchScoreUpdate(serviceProvider),
                 new MatchComplete(serviceProvider),
@@ -67,8 +69,9 @@ namespace Cringe.Bancho.Services
                 packets.Add((type, packetData));
             }
 
-            if(!(packets.Count == 1 && packets[0].type is ClientPacketType.Ping or ClientPacketType.MatchScoreUpdate))
-                _logger.LogDebug("{Token} | Invokes these packets\n{Packets}", session.Token, packets.Select(x => x.type));
+            if (!(packets.Count == 1 && packets[0].type is ClientPacketType.Ping or ClientPacketType.MatchScoreUpdate))
+                _logger.LogDebug("{Token} | Invokes these packets\n{Packets}", session.Token,
+                    packets.Select(x => x.type));
 
             foreach (var (type, data) in packets)
             {

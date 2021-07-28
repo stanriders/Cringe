@@ -24,18 +24,19 @@ namespace Cringe.Bancho.Types
 
         public bool ConnectWithPassword(PlayerSession session, string password)
         {
-             if (Match.Password != "" && password != Match.Password)
-             {
-                 session.Queue.EnqueuePacket(new MatchJoinFail());
-                 session.Queue.EnqueuePacket(new Notification("Wrong password"));
+            if (Match.Password != "" && password != Match.Password)
+            {
+                session.Queue.EnqueuePacket(new MatchJoinFail());
+                session.Queue.EnqueuePacket(new Notification("Wrong password"));
 
-                 return false;
-             }
+                return false;
+            }
 
-             Connect(session);
+            Connect(session);
 
-             return true;
+            return true;
         }
+
         public void Connect(PlayerSession session)
         {
             Register(session);

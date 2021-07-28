@@ -138,6 +138,8 @@ namespace Cringe.Bancho.Controllers
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
             var session = PlayersPool.GetPlayer(token.PlayerId);
+            if (session is null)
+                return PacketQueue.NullUser();
 
             await using var inStream = new MemoryStream();
             await Request.Body.CopyToAsync(inStream);

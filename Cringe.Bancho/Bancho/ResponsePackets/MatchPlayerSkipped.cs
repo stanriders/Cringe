@@ -11,7 +11,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
             _slot = slot;
         }
 
-        public override ServerPacketType Type => ServerPacketType.MatchPlayerFailed;
+        public override ServerPacketType Type => ServerPacketType.MatchPlayerSkipped;
 
         public override byte[] GetBytes()
         {

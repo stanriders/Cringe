@@ -143,7 +143,7 @@ namespace Cringe.Bancho.Controllers
             await Request.Body.CopyToAsync(inStream);
             var data = inStream.ToArray();
 
-            _invoke.Invoke(session, data);
+            await _invoke.Invoke(session, data);
 
             return session.Queue;
         }

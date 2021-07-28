@@ -51,6 +51,11 @@ namespace Cringe.Bancho.Types
             return Slots.FirstOrDefault(x => x.Player?.Player.Id == id);
         }
 
+        public byte GetPlayerPosition(int id)
+        {
+            return (byte) Slots.FindIndex(x => x.Player?.Player.Id == id);
+        }
+
         public static Match Parse(byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));

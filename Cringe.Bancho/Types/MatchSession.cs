@@ -56,7 +56,8 @@ namespace Cringe.Bancho.Types
             session.Queue.EnqueuePacket(new ChannelKick(GlobalChat.Multiplayer));
             session.MatchSession = null;
 
-            Match.GetPlayer(session.Token.PlayerId).Wipe();;
+            Match.GetPlayer(session.Token.PlayerId).Wipe();
+            ;
             var slots = Match.Players.ToArray();
 
             if (slots.Length == 0)

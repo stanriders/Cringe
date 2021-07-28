@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;

@@ -64,7 +64,8 @@ namespace Cringe.Bancho.Services
                 packets.Add((type, packetData));
             }
 
-            _logger.LogDebug("{Token} | Invokes these packets\n{Packets}", session.Token, packets.Select(x => x.type));
+            if(!(packets.Count == 1 && packets[0].type is ClientPacketType.Ping or ClientPacketType.MatchScoreUpdate))
+                _logger.LogDebug("{Token} | Invokes these packets\n{Packets}", session.Token, packets.Select(x => x.type));
 
             foreach (var (type, data) in packets)
             {

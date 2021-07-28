@@ -1,3 +1,4 @@
+using System;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Web.Services;
@@ -27,12 +28,17 @@ namespace Cringe.Web
             services.AddTransient<BeatmapService>();
             services.AddTransient<PpService>();
             services.AddTransient<OsuApiWrapper>();
+            services.AddTransient<BanchoApiWrapper>();
             services.AddTransient<PlayerTopscoreStatsCache>();
             services.AddTransient<PlayerRankCache>();
             services.AddTransient<ReplayStorage>();
             services.AddTransient<ScoreService>();
 
-            services.AddHttpClient<OsuApiWrapper>();
+            services.AddHttpClient<OsuApiWrapper>(client =>
+            {
+                client.BaseAddress = new Uri(Configuration["BanchoApiAddress"] ?? "127.0.0.1");
+            });
+            services.AddHttpClient<BanchoApiWrapper>();
             services.AddMemoryCache();
 
             services.AddControllers();

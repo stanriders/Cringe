@@ -35,6 +35,7 @@ namespace Cringe.Bancho.Services
                 new MatchHasBeatmap(serviceProvider),
                 new MatchLoadComplete(serviceProvider),
                 new MatchLock(serviceProvider),
+                new MatchInvite(serviceProvider),
                 new MatchNoBeatmap(serviceProvider),
                 new MatchNotReady(serviceProvider),
                 new MatchReady(serviceProvider),

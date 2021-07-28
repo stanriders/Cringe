@@ -8,6 +8,7 @@ using Cringe.Services;
 using Cringe.Types.Database;
 using Cringe.Types.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Paddings;
@@ -24,10 +25,11 @@ namespace Cringe.Web.Services
         private readonly PlayerRankCache _rankCache;
         private readonly ScoreDatabaseContext _scoreContext;
         private readonly BanchoApiWrapper _banchoApiWrapper;
+        private readonly ILogger<ScoreService> _logger;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
             BeatmapDatabaseContext beatmapContext, PpService ppService, PlayerTopscoreStatsCache ppCache,
-            PlayerRankCache rankCache, BanchoApiWrapper banchoApiWrapper)
+            PlayerRankCache rankCache, BanchoApiWrapper banchoApiWrapper, ILogger<ScoreService> logger)
         {
             _scoreContext = scoreContext;
             _playerContext = playerContext;
@@ -36,49 +38,54 @@ namespace Cringe.Web.Services
             _ppCache = ppCache;
             _rankCache = rankCache;
             _banchoApiWrapper = banchoApiWrapper;
+            _logger = logger;
         }
 
         public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit, bool failed)
         {
-            // TODO: recent scores
-            if (quit || failed)
-                return null;
-
             var score = await ProcessScoreData(DecryptScoreData(encodedData, iv, osuver));
 
             if (score is null)
+            {
+                _logger.LogWarning("Failed to decrypt a score!");
                 return null;
+            }
 
-            // don't submit if previous score has bigger score
-            if (score.PreviousScore?.Score > score.Score)
-                return null;
-
-            // this shouldn't happen since we check for quit & failed but it does
-            if (score.Rank == "F")
-                return null;
+            _logger.LogDebug("Received score {Score}", score);
 
             score.Quit = quit;
             score.Failed = !quit && failed;
-            score.Pp = await _ppService.CalculatePp(score);
 
-            if (score.PreviousScore is not null)
-                _scoreContext.Scores.Remove(score.PreviousScore);
-
-            await _scoreContext.Scores.AddAsync(score);
-            await _scoreContext.SaveChangesAsync();
-
-            if (score.Passed)
+            // TODO: recent scores
+            if (score.Rank != "F" && !quit && !failed)
             {
-                score.Player.Playcount++;
-                await _ppCache.UpdatePlayerStats(score.Player);
-                await _rankCache.UpdatePlayerRank(score.Player);
+                // don't submit if previous score has bigger score
+                if (score.PreviousScore?.Score > score.Score)
+                    return null;
+
+                if (score.PreviousScore is not null)
+                    _scoreContext.Scores.Remove(score.PreviousScore);
+
+                score.Pp = await _ppService.CalculatePp(score);
+
+                await _scoreContext.Scores.AddAsync(score);
+                await _scoreContext.SaveChangesAsync();
+
+                _logger.LogDebug($"Wrote score #{score.Id} to database");
+
+                if (score.Passed)
+                {
+                    await _ppCache.UpdatePlayerStats(score.Player);
+                    await _rankCache.UpdatePlayerRank(score.Player);
+                }
+
+                // send score as a notif to confirm submission
+                await _banchoApiWrapper.SendNotification(score.Player.Id, $"{Math.Round(score.Pp, 2)} pp");
             }
 
+            score.Player.Playcount++;
             score.Player.TotalScore += (ulong) score.Score;
             await _playerContext.SaveChangesAsync();
-
-            // send score as a notif to confirm submission
-            await _banchoApiWrapper.SendNotification(score.Player.Id, $"{Math.Round(score.Pp, 2)} pp");
 
             return score;
         }

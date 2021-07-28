@@ -28,6 +28,7 @@ namespace Cringe.Bancho.Services
                 new JoinLobby(serviceProvider),
                 new JoinMatch(serviceProvider),
                 new LogoutPacket(serviceProvider),
+                new MatchChangeMods(serviceProvider),
                 new MatchChangeSettings(serviceProvider),
                 new MatchChangeSlot(serviceProvider),
                 new MatchLock(serviceProvider),

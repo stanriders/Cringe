@@ -18,12 +18,27 @@ namespace Cringe.Bancho.Types
         public string MapName { get; set; }
         public GameModes Mode { get; set; } = GameModes.Osu;
         public bool FreeMode { get; set; }
-        public MatchWinConditions WinConditions { get; set; }
+        public MatchWinConditions WinConditions { get; set; } = MatchWinConditions.score;
         public MatchTeamTypes TeamTypes { get; set; } = MatchTeamTypes.head_to_head;
         public bool InProgress { get; set; }
         public List<Slot> Slots { get; set; } = new int[16].Select(_ => new Slot()).ToList();
 
         public Mods Mods { get; set; }
+
+        public static Match NullMatch => new Match
+        {
+            Id = 0,
+            Name = "",
+            Password = "",
+            Host = 0,
+            MapId = 0,
+            MapMd5 = "",
+            MapName = "",
+            Mode = GameModes.Osu,
+            FreeMode = false,
+            InProgress = false,
+            Mods = Mods.None
+        };
 
         public static Match Parse(byte[] data)
         {

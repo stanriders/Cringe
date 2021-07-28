@@ -2,29 +2,16 @@
 using System.IO;
 using System.Linq;
 using Cringe.Bancho.Bancho;
+using Cringe.Types;
 using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Bancho.Types
 {
-    public class Match
+    public class Match : MatchModel
     {
-        public short Id { get; set; }
-        public string Name { get; set; }
-        public string Password { get; set; }
-        public int Host { get; set; }
-        public int MapId { get; set; }
-        public string MapMd5 { get; set; }
-        public string MapName { get; set; }
-        public GameModes Mode { get; set; } = GameModes.Osu;
-        public bool FreeMode { get; set; }
-        public MatchWinConditions WinConditions { get; set; } = MatchWinConditions.score;
-        public MatchTeamTypes TeamTypes { get; set; } = MatchTeamTypes.head_to_head;
-        public bool InProgress { get; set; }
         public List<Slot> Slots { get; set; } = new int[16].Select(_ => new Slot()).ToList();
         public IEnumerable<Slot> Players => Slots.Where(x => x.Player is not null);
-
-        public Mods Mods { get; set; }
 
         public static Match NullMatch => new()
         {

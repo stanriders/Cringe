@@ -1,0 +1,49 @@
+﻿@page
+@model Cringe.Web.Pages.Matches.IndexModel
+@{
+    ViewData["Title"] = "Active matches";
+}
+
+<h1>Active matches</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Map</th>
+            <th>Host</th>
+            <th>Mode</th>
+            <th>Mods</th>
+            <th>Team type</th>
+            <th>Win condition</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var match in Model.Matches)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => match.Name) @(match.InProgress ? "(in progress)" : "")
+            </td>
+            <td>
+                <a asp-page="./Beatmaps/Index" asp-route-id="@match.MapId">@match.MapName</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => match.Host)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => match.Mode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => match.Mods)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => match.TeamTypes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => match.WinConditions)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -34,11 +34,11 @@ namespace Cringe.Web
             services.AddTransient<ReplayStorage>();
             services.AddTransient<ScoreService>();
 
-            services.AddHttpClient<OsuApiWrapper>(client =>
+            services.AddHttpClient<OsuApiWrapper>();
+            services.AddHttpClient<BanchoApiWrapper>(client =>
             {
-                client.BaseAddress = new Uri(Configuration["BanchoApiAddress"] ?? "127.0.0.1");
+                client.BaseAddress = new Uri(Configuration["BanchoApiAddress"] ?? "http://127.0.0.1");
             });
-            services.AddHttpClient<BanchoApiWrapper>();
             services.AddMemoryCache();
 
             services.AddControllers();

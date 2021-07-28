@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cringe.Bancho.Controllers
 {
+    [Route("/api")]
     public class ApiController : ControllerBase
     {
         private readonly LobbyService _lobby;

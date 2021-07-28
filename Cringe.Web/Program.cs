@@ -38,7 +38,7 @@ namespace Cringe.Web
                         .Enrich.FromLogContext()
                         .WriteTo.Sentry(o => o.Dsn = services.GetService<IConfiguration>()?["SentryKey"])
                         .WriteTo.Console()
-                        .WriteTo.Datadog(new DatadogConfiguration("127.0.0.1", null, "main", System.Array.Empty<string>()))
+                        .WriteTo.Datadog(new DatadogConfiguration("127.0.0.1", 8125, "main", new[] { "cringe.web" }))
                         .WriteTo.File("log.txt", rollingInterval: RollingInterval.Month))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

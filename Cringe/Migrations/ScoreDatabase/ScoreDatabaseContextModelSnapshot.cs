@@ -3,6 +3,7 @@ using System;
 using Cringe.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Cringe.Migrations.ScoreDatabase
 {

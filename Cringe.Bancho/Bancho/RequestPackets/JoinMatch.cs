@@ -20,6 +20,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             using var reader = new BinaryReader(new MemoryStream(data));
             var id = reader.ReadInt32();
+            var password = ReadString(reader.BaseStream);
+
             if (session.MatchSession is not null)
             {
                 session.Queue.EnqueuePacket(new MatchJoinFail());
@@ -32,6 +34,20 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
 
             var match = Lobby.GetSession(id);
+            if (match is null)
+            {
+                session.Queue.EnqueuePacket(new MatchJoinFail());
+                session.Queue.EnqueuePacket(new Notification("Lobbeshnika nema, on nyuknulsya D:"));
+                return Task.CompletedTask;
+            }
+
+            if (match.Match.Password != "" && password != match.Match.Password)
+            {
+                session.Queue.EnqueuePacket(new MatchJoinFail());
+                session.Queue.EnqueuePacket(new Notification("Wrong password"));
+                return Task.CompletedTask;
+            }
+
             match.Connect(session);
 
             Logger.LogInformation("{Token} | Connected to the match | {@Match}", session.Token, match);

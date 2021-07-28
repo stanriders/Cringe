@@ -18,26 +18,24 @@ namespace Cringe.Web.Services
     public class ScoreService
     {
         private readonly BeatmapDatabaseContext _beatmapContext;
-
         private readonly PlayerDatabaseContext _playerContext;
-
-        //private readonly PlayersPool _pool;
         private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly PpService _ppService;
         private readonly PlayerRankCache _rankCache;
         private readonly ScoreDatabaseContext _scoreContext;
+        private readonly BanchoApiWrapper _banchoApiWrapper;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
-            BeatmapDatabaseContext beatmapContext, PpService ppService, //PlayersPool pool,
-            PlayerTopscoreStatsCache ppCache, PlayerRankCache rankCache)
+            BeatmapDatabaseContext beatmapContext, PpService ppService, PlayerTopscoreStatsCache ppCache,
+            PlayerRankCache rankCache, BanchoApiWrapper banchoApiWrapper)
         {
-            //_pool = pool;
             _scoreContext = scoreContext;
             _playerContext = playerContext;
             _beatmapContext = beatmapContext;
             _ppService = ppService;
             _ppCache = ppCache;
             _rankCache = rankCache;
+            _banchoApiWrapper = banchoApiWrapper;
         }
 
         public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit,
@@ -130,8 +128,7 @@ namespace Cringe.Web.Services
                 await _playerContext.SaveChangesAsync();
 
                 // send score as a notif to confirm submission
-                //var queue = PlayersPool.GetPlayer(player.Id).Queue;
-                //queue.EnqueuePacket(new Notification($"{Math.Round(submittedScore.Pp, 2)} pp"));
+                await _banchoApiWrapper.SendNotification(player.Id, $"{Math.Round(submittedScore.Pp, 2)} pp");
 
                 return submittedScore;
             }

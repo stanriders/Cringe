@@ -14,7 +14,7 @@ namespace Cringe.Database
             var dbPath = configuration["DbFolder"] ?? "./";
             _connectionString = $"Filename={Path.Combine(dbPath, "beatmaps.db")}";
 
-            Database.EnsureCreated();
+            Database.Migrate();
         }
 
         public DbSet<Beatmap> Beatmaps { get; set; }

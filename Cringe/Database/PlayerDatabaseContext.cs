@@ -14,7 +14,7 @@ namespace Cringe.Database
             var dbPath = configuration["DbFolder"] ?? "./";
             _connectionString = $"Filename={Path.Combine(dbPath, "players.db")}";
 
-            Database.EnsureCreated();
+            Database.Migrate();
         }
 
         public DbSet<Player> Players { get; set; }
@@ -28,7 +28,7 @@ namespace Cringe.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PlayerRankQuery>(eb => { eb.HasNoKey(); });
+            modelBuilder.Entity<PlayerRankQuery>(entity => { entity.HasNoKey().ToView(null); });
         }
     }
 }

@@ -49,13 +49,14 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                     Logger.LogInformation("{Token} | User kicks {KickedPlayerId} with a lock", session.Token,
                         lockedSlot.Player.Player.Id);
                     lockedSlot.Player.Queue.EnqueuePacket(new Notification("You've been killed with a fucking lock"));
+
                     session.MatchSession.Disconnect(lockedSlot.Player);
                 }
 
                 lockedSlot.Status = SlotStatus.locked;
             }
 
-            session.MatchSession.OnUpdateMatch();
+            session.MatchSession.OnUpdateMatch(true);
             Logger.LogDebug("{Token} | User locks a slot. Match info: {@Match}", session.Token,
                 session.MatchSession.Match);
 

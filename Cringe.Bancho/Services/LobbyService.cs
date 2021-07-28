@@ -56,7 +56,7 @@ namespace Cringe.Bancho.Services
                     session.Token, matchSession.Match);
 
             OnNewMatch(matchSession.Match);
-            matchSession.UpdateMatch += OnUpdateMatch;
+            matchSession.LobbyUpdate += OnUpdateMatch;
 
             return matchSession;
         }

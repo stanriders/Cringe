@@ -23,6 +23,7 @@ namespace Cringe.Bancho.Types
         public bool InProgress { get; set; }
         public List<Slot> Slots { get; set; } = new int[16].Select(_ => new Slot()).ToList();
         public IEnumerable<Slot> Players => Slots.Where(x => x.Player is not null);
+        public IEnumerable<Slot> PlayingPlayers => Players.Where(x => x.Status == SlotStatus.playing);
 
         public Mods Mods { get; set; }
 
@@ -53,9 +54,9 @@ namespace Cringe.Bancho.Types
             return Slots.FirstOrDefault(x => x.Player?.Player.Id == id);
         }
 
-        public byte GetPlayerPosition(int id)
+        public int GetPlayerPosition(int id)
         {
-            return (byte) Slots.FindIndex(x => x.Player?.Player.Id == id);
+            return Slots.FindIndex(x => x.Player?.Player.Id == id);
         }
 
         public static Match Parse(byte[] data)

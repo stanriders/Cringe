@@ -16,15 +16,13 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.ChannelJoin;
 
-        public override Task Execute(PlayerSession session, byte[] data)
+        public override async Task Execute(PlayerSession session, byte[] data)
         {
-            using var stream = new MemoryStream(data);
+            await using var stream = new MemoryStream(data);
             var str = ReadString(stream);
             Logger.LogInformation("{Token} | Connecting to the {Chat} chat", session.Token, str);
             var chat = ChatService.GetChat(str);
             chat?.Connect(session);
-
-            return Task.CompletedTask;
         }
     }
 }

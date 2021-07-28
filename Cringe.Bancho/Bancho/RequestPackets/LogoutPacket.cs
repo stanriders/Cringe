@@ -19,7 +19,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         {
             if (!Pool.Disconnect(session.Token))
                 Logger.LogWarning("{Token} | Failed to disconnect", session.Token);
-            ;
+
             ChatService.Purge(session);
 
             Logger.LogInformation("{Token} | User logged out.\nConnected users are\n{Users}", session.Token,

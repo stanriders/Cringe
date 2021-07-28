@@ -38,6 +38,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             {
                 if (player.Status != SlotStatus.complete) continue;
 
+                player.Loaded = false;
+                player.Skipped = false;
                 player.Status = SlotStatus.not_ready;
                 player.Player.Queue.EnqueuePacket(new ResponsePackets.MatchComplete());
             }

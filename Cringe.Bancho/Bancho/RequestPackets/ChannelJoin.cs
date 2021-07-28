@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
-    public class ChannelJoinPacket : RequestPacket
+    public class ChannelJoin : RequestPacket
     {
-        public ChannelJoinPacket(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ChannelJoin(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 

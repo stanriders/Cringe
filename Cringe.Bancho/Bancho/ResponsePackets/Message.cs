@@ -26,7 +26,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
             var data = PackData(Sender.Username).AsEnumerable();
             data = data.Concat(PackData(Content));
             data = data.Concat(PackData(Receiver));
-
+            data = data.Concat(PackData(Sender.Id));
             return data.ToArray();
         }
 

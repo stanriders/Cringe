@@ -8,6 +8,7 @@ using Cringe.Bancho.Bancho.RequestPackets;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Microsoft.Extensions.Logging;
+using ChangeAction = Cringe.Bancho.Bancho.RequestPackets.ChangeAction;
 
 namespace Cringe.Bancho.Services
 {
@@ -21,8 +22,8 @@ namespace Cringe.Bancho.Services
             _logger = logger;
             _handlers = new RequestPacket[]
             {
-                new ChangeActionPacket(serviceProvider),
-                new ChannelJoinPacket(serviceProvider),
+                new ChangeAction(serviceProvider),
+                new ChannelJoin(serviceProvider),
                 new ChannelPart(serviceProvider),
                 new CreateMatch(serviceProvider),
                 new JoinLobby(serviceProvider),
@@ -34,6 +35,7 @@ namespace Cringe.Bancho.Services
                 new MatchHasBeatmap(serviceProvider),
                 new MatchLoadComplete(serviceProvider),
                 new MatchLock(serviceProvider),
+                new MatchInvite(serviceProvider),
                 new MatchNoBeatmap(serviceProvider),
                 new MatchNotReady(serviceProvider),
                 new MatchReady(serviceProvider),

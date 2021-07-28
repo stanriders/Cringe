@@ -18,7 +18,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (session.MatchSession is null)
                 return Task.CompletedTask;
 
-            data[11] = session.MatchSession.Match.GetPlayerPosition(session.Player.Id);
+            data[4] = session.MatchSession.Match.GetPlayerPosition(session.Player.Id);
             foreach (var player in session.MatchSession.Match.Players)
                 player.Player.Queue.EnqueuePacket(new ResponsePackets.MatchScoreUpdate(data));
 

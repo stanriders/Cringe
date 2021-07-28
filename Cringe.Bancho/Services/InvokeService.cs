@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.RequestPackets;
 using Cringe.Bancho.Types;

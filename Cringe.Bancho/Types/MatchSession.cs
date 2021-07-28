@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Types.Enums.Multiplayer;
@@ -85,7 +84,7 @@ namespace Cringe.Bancho.Types
         public virtual void OnUpdateMatch(bool lobby = false)
         {
             UpdateMatch?.Invoke(Match);
-            if(lobby)
+            if (lobby)
                 LobbyUpdate?.Invoke(Match);
         }
 

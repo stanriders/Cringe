@@ -14,10 +14,11 @@ namespace Cringe.Bancho.Services
     public class PlayersPool
     {
         private readonly PlayerDatabaseContext _database;
-        private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly ILogger<PlayersPool> _logger;
+        private readonly PlayerTopscoreStatsCache _ppCache;
 
-        public PlayersPool(PlayerDatabaseContext database, PlayerTopscoreStatsCache ppCache, ILogger<PlayersPool> logger)
+        public PlayersPool(PlayerDatabaseContext database, PlayerTopscoreStatsCache ppCache,
+            ILogger<PlayersPool> logger)
         {
             _database = database;
             _ppCache = ppCache;

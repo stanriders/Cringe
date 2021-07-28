@@ -16,13 +16,11 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             if (session.MatchSession is null)
-            {
                 return Task.CompletedTask;
-            }
 
             foreach (var player in session.MatchSession.Match.Players)
             {
-                if(player.Player == session) continue;
+                if (player.Player == session) continue;
 
                 player.Player.Queue.EnqueuePacket(new ResponsePackets.MatchScoreUpdate(data));
             }

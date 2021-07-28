@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using Cringe.Bancho.Bancho.ResponsePackets;
-using Cringe.Types.Database;
+﻿using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Types.Enums;
 
 namespace Cringe.Bancho.Types

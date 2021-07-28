@@ -4,7 +4,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
 {
     public class MatchScoreUpdate : ResponsePacket
     {
-        private byte[] _bytes;
+        private readonly byte[] _bytes;
 
         public MatchScoreUpdate(byte[] bytes)
         {

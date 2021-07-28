@@ -10,6 +10,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
     public class MatchComplete : RequestPacket
     {
         public static object key = new();
+
         public MatchComplete(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
@@ -22,9 +23,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             if (session.MatchSession is null)
-            {
                 return Task.CompletedTask;
-            }
 
             var match = session.MatchSession.Match;
             var slot = match.GetPlayer(session.Token.PlayerId);
@@ -32,6 +31,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             lock (key) //I believe we may have problems without mutex
             {
                 slot.Status = SlotStatus.complete;
+
                 if (match.Slots.Any(x => x.Status == SlotStatus.playing))
                     return Task.CompletedTask;
             }
@@ -46,6 +46,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
 
             session.MatchSession.OnUpdateMatch();
+
             return Task.CompletedTask;
         }
     }

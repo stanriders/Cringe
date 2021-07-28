@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
@@ -20,6 +21,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (session.MatchSession is null)
             {
                 Logger.LogError("{Token} | MatchStart packet while not in match", session.Token);
+
                 return Task.CompletedTask;
             }
 
@@ -27,6 +29,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (match.Host != session.Token.PlayerId)
             {
                 Logger.LogInformation("{Token} | Attempted to start match as non-host", session.Token);
+
                 return Task.CompletedTask;
             }
 
@@ -38,7 +41,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 player.Status = SlotStatus.playing;
             }
 
-            var response = new ResponsePackets.NewMatch(match);
+            var response = new NewMatch(match);
             foreach (var player in match.Players)
             {
                 if (player.Status != SlotStatus.playing) continue;
@@ -47,6 +50,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
 
             session.MatchSession.OnUpdateMatch(true);
+
             return Task.CompletedTask;
         }
     }

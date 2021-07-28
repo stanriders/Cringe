@@ -20,6 +20,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (session.MatchSession is null)
             {
                 Logger.LogError("{Token} | No beatmap status while not in match", session.Token);
+
                 return Task.CompletedTask;
             }
 
@@ -27,6 +28,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             var slot = match.GetPlayer(session.Token.PlayerId);
             slot.Status = SlotStatus.no_map;
             session.MatchSession.OnUpdateMatch();
+
             return Task.CompletedTask;
         }
     }

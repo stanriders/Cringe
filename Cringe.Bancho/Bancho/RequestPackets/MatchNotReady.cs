@@ -21,8 +21,11 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             var slot = session.MatchSession?.Match.Slots.FirstOrDefault(x => x.Player == session);
             if (slot is null)
             {
-                Logger.LogError("{Token} | User tries to set not_ready status while his MatchSession is null or user hasn't been founded in slots. Match info: {@Session}", session.Token, session.MatchSession);
+                Logger.LogError(
+                    "{Token} | User tries to set not_ready status while his MatchSession is null or user hasn't been founded in slots. Match info: {@Session}",
+                    session.Token, session.MatchSession);
                 session.UpdateMatch(Match.NullMatch);
+
                 return Task.CompletedTask;
             }
 

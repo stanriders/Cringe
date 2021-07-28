@@ -20,9 +20,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
             data[11] = session.MatchSession.Match.GetPlayerPosition(session.Player.Id);
             foreach (var player in session.MatchSession.Match.Players)
-            {
                 player.Player.Queue.EnqueuePacket(new ResponsePackets.MatchScoreUpdate(data));
-            }
 
             return Task.CompletedTask;
         }

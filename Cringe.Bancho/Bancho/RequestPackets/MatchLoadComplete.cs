@@ -9,7 +9,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 {
     public class MatchLoadComplete : RequestPacket
     {
-        private object key = new();
+        private readonly object key = new();
+
         public MatchLoadComplete(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
@@ -18,7 +19,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
         public override Task Execute(PlayerSession session, byte[] data)
         {
-            if(session.MatchSession is null)
+            if (session.MatchSession is null)
                 return Task.CompletedTask;
 
             var match = session.MatchSession.Match;
@@ -27,10 +28,9 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             {
                 var slot = match.GetPlayer(session.Token.PlayerId);
                 slot.Loaded = true;
+
                 if (match.Players.Where(x => x.Status == SlotStatus.playing).Any(player => !player.Loaded))
-                {
                     return Task.CompletedTask;
-                }
             }
 
             foreach (var player in match.Players)

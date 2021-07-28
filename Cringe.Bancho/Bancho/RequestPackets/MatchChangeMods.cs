@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
@@ -48,24 +47,28 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                     match.Match.Mods = mods & Mods.SpeedChangingMods;
 
                 slot.Mods = mods & ~Mods.SpeedChangingMods;
-                Logger.LogDebug("{Token} | Change freemod mod to {Mod}. Match info: {@Match}", session.Token, mods, match.Match);
+                Logger.LogDebug("{Token} | Change freemod mod to {Mod}. Match info: {@Match}", session.Token, mods,
+                    match.Match);
             }
             else
             {
                 if (match.Match.Host == session.Token.PlayerId)
                 {
                     match.Match.Mods = mods;
-                    Logger.LogDebug("{Token} | Change lobby mod to {Mod}. Match info: {@Match}", session.Token, mods, match.Match);
+                    Logger.LogDebug("{Token} | Change lobby mod to {Mod}. Match info: {@Match}", session.Token, mods,
+                        match.Match);
                 }
                 else
                 {
                     Logger.LogInformation("{Token} | Attempted to change mods as non-host. The host is {Host}",
                         session.Token, match.Match.Host);
+
                     return Task.CompletedTask;
                 }
             }
 
-            Logger.LogInformation("{Token} | Changes mods to {Mods}. Match info: {@Match}", session.Token, mods, match.Match);
+            Logger.LogInformation("{Token} | Changes mods to {Mods}. Match info: {@Match}", session.Token, mods,
+                match.Match);
 
             match.OnUpdateMatch();
 

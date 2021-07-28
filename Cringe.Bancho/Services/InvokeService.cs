@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.RequestPackets;
 using Cringe.Bancho.Types;
@@ -50,7 +51,7 @@ namespace Cringe.Bancho.Services
             }.ToDictionary(x => x.Type);
         }
 
-        public void Invoke(PlayerSession session, byte[] body)
+        public async Task Invoke(PlayerSession session, byte[] body)
         {
             using var reader = new BinaryReader(new MemoryStream(body));
             var packets = new List<(ClientPacketType type, byte[] data)>();
@@ -69,9 +70,7 @@ namespace Cringe.Bancho.Services
             {
                 if (!_handlers.TryGetValue(type, out var request)) continue;
 
-                var requestTask = request.Execute(session, data);
-
-                if (requestTask.Exception is not null) throw requestTask.Exception;
+                await request.Execute(session, data);
             }
         }
     }

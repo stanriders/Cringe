@@ -56,13 +56,12 @@ namespace Cringe.Bancho.Types
             session.Queue.EnqueuePacket(new ChannelKick(GlobalChat.Multiplayer));
             session.MatchSession = null;
 
-            var slots = Match.Slots.Where(x => x.Player is not null).ToArray();
-            slots.FirstOrDefault(x => x.Player == session)?.Wipe();
+            Match.GetPlayer(session.Token.PlayerId).Wipe();;
+            var slots = Match.Players.ToArray();
 
-            if (slots.Length <= 1)
+            if (slots.Length == 0)
             {
                 Dispose(Match);
-                OnUpdateMatch();
                 UpdateMatch -= session.UpdateMatch;
 
                 return;
@@ -71,14 +70,12 @@ namespace Cringe.Bancho.Types
             if (Match.Host == session.Player.Id)
             {
                 var host = slots[new Random().Next(0, slots.Length)].Player;
-
                 Match.Host = host.Player.Id;
-
                 host.Queue.EnqueuePacket(new MatchTransferHost());
             }
 
             UpdateMatch -= session.UpdateMatch;
-            OnUpdateMatch();
+            OnUpdateMatch(true);
         }
 
         public virtual void OnUpdateMatch(bool lobby = false)

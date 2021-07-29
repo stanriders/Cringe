@@ -55,10 +55,7 @@
     <table class="table">
         <thead>
         <tr>
-            <th>Rank</th>
             <th>Beatmap</th>
-            <th>Accuracy</th>
-            <th>Combo</th>
             <th>Mods</th>
             <th>Game Mode</th>
             <th>Date</th>
@@ -71,16 +68,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Rank)
-                </td>
-                <td>
-                    <a asp-page="./Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Accuracy)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MaxCombo)
+                    (@Html.DisplayFor(modelItem => item.Rank)) <a asp-page="./Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a> (@Html.DisplayFor(m => item.Accuracy))<br /><small>@(item.MaxCombo)x (@item.Count300 / @item.Count100 / @item.Count50 / @item.CountMiss)</small>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Mods)

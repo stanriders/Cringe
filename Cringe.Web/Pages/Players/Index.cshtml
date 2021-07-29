@@ -89,7 +89,7 @@
                     @Html.DisplayFor(modelItem => item.GameMode)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PlayDateTime)
+                    <time class="timeago" datetime="@Html.DisplayFor(modelItem => item.PlayDateTime)">@Html.DisplayFor(modelItem => item.PlayDateTime)</time>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Pp)

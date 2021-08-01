@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types.Database;
@@ -20,7 +21,7 @@ namespace Cringe.Web.Pages.Scores
 
         public async Task OnGetAsync()
         {
-            SubmittedScore = await _context.Scores.ToListAsync();
+            SubmittedScore = await _context.Scores.AsNoTracking().TakeLast(100).ToListAsync();
         }
     }
 }

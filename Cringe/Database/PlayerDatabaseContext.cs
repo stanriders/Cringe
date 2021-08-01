@@ -21,6 +21,8 @@ namespace Cringe.Database
 
         public DbSet<PlayerRankQuery> PlayerRankQuery { get; set; }
 
+        public DbSet<Friends> Friends { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(_connectionString);
@@ -29,6 +31,7 @@ namespace Cringe.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PlayerRankQuery>(entity => { entity.HasNoKey().ToView(null); });
+            modelBuilder.Entity<Friends>(entity => { entity.HasNoKey(); });
         }
     }
 }

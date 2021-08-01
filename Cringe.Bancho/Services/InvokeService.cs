@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.RequestPackets;
+using Cringe.Bancho.Bancho.RequestPackets.Match;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Microsoft.Extensions.Logging;

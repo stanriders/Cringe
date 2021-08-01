@@ -42,5 +42,14 @@ namespace Cringe.Bancho.Controllers
         {
             return _lobby.Sessions.Values;
         }
+
+        [HttpPost]
+        [Route("players/{playerId}/updateStats")]
+        public IActionResult UpdatePlayerStats(int playerId)
+        {
+            PlayersPool.GetPlayer(playerId)?.UpdateStats();
+
+            return Ok();
+        }
     }
 }

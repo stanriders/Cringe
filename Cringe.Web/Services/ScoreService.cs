@@ -81,6 +81,7 @@ namespace Cringe.Web.Services
 
                 // send score as a notif to confirm submission
                 await _banchoApiWrapper.SendNotification(score.Player.Id, $"{Math.Round(score.Pp, 2)} pp");
+                await _banchoApiWrapper.UpdatePlayerStats(score.Player.Id);
             }
 
             score.Player.Playcount++;

@@ -118,6 +118,12 @@ namespace Cringe.Bancho.Types
                 Pp = Player.Pp
             };
         }
+
+        public void UpdateStats()
+        {
+            Queue.EnqueuePacket(new UserStats(GetStats()));
+            Queue.EnqueuePacket(new UserPresence(GetPresence()));
+        }
         #endregion
     }
 }

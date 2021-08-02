@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +48,13 @@ namespace Cringe.Bancho.Bancho
         public FileContentResult GetResult()
         {
             return new(GetDataToSend(), "text/html; charset=UTF-8");
+        }
+
+        public static PacketQueue ServerRestarted()
+        {
+            return new PacketQueue()
+                .EnqueuePacket(new Notification("Server has restarted, reconnecting :)"))
+                .EnqueuePacket(new Restart(0));
         }
     }
 }

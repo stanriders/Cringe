@@ -29,9 +29,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
 
             var frame = new SpectateFrames(data);
             foreach (var viewer in spec.Viewers)
-            {
                 viewer.Queue.EnqueuePacket(frame);
-            }
 
             return Task.CompletedTask;
         }

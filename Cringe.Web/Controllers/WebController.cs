@@ -18,10 +18,10 @@ namespace Cringe.Web.Controllers
     public class WebController : ControllerBase
     {
         private readonly BeatmapDatabaseContext _beatmapContext;
+        private readonly PlayerDatabaseContext _playerDatabaseContext;
         private readonly ReplayStorage _replayStorage;
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
         private readonly ScoreService _scoreService;
-        private readonly PlayerDatabaseContext _playerDatabaseContext;
 
         public WebController(ScoreService scoreService,
             ScoreDatabaseContext scoreDatabaseContext,
@@ -58,10 +58,11 @@ namespace Cringe.Web.Controllers
         {
             var friends = await _playerDatabaseContext.Friends
                 .Where(x => x.From.Username == u)
-                .Select(x=> x.To.Id)
+                .Select(x => x.To.Id)
                 .ToArrayAsync();
 
-            return new FileContentResult(Encoding.UTF8.GetBytes(string.Join('\n', friends)), "text/html; charset=UTF-8");
+            return new FileContentResult(Encoding.UTF8.GetBytes(string.Join('\n', friends)),
+                "text/html; charset=UTF-8");
         }
 
         [HttpPost("osu-submit-modular-selector.php")]

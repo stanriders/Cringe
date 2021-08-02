@@ -1,6 +1,4 @@
-﻿
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Cringe.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,9 +16,12 @@ namespace Cringe.Web.Attributes
             if (dbContext is null ||
                 !context.ActionArguments.ContainsKey("u") ||
                 !context.ActionArguments.ContainsKey("h") ||
-                !await dbContext.Players.AnyAsync(x => x.Username == (string) context.ActionArguments["u"])) // && x.Password == (string) context.ActionArguments["h"]
+                !await dbContext.Players.AnyAsync(x =>
+                    x.Username ==
+                    (string) context.ActionArguments["u"])) // && x.Password == (string) context.ActionArguments["h"]
             {
                 context.Result = new UnauthorizedResult();
+
                 return;
             }
 

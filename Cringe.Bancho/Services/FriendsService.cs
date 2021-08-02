@@ -1,5 +1,4 @@
-﻿
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types.Database;
@@ -25,12 +24,14 @@ namespace Cringe.Bancho.Services
                 !PlayersPool.Players.TryGetValue(to, out var toSession))
             {
                 _logger.LogWarning("AddFriend failed for {From}->{To} because some of them had no session!", from, to);
+
                 return;
             }
 
             if (await _database.Friends.AnyAsync(x => x.From == fromSession.Player && x.To == toSession.Player))
             {
                 _logger.LogWarning("AddFriend failed for {From}->{To} because they are already friends!", from, to);
+
                 return;
             }
 
@@ -48,14 +49,18 @@ namespace Cringe.Bancho.Services
             if (!PlayersPool.Players.TryGetValue(from, out var fromSession) ||
                 !PlayersPool.Players.TryGetValue(to, out var toSession))
             {
-                _logger.LogWarning("RemoveFriend failed for {From}->{To} because some of them had no session!", from, to);
+                _logger.LogWarning("RemoveFriend failed for {From}->{To} because some of them had no session!", from,
+                    to);
+
                 return;
             }
 
-            var relation = await _database.Friends.Where(x => x.From == fromSession.Player && x.To == toSession.Player).SingleOrDefaultAsync();
+            var relation = await _database.Friends.Where(x => x.From == fromSession.Player && x.To == toSession.Player)
+                .SingleOrDefaultAsync();
             if (relation is null)
             {
                 _logger.LogWarning("RemoveFriend failed for {From}->{To} because they were never friends!", from, to);
+
                 return;
             }
 

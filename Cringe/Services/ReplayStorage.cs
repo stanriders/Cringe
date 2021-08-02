@@ -13,11 +13,12 @@ namespace Cringe.Services
 {
     public class ReplayStorage
     {
+        private readonly BeatmapDatabaseContext _beatmapDatabaseContext;
         private readonly string _cachePath;
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
-        private readonly BeatmapDatabaseContext _beatmapDatabaseContext;
 
-        public ReplayStorage(IConfiguration configuration, ScoreDatabaseContext scoreDatabaseContext, BeatmapDatabaseContext beatmapDatabaseContext)
+        public ReplayStorage(IConfiguration configuration, ScoreDatabaseContext scoreDatabaseContext,
+            BeatmapDatabaseContext beatmapDatabaseContext)
         {
             _scoreDatabaseContext = scoreDatabaseContext;
             _beatmapDatabaseContext = beatmapDatabaseContext;
@@ -61,7 +62,8 @@ namespace Cringe.Services
             if (score is null)
                 return null;
 
-            var beatmap = await _beatmapDatabaseContext.Beatmaps.Select(x=> new {x.Id, x.Md5}).FirstOrDefaultAsync(x => x.Id == score.BeatmapId);
+            var beatmap = await _beatmapDatabaseContext.Beatmaps.Select(x => new {x.Id, x.Md5})
+                .FirstOrDefaultAsync(x => x.Id == score.BeatmapId);
 
             if (beatmap is null)
                 return null;
@@ -72,7 +74,7 @@ namespace Cringe.Services
                 beatmap.Md5, score.MaxCombo,
                 score.FullCombo ? "True" : "False",
                 score.PlayerUsername, score.Score, score.Rank,
-                (int)score.Mods, "True");
+                (int) score.Mods, "True");
 
             using var md5 = MD5.Create();
             var hash = BitConverter.ToString(md5.ComputeHash(Encoding.Default.GetBytes(scoreData)))
@@ -81,7 +83,7 @@ namespace Cringe.Services
 
             await using var stream = new MemoryStream();
 
-            await stream.WriteAsync(new[] { (byte) score.GameMode });
+            await stream.WriteAsync(new[] {(byte) score.GameMode});
             await stream.WriteAsync(BitConverter.GetBytes(20210728));
             await stream.WriteAsync(PackString(beatmap.Md5));
             await stream.WriteAsync(PackString(score.PlayerUsername));
@@ -94,9 +96,9 @@ namespace Cringe.Services
             await stream.WriteAsync(BitConverter.GetBytes((ushort) score.CountMiss));
             await stream.WriteAsync(BitConverter.GetBytes((int) score.Score));
             await stream.WriteAsync(BitConverter.GetBytes((ushort) score.MaxCombo));
-            await stream.WriteAsync(new[] { score.FullCombo ? (byte) 1 : (byte) 0});
+            await stream.WriteAsync(new[] {score.FullCombo ? (byte) 1 : (byte) 0});
             await stream.WriteAsync(BitConverter.GetBytes((int) score.Mods));
-            await stream.WriteAsync(new byte[] { 0x00 });
+            await stream.WriteAsync(new byte[] {0x00});
             await stream.WriteAsync(BitConverter.GetBytes(score.PlayDateTime.Ticks));
             await stream.WriteAsync(await PackReplay(filePath));
             await stream.WriteAsync(BitConverter.GetBytes((long) scoreId));

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
-using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
 using Microsoft.Extensions.Logging;
 
@@ -8,8 +7,9 @@ namespace Cringe.Bancho.Services
 {
     public class SpectateService
     {
-        private readonly ConcurrentDictionary<int, SpectateSession> _pool;
         private readonly ILogger<SpectateService> _logger;
+        private readonly ConcurrentDictionary<int, SpectateSession> _pool;
+
         public SpectateService(ILogger<SpectateService> logger)
         {
             _logger = logger;
@@ -26,15 +26,13 @@ namespace Cringe.Bancho.Services
                 _pool.TryAdd(host.Id, spectate);
             }
 
+
             if (spectator.SpectateSession is not null && spectator.SpectateSession != spectate)
             {
                 spectator.SpectateSession.Disconnect(spectator);
-            }
 
             if (spectate.Viewers.Contains(spectator))
-            {
                 return;
-            }
 
             spectate.Connect(spectator);
             _logger.LogDebug("{Token} | Connected to {@Spec}", spectator.Token, spectate);

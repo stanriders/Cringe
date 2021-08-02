@@ -9,6 +9,8 @@ namespace Cringe.Bancho.Types
 {
     public class SpectateSession
     {
+        private readonly Action<int> _nuke;
+
         public SpectateSession(PlayerSession host, Action<int> nuke)
         {
             Host = host;
@@ -18,7 +20,6 @@ namespace Cringe.Bancho.Types
 
         public PlayerSession Host { get; }
         public ConcurrentBag<PlayerSession> Viewers { get; }
-        private readonly Action<int> _nuke;
 
         public void Disconnect(PlayerSession session)
         {
@@ -27,12 +28,14 @@ namespace Cringe.Bancho.Types
             if (!Viewers.Contains(session))
             {
                 Log.Error("{Token} | Attempted to disconnect from spectate", session.Token);
+
                 return;
             }
 
             if (!Viewers.TryTake(out _))
             {
                 Log.Error("{Token} | Cannot remove from Viewers. Viewers: {@Viewers}", session.Token, Viewers);
+
                 return;
             }
 
@@ -44,6 +47,7 @@ namespace Cringe.Bancho.Types
             if (Viewers.IsEmpty)
             {
                 _nuke(Host.Id);
+
                 return;
             }
 
@@ -83,15 +87,14 @@ namespace Cringe.Bancho.Types
             if (!Viewers.Contains(session))
             {
                 session.SpectateSession = null;
+
                 return;
             }
 
             Host.Queue.EnqueuePacket(new SpectatorJoined(session.Id));
             var reconnectPacket = new FellowSpectatorJoined(session.Id);
             foreach (var viewer in Viewers.Where(x => x != session))
-            {
                 viewer.Queue.EnqueuePacket(reconnectPacket);
-            }
         }
     }
 }

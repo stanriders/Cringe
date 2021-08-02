@@ -19,10 +19,12 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
             if (session.SpectateSession is null)
             {
                 Logger.LogError("{Token} | Attempted to stop spectating as non-spectator", session.Token);
+
                 return Task.CompletedTask;
             }
 
             session.SpectateSession.Disconnect(session);
+
             return Task.CompletedTask;
         }
     }

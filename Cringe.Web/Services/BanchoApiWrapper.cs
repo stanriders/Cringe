@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -19,7 +18,7 @@ namespace Cringe.Web.Services
 
         public Task SendNotification(int playerId, string text)
         {
-            return _client.PostAsync("api/notification", new FormUrlEncodedContent(new []
+            return _client.PostAsync("api/notification", new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("playerId", playerId.ToString()),
                 new KeyValuePair<string, string>("text", text)
@@ -37,7 +36,7 @@ namespace Cringe.Web.Services
         {
             var response = await _client.GetAsync("api/lobby/matches");
 
-            var apiType = new []
+            var apiType = new[]
             {
                 new
                 {
@@ -45,7 +44,8 @@ namespace Cringe.Web.Services
                 }
             };
 
-            return JsonConvert.DeserializeAnonymousType(await response.Content.ReadAsStringAsync(), apiType).Select(x=> x.match).ToArray();
+            return JsonConvert.DeserializeAnonymousType(await response.Content.ReadAsStringAsync(), apiType)
+                .Select(x => x.match).ToArray();
         }
 
         public Task UpdatePlayerStats(int playerId)

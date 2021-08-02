@@ -12,8 +12,8 @@ namespace Cringe.Web.Controllers
     [Route("/users")]
     public class UsersController : ControllerBase
     {
-        private readonly PlayerDatabaseContext _playerDatabaseContext;
         private readonly ILogger<UsersController> _logger;
+        private readonly PlayerDatabaseContext _playerDatabaseContext;
 
         public UsersController(PlayerDatabaseContext playerDatabaseContext, ILogger<UsersController> logger)
         {
@@ -32,6 +32,7 @@ namespace Cringe.Web.Controllers
             if (_playerDatabaseContext.Players.Any(x => x.Username == user.username))
             {
                 _logger.LogWarning($"Player {user.username} tried registering, but username has been taken!");
+
                 return BadRequest();
             }
 

@@ -48,6 +48,7 @@ namespace Cringe.Bancho.Services
             OnPlayerLoggedIn(session);
             PlayerLoggedIn += session.PlayerLoggedIn;
             PlayerLoggedOut += session.PlayerLoggedOut;
+
             if (!Players.TryAdd(token.PlayerId, session))
             {
                 _logger.LogCritical("{Token} | Unable to add to a concurrent dictionary of player sessions", token);
@@ -66,6 +67,7 @@ namespace Cringe.Bancho.Services
             PlayerLoggedIn -= playerSession.PlayerLoggedIn;
             PlayerLoggedOut -= playerSession.PlayerLoggedOut;
             OnPlayerLoggedOut(playerSession);
+
             Players.Remove(token.PlayerId, out _);
             _logger.LogDebug("{Token} | Disconnected from PlayersPool", token);
             _logger.LogDebug("Currently connected players:\n{Dump}", string.Join("|", GetPlayersId()));
@@ -73,8 +75,8 @@ namespace Cringe.Bancho.Services
             return true;
         }
 
-        public event Action<PlayerSession> PlayerLoggedIn;
-        public event Action<PlayerSession> PlayerLoggedOut;
+        public static event Action<PlayerSession> PlayerLoggedIn;
+        public static event Action<PlayerSession> PlayerLoggedOut;
 
         public static IEnumerable<int> GetPlayersId()
         {

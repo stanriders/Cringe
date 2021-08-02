@@ -21,7 +21,7 @@ namespace Cringe.Web.Pages.Players
 
         public async Task OnGetAsync()
         {
-            Player = await _context.Players.OrderByDescending(x => x.Pp).ToListAsync();
+            Player = await _context.Players.AsNoTracking().OrderByDescending(x => x.Pp).ToListAsync();
         }
     }
 }

@@ -47,5 +47,10 @@ namespace Cringe.Web.Services
 
             return JsonConvert.DeserializeAnonymousType(await response.Content.ReadAsStringAsync(), apiType).Select(x=> x.match).ToArray();
         }
+
+        public Task UpdatePlayerStats(int playerId)
+        {
+            return _client.PostAsync($"api/players/{playerId}/updateStats", null!);
+        }
     }
 }

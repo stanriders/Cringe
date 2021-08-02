@@ -25,7 +25,8 @@ namespace Cringe.Web.Pages.Beatmaps
 
         public async Task OnGetAsync(int? start, int? amount)
         {
-            Beatmap = await _context.Beatmaps.OrderByDescending(x => x.Id)
+            Beatmap = await _context.Beatmaps.AsNoTracking()
+                .OrderByDescending(x => x.Id)
                 .Skip(start ?? 0)
                 .Take(amount ?? 100)
                 .ToListAsync();

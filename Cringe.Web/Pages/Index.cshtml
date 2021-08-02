@@ -14,9 +14,6 @@ Online players: @string.Join(", ", Model.OnlinePlayers)
         <th>#</th>
         <th>Beatmap</th>
         <th>Username</th>
-        <th>Accuracy</th>
-        <th>Combo</th>
-        <th>Rank</th>
         <th>Mods</th>
         <th>Game Mode</th>
         <th>Date</th>
@@ -32,19 +29,10 @@ Online players: @string.Join(", ", Model.OnlinePlayers)
                 @(i + 1)
             </td>
             <td>
-                <a asp-page="./Beatmaps/Index" asp-route-id="@Model.Scores[i].BeatmapId">@Model.Scores[i].BeatmapTitle</a>
+                (@Html.DisplayFor(modelItem => Model.Scores[i].Rank)) <a asp-page="./Beatmaps/Index" asp-route-id="@Model.Scores[i].BeatmapId">@Model.Scores[i].BeatmapTitle</a> (@Html.DisplayFor(m => m.Scores[i].Accuracy))<br /><small>@(Model.Scores[i].MaxCombo)x (@Model.Scores[i].Count300 / @Model.Scores[i].Count100 / @Model.Scores[i].Count50 / @Model.Scores[i].CountMiss)</small>
             </td>
             <td>
                 <a asp-page="./Players/Index" asp-route-id="@Model.Scores[i].PlayerId">@Model.Scores[i].PlayerUsername</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => Model.Scores[i].Accuracy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => Model.Scores[i].MaxCombo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => Model.Scores[i].Rank)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => Model.Scores[i].Mods)
@@ -53,7 +41,7 @@ Online players: @string.Join(", ", Model.OnlinePlayers)
                 @Html.DisplayFor(modelItem => Model.Scores[i].GameMode)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => Model.Scores[i].PlayDateTime)
+                <time class="timeago" datetime="@Html.DisplayFor(modelItem => Model.Scores[i].PlayDateTime)">@Html.DisplayFor(modelItem => Model.Scores[i].PlayDateTime)</time>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => Model.Scores[i].Pp)

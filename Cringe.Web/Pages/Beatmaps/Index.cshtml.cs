@@ -31,7 +31,7 @@ namespace Cringe.Web.Pages.Beatmaps
 
             if (Beatmap == null) return NotFound();
 
-            Scores = await _scoreContext.Scores
+            Scores = await _scoreContext.Scores.AsNoTracking()
                 .Where(x => x.BeatmapId == Beatmap.Id)
                 .Take(100)
                 .OrderByDescending(x => x.Score)

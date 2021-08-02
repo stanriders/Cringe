@@ -21,6 +21,8 @@ namespace Cringe.Database
 
         public DbSet<PlayerRankQuery> PlayerRankQuery { get; set; }
 
+        public DbSet<Friends> Friends { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(_connectionString);

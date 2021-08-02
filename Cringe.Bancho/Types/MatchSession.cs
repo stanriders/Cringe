@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Cringe.Bancho.Bancho.ResponsePackets;
+using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Bancho.Types

@@ -1,9 +1,11 @@
 ﻿using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;
 using Cringe.Types.Enums;
+using Cringe.Web.Attributes;
 using Cringe.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,20 +21,22 @@ namespace Cringe.Web.Controllers
         private readonly ReplayStorage _replayStorage;
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
         private readonly ScoreService _scoreService;
+        private readonly PlayerDatabaseContext _playerDatabaseContext;
 
         public WebController(ScoreService scoreService,
             ScoreDatabaseContext scoreDatabaseContext,
             BeatmapDatabaseContext beatmapContext,
-            ReplayStorage replayStorage)
+            ReplayStorage replayStorage,
+            PlayerDatabaseContext playerDatabaseContext)
         {
             _scoreService = scoreService;
             _scoreDatabaseContext = scoreDatabaseContext;
             _beatmapContext = beatmapContext;
             _replayStorage = replayStorage;
+            _playerDatabaseContext = playerDatabaseContext;
         }
 
         [HttpPost("osu-error.php")]
-        [HttpGet("osu-getfriends.php")]
         [HttpGet("lastfm.php")]
         [HttpGet("osu-getseasonal.php")]
         [HttpPost("osu-session.php")]
@@ -41,11 +45,23 @@ namespace Cringe.Web.Controllers
             return new OkResult();
         }
 
+        [Auth]
         [HttpGet("bancho_connect.php")]
         public IActionResult Connect(string u, string h)
         {
-            // TODO: login here
             return new OkObjectResult("BR"); // ripple outputs player's country here, we output brazil
+        }
+
+        [Auth]
+        [HttpGet("osu-getfriends.php")]
+        public async Task<IActionResult> GetFriends(string u, string h)
+        {
+            var friends = await _playerDatabaseContext.Friends
+                .Where(x => x.From.Username == u)
+                .Select(x=> x.To.Id)
+                .ToArrayAsync();
+
+            return new FileContentResult(Encoding.UTF8.GetBytes(string.Join('\n', friends)), "text/html; charset=UTF-8");
         }
 
         [HttpPost("osu-submit-modular-selector.php")]
@@ -58,7 +74,7 @@ namespace Cringe.Web.Controllers
         {
             var submittedScore = await _scoreService.SubmitScore(score, iv, osuver, quit == "1", failed == "1");
 
-            if (submittedScore == null)
+            if (submittedScore == null || submittedScore.Id == 0)
                 return new OkResult();
 
             await using var replayStream = replay.OpenReadStream();
@@ -97,6 +113,7 @@ namespace Cringe.Web.Controllers
             return new OkObjectResult(outData);
         }
 
+        //[Auth] // FIXME: its "us" and "ha" instead of "u" and "h"
         [HttpGet("osu-osz2-getscores.php")]
         public async Task<IActionResult> GetScores([FromQuery(Name = "c")] string md5,
             [FromQuery(Name = "f")] string fileName,
@@ -137,19 +154,18 @@ namespace Cringe.Web.Controllers
             return new OkObjectResult(data);
         }
 
+        [Auth]
         [HttpGet("osu-getreplay.php")]
         public async Task<IActionResult> GetReplay([FromQuery(Name = "c")] int scoreId,
             [FromQuery(Name = "u")] string username,
             [FromQuery(Name = "h")] string password)
         {
-            // TODO: check username/password
+            var replayData = await _replayStorage.GetRawReplay(scoreId);
 
-            await using var replayData = _replayStorage.GetReplay(scoreId);
+            if (replayData is null)
+                return NotFound();
 
-            if (replayData is not null)
-                return File(replayData, "application/octet-stream");
-
-            return NotFound();
+            return new FileContentResult(replayData, "text/html; charset=UTF-8");
         }
     }
 }

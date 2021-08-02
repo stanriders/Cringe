@@ -1,9 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.ResponsePackets;
+using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Types;
 using Cringe.Types.Database;
 using Destructurama.Attributed;
+using Serilog;
 
 namespace Cringe.Bancho.Types
 {
@@ -31,12 +33,11 @@ namespace Cringe.Bancho.Types
         {
             Queue.EnqueuePacket(new UserStats(player.GetStats()));
             Queue.EnqueuePacket(new UserPresence(player.GetPresence()));
-            //TODO: Green message on friend login
         }
 
         public void PlayerLoggedOut(PlayerSession player)
         {
-            //TODO: Red message on friend logout
+            Queue.EnqueuePacket(new UserLogout(player.Player.Id));
         }
         #endregion
 
@@ -122,6 +123,12 @@ namespace Cringe.Bancho.Types
                 GameRank = Player.Rank,
                 Pp = Player.Pp
             };
+        }
+
+        public void UpdateStats()
+        {
+            Queue.EnqueuePacket(new UserStats(GetStats()));
+            Queue.EnqueuePacket(new UserPresence(GetPresence()));
         }
         #endregion
     }

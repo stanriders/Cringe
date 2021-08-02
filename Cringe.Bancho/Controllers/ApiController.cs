@@ -11,11 +11,13 @@ namespace Cringe.Bancho.Controllers
     {
         private readonly LobbyService _lobby;
         private readonly StatsService _stats;
+        private readonly SpectateService _spectate;
 
-        public ApiController(LobbyService lobby, StatsService stats)
+        public ApiController(LobbyService lobby, StatsService stats, SpectateService spectate)
         {
             _lobby = lobby;
             _stats = stats;
+            _spectate = spectate;
         }
 
         [HttpPost]
@@ -45,8 +47,15 @@ namespace Cringe.Bancho.Controllers
             return _lobby.Sessions.Values;
         }
 
+        [HttpGet]
+        [Route("spec/specs")]
+        public IEnumerable<SpectateSession> GetSpecs()
+        {
+            return _spectate.Pool.Values;
+        }
+
         [HttpPost]
-        [Route("players/{playerId}/updateStats")]
+        [Route("players/{playerId:int}/updateStats")]
         public IActionResult UpdatePlayerStats(int playerId)
         {
             _stats.RemoveStats(playerId);

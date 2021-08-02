@@ -25,11 +25,13 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
             {
                 if (session.SpectateSession.Host.Id == id)
                 {
+                    Logger.LogDebug("{Token} | Reconnecting to {@Spec}", session.Token, session.SpectateSession);
                     session.SpectateSession.Reconnect(session);
 
                     return Task.CompletedTask;
                 }
 
+                Logger.LogDebug("{Token} | Disconnecting from {@Spec}", session.Token, session.SpectateSession);
                 session.SpectateSession.Disconnect(session);
             }
 
@@ -42,6 +44,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
                 return Task.CompletedTask;
             }
 
+            Logger.LogDebug("{Token} | Connecting to {@Host}", session.Token, host);
             Spectate.StartSpectating(host, session);
 
             return Task.CompletedTask;

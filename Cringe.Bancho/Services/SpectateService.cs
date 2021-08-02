@@ -31,11 +31,12 @@ namespace Cringe.Bancho.Services
             {
                 spectator.SpectateSession.Disconnect(spectator);
 
-            if (spectate.Viewers.Contains(spectator))
-                return;
+                if (spectate.Viewers.Contains(spectator))
+                    return;
 
-            spectate.Connect(spectator);
-            _logger.LogDebug("{Token} | Connected to {@Spec}", spectator.Token, spectate);
+                spectate.Connect(spectator);
+                _logger.LogDebug("{Token} | Connected to {@Spec}", spectator.Token, spectate);
+            }
         }
 
         private void Destroy(int id)

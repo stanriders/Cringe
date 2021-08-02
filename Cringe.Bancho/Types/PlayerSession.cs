@@ -86,6 +86,7 @@ namespace Cringe.Bancho.Types
         #endregion
 
         #region Presence
+        public Presence Presence => GetPresence();
         public Presence GetPresence()
         {
             return new()
@@ -101,6 +102,7 @@ namespace Cringe.Bancho.Types
             };
         }
 
+        public Stats Stats => GetStats();
         public Stats GetStats()
         {
             return new()

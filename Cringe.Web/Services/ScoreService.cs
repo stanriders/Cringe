@@ -3,11 +3,13 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types.Database;
 using Cringe.Types.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
@@ -22,29 +24,38 @@ namespace Cringe.Web.Services
         private readonly BeatmapDatabaseContext _beatmapContext;
         private readonly ILogger<ScoreService> _logger;
         private readonly PlayerDatabaseContext _playerContext;
-        private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly PpService _ppService;
-        private readonly PlayerRankCache _rankCache;
         private readonly ScoreDatabaseContext _scoreContext;
+        private readonly IMapper _mapper;
+        private readonly IMemoryCache _memoryCache;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
-            BeatmapDatabaseContext beatmapContext, PpService ppService, PlayerTopscoreStatsCache ppCache,
-            PlayerRankCache rankCache, BanchoApiWrapper banchoApiWrapper, ILogger<ScoreService> logger)
+            BeatmapDatabaseContext beatmapContext, PpService ppService, BanchoApiWrapper banchoApiWrapper,
+            ILogger<ScoreService> logger, IMapper mapper, IMemoryCache memoryCache)
         {
             _scoreContext = scoreContext;
             _playerContext = playerContext;
             _beatmapContext = beatmapContext;
             _ppService = ppService;
-            _ppCache = ppCache;
-            _rankCache = rankCache;
             _banchoApiWrapper = banchoApiWrapper;
             _logger = logger;
+            _mapper = mapper;
+            _memoryCache = memoryCache;
         }
 
-        public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit,
+        public async Task<ScoreBase> SubmitScore(string encodedData, string iv, string osuver, bool quit,
             bool failed)
         {
-            var score = await ProcessScoreData(DecryptScoreData(encodedData, iv, osuver));
+            var scoreData = DecryptScoreData(encodedData, iv, osuver);
+            var scoreUniqueHash = $"{scoreData[0]}_{scoreData[1].Trim()}_{scoreData[9]}";
+
+            if (_memoryCache.TryGetValue(scoreUniqueHash, out _))
+            {
+                _logger.LogInformation("Duplicate score {Score}", scoreUniqueHash);
+                return null;
+            }
+
+            var score = await ProcessScoreData(scoreData);
 
             if (score is null)
             {
@@ -55,12 +66,23 @@ namespace Cringe.Web.Services
 
             _logger.LogDebug("Received score {Score}", score);
 
+            // disallow duplicates for 1 minute
+            _memoryCache.Set(scoreUniqueHash, 0, TimeSpan.FromMinutes(1));
+
             score.Quit = quit;
             score.Failed = !quit && failed;
+            score.Pp = await _ppService.CalculatePp(score);
 
-            // TODO: recent scores
+            await _scoreContext.RecentScores.AddAsync(_mapper.Map<RecentScore>(score));
+
+            SubmittedScore submittedScore = null;
+
             if (score.Rank != "F" && !quit && !failed)
             {
+                score.PreviousScore = await _scoreContext.Scores.AsNoTracking()
+                    .Where(x => x.PlayerId == score.PlayerId && x.BeatmapId == score.BeatmapId)
+                    .FirstOrDefaultAsync();
+
                 // don't submit if previous score has bigger score
                 if (score.PreviousScore?.Score > score.Score)
                     return null;
@@ -68,18 +90,8 @@ namespace Cringe.Web.Services
                 if (score.PreviousScore is not null)
                     _scoreContext.Scores.Remove(score.PreviousScore);
 
-                score.Pp = await _ppService.CalculatePp(score);
-
-                await _scoreContext.Scores.AddAsync(score);
-                await _scoreContext.SaveChangesAsync();
-
-                _logger.LogDebug($"Wrote score #{score.Id} to database");
-
-                if (score.Passed)
-                {
-                    await _ppCache.UpdatePlayerStats(score.Player);
-                    await _rankCache.UpdatePlayerRank(score.Player);
-                }
+                submittedScore = _mapper.Map<SubmittedScore>(score);
+                await _scoreContext.Scores.AddAsync(submittedScore);
 
                 // send score as a notif to confirm submission
                 await _banchoApiWrapper.SendNotification(score.Player.Id, $"{Math.Round(score.Pp, 2)} pp");
@@ -88,7 +100,16 @@ namespace Cringe.Web.Services
 
             score.Player.Playcount++;
             score.Player.TotalScore += (ulong) score.Score;
+
+            if (submittedScore is not null)
+            {
+                score.Id = submittedScore.Id;
+
+                _logger.LogDebug($"Wrote score #{score.Id} to database");
+            }
+
             await _playerContext.SaveChangesAsync();
+            await _scoreContext.SaveChangesAsync();
 
             return score;
         }
@@ -118,7 +139,7 @@ namespace Cringe.Web.Services
             return Encoding.Default.GetString(comparisonBytes).Split(':');
         }
 
-        private async Task<SubmittedScore> ProcessScoreData(string[] scoreData)
+        private async Task<ScoreBase> ProcessScoreData(string[] scoreData)
         {
             if (scoreData.Length >= 16 && scoreData[0].Length == 32)
             {
@@ -132,15 +153,11 @@ namespace Cringe.Web.Services
                 if (player is null)
                     return null;
 
-                var previousScore = await _scoreContext.Scores
-                    .Where(x => x.PlayerId == player.Id && x.BeatmapId == beatmap.Id)
-                    .FirstOrDefaultAsync();
-
                 if (!DateTime.TryParseExact(scoreData[16], "yyMMddHHmmss", CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out var date))
                     date = DateTime.UtcNow;
 
-                var submittedScore = new SubmittedScore
+                var submittedScore = new ScoreBase
                 {
                     Count300 = int.Parse(scoreData[3]),
                     Count100 = int.Parse(scoreData[4]),
@@ -163,8 +180,7 @@ namespace Cringe.Web.Services
 
                     // non-db models
                     Beatmap = beatmap,
-                    Player = player,
-                    PreviousScore = previousScore
+                    Player = player
                 };
 
                 return submittedScore;

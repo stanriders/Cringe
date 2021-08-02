@@ -52,6 +52,42 @@
             @Html.DisplayFor(model => model.Player.UserRank)
         </dd>
     </dl>
+    <h2>Recent scores</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Beatmap</th>
+            <th>Mods</th>
+            <th>Game Mode</th>
+            <th>Date</th>
+            <th>CRINGE POINTS</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.RecentScores)
+        {
+            <tr>
+                <td>
+                    (@Html.DisplayFor(modelItem => item.Rank)) <a asp-page="./Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a> (@Html.DisplayFor(m => item.Accuracy))<br/><small>@(item.MaxCombo)x (@item.Count300 / @item.Count100 / @item.Count50 / @item.CountMiss)</small>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mods)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameMode)
+                </td>
+                <td>
+                    <time class="timeago" datetime="@Html.DisplayFor(modelItem => item.PlayDateTime) UTC">@Html.DisplayFor(modelItem => item.PlayDateTime)</time>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pp)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <h2>Best scores</h2>
     <table class="table">
         <thead>
         <tr>

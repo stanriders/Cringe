@@ -15,7 +15,7 @@ namespace Cringe.Services
             _beatmapService = beatmapService;
         }
 
-        public async Task<double> CalculatePp(SubmittedScore score)
+        public async Task<double> CalculatePp(ScoreBase score)
         {
             await using var stream = new MemoryStream(await _beatmapService.GetBeatmapBytes(score.BeatmapId), false);
             using var reader = new StreamReader(stream, true);

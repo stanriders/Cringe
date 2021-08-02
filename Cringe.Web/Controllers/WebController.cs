@@ -70,13 +70,18 @@ namespace Cringe.Web.Controllers
             [FromForm] string iv,
             [FromForm] string osuver,
             [FromForm(Name = "x")] string quit,
-            [FromForm(Name = "ft")] string failed,
+            [FromForm(Name = "ft")] int failTime,
             [FromForm(Name = "score")] IFormFile replay)
         {
-            var submittedScore = await _scoreService.SubmitScore(score, iv, osuver, quit == "1", failed == "1");
+            var submittedScore = await _scoreService.SubmitScore(score, iv, osuver, quit == "1", failTime > 0);
 
             if (submittedScore == null || submittedScore.Id == 0)
-                return new OkResult();
+            {
+                var outFailedData = "beatmapId:0|beatmapSetId:0|beatmapPlaycount:3|beatmapPasscount:2|approvedDate:0\n" +
+                              new BeatmapChart() + new PlayerChart();
+
+                return new OkObjectResult(outFailedData);
+            }
 
             await using var replayStream = replay.OpenReadStream();
             await _replayStorage.SaveReplay(submittedScore.Id, replayStream);
@@ -86,6 +91,7 @@ namespace Cringe.Web.Controllers
                 new BeatmapChart
                 {
                     Name = "AYE",
+                    Url = $"https://bancho.stanr.info/beatmaps/{submittedScore.BeatmapId}",
                     RankBefore = 2,
                     RankAfter = 1,
                     ScoreBefore = (ulong) (submittedScore.PreviousScore?.Score ?? 0),
@@ -101,6 +107,7 @@ namespace Cringe.Web.Controllers
                 new PlayerChart
                 {
                     Name = "Profile",
+                    Url = $"https://bancho.stanr.info/players/{submittedScore.PlayerId}",
                     RankBefore = 99999,
                     RankAfter = submittedScore.Player.Rank,
                     ScoreBefore = submittedScore.Player.TotalScore - (ulong) submittedScore.Score,

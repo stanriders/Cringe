@@ -26,6 +26,8 @@ namespace Cringe.Web.Pages.Players
 
         public SubmittedScore[] Scores { get; set; }
 
+        public RecentScore[] RecentScores { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null) return NotFound();
@@ -41,9 +43,24 @@ namespace Cringe.Web.Pages.Players
                 .ToArrayAsync();
 
             foreach (var score in Scores)
+            {
                 score.Beatmap = await _beatmapContext.Beatmaps.Where(x => x.Id == score.BeatmapId)
                     .Select(x => new Beatmap {Artist = x.Artist, Title = x.Title, DifficultyName = x.DifficultyName})
                     .FirstOrDefaultAsync();
+            }
+
+            RecentScores = await _scoreContext.RecentScores
+                .Where(x => x.PlayerId == Player.Id)
+                .Take(100)
+                .OrderByDescending(x => x.PlayDateTime)
+                .ToArrayAsync();
+
+            foreach (var score in RecentScores)
+            {
+                score.Beatmap = await _beatmapContext.Beatmaps.Where(x => x.Id == score.BeatmapId)
+                    .Select(x => new Beatmap { Artist = x.Artist, Title = x.Title, DifficultyName = x.DifficultyName })
+                    .FirstOrDefaultAsync();
+            }
 
             return Page();
         }

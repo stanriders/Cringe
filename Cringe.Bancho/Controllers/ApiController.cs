@@ -3,7 +3,10 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
+using Cringe.Database;
+using Cringe.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cringe.Bancho.Controllers
 {
@@ -13,12 +16,19 @@ namespace Cringe.Bancho.Controllers
         private readonly LobbyService _lobby;
         private readonly StatsService _stats;
         private readonly SpectateService _spectate;
+        private readonly PlayerTopscoreStatsCache _ppCache;
+        private readonly PlayerRankCache _rankCache;
+        private readonly PlayerDatabaseContext _playerDatabaseContext;
 
-        public ApiController(LobbyService lobby, StatsService stats, SpectateService spectate)
+        public ApiController(LobbyService lobby, StatsService stats, SpectateService spectate,
+            PlayerTopscoreStatsCache ppCache, PlayerRankCache rankCache, PlayerDatabaseContext playerDatabaseContext)
         {
             _lobby = lobby;
             _stats = stats;
             _spectate = spectate;
+            _ppCache = ppCache;
+            _rankCache = rankCache;
+            _playerDatabaseContext = playerDatabaseContext;
         }
 
         [HttpPost]
@@ -57,9 +67,14 @@ namespace Cringe.Bancho.Controllers
 
         [HttpPost]
         [Route("players/{playerId:int}/updateStats")]
-        public IActionResult UpdatePlayerStats(int playerId)
+        public async Task<IActionResult> UpdatePlayerStats(int playerId)
         {
             _stats.RemoveStats(playerId);
+
+            var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x=> x.Id == playerId);
+            await _ppCache.UpdatePlayerStats(player);
+            await _rankCache.UpdatePlayerRank(player);
+            await _playerDatabaseContext.SaveChangesAsync();
 
             PlayersPool.GetPlayer(playerId)?.UpdateStats();
 
@@ -68,9 +83,9 @@ namespace Cringe.Bancho.Controllers
 
         [HttpGet]
         [Route("players/{playerId:int}/getStats")]
-        public async Task<Stats> GetStats(int playerId)
+        public Task<Stats> GetStats(int playerId)
         {
-            return await _stats.GetUpdates(playerId);
+            return _stats.GetUpdates(playerId);
         }
     }
 }

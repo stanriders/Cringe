@@ -19,6 +19,8 @@ namespace Cringe.Database
 
         public DbSet<SubmittedScore> Scores { get; set; }
 
+        public DbSet<RecentScore> RecentScores { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(_connectionString);

@@ -1,5 +1,6 @@
 using System;
 using Cringe.Database;
+using Cringe.Mappings;
 using Cringe.Services;
 using Cringe.Web.Services;
 using Microsoft.AspNetCore.Builder;
@@ -39,7 +40,10 @@ namespace Cringe.Web
             {
                 client.BaseAddress = new Uri(Configuration["BanchoApiAddress"] ?? "http://127.0.0.1");
             });
+
             services.AddMemoryCache();
+
+            services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddControllers();
             services.AddRazorPages();

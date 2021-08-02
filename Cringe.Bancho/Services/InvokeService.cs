@@ -52,7 +52,6 @@ namespace Cringe.Bancho.Services
                 new MatchTransferHost(serviceProvider),
                 new MatchScoreUpdate(serviceProvider),
                 new MatchComplete(serviceProvider),
-
                 new PartLobby(serviceProvider),
                 new PartMatch(serviceProvider),
                 new PingPacket(serviceProvider),
@@ -61,6 +60,7 @@ namespace Cringe.Bancho.Services
                 new SendPublicMessagePacket(serviceProvider),
                 new StartSpectating(serviceProvider),
                 new StopSpectating(serviceProvider),
+                new SpectateFrame(serviceProvider),
                 new UserStatsRequest(serviceProvider),
                 new UserPresenceRequest(serviceProvider)
             }.ToDictionary(x => x.Type);

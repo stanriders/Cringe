@@ -17,13 +17,12 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
         public override Task Execute(PlayerSession session, byte[] data)
         {
             var spec = session.SpectateSession;
+
             if (spec.Host.Id != session.Id) return Task.CompletedTask;
 
             var frame = new SpectateFrames(data);
             foreach (var viewer in spec.Viewers)
-            {
                 viewer.Queue.EnqueuePacket(frame);
-            }
 
             return Task.CompletedTask;
         }

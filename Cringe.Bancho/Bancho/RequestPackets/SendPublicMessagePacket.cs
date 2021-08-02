@@ -36,7 +36,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             {
                 if (session.SpectateSession is not null)
                 {
-                    foreach (var viewer in session.SpectateSession.Viewers)
+                    foreach (var viewer in session.SpectateSession.Viewers.Values)
                         viewer.ReceiveMessage(message);
                     session.SpectateSession.Host.ReceiveMessage(message);
                 }

@@ -112,8 +112,8 @@ namespace Cringe.Bancho.Controllers
                 queue.EnqueuePacket(new Notification(_config["LoginMessage"]));
 
             queue.EnqueuePacket(new SilenceEnd(0));
-            var myPresence = new UserPresence(session.GetPresence());
-            var myStats = new UserStats(session.GetStats());
+            var myPresence = new UserPresence(session.Presence);
+            var myStats = new UserStats(session.Stats);
             queue.EnqueuePacket(myPresence);
             queue.EnqueuePacket(myStats);
 
@@ -124,8 +124,8 @@ namespace Cringe.Bancho.Controllers
                 var player = PlayersPool.GetPlayer(i);
                 player.Queue.EnqueuePacket(myPresence);
                 player.Queue.EnqueuePacket(myStats);
-                queue.EnqueuePacket(new UserPresence(player.GetPresence()));
-                queue.EnqueuePacket(new UserStats(player.GetStats()));
+                queue.EnqueuePacket(new UserPresence(player.Presence));
+                queue.EnqueuePacket(new UserStats(player.Stats));
             }
 
             _chat.Initialize(session);

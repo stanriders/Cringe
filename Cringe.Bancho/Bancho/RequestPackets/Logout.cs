@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets
 {
-    public class LogoutPacket : RequestPacket
+    public class Logout : RequestPacket
     {
-        public LogoutPacket(IServiceProvider serviceProvider) : base(serviceProvider)
+        public Logout(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
@@ -20,6 +20,8 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (!Pool.Disconnect(session.Token))
                 Logger.LogWarning("{Token} | Failed to disconnect", session.Token);
 
+            session.MatchSession?.Disconnect(session);
+            Spectate.NukeOrLogout(session);
             ChatService.Purge(session);
             Stats.RemoveStats(session.Id);
 

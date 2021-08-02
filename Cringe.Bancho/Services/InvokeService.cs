@@ -32,7 +32,7 @@ namespace Cringe.Bancho.Services
                 new FriendRemove(serviceProvider),
                 new JoinLobby(serviceProvider),
                 new JoinMatch(serviceProvider),
-                new LogoutPacket(serviceProvider),
+                new Logout(serviceProvider),
 
                 new MatchChangeMods(serviceProvider),
                 new MatchChangeSettings(serviceProvider),

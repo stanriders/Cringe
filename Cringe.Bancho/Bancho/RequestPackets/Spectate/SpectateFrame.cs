@@ -28,7 +28,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
             if (spec.Host.Id != session.Id) return Task.CompletedTask;
 
             var frame = new SpectateFrames(data);
-            foreach (var viewer in spec.Viewers)
+            foreach (var viewer in spec.Viewers.Values)
                 viewer.Queue.EnqueuePacket(frame);
 
             return Task.CompletedTask;

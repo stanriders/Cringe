@@ -30,8 +30,8 @@ namespace Cringe.Bancho.Types
         #region Login / Logout triggers
         public void PlayerLoggedIn(PlayerSession player)
         {
-            Queue.EnqueuePacket(new UserStats(player.GetStats()));
-            Queue.EnqueuePacket(new UserPresence(player.GetPresence()));
+            Queue.EnqueuePacket(new UserStats(player.Stats));
+            Queue.EnqueuePacket(new UserPresence(player.Presence));
         }
 
         public void PlayerLoggedOut(PlayerSession player)
@@ -86,50 +86,42 @@ namespace Cringe.Bancho.Types
         #endregion
 
         #region Presence
-        public Presence Presence => GetPresence();
-        public Presence GetPresence()
+        public Presence Presence => new()
         {
-            return new()
-            {
-                UserId = Player.Id,
-                Username = Player.Username,
-                Timezone = 0x3, //Moscow UTC
-                Country = 0x1F, //Brazil Code
-                UserRank = Player.UserRank,
-                Longitude = 0.0f,
-                Latitude = 0.0f,
-                GameRank = Player.Rank
-            };
-        }
+            UserId = Player.Id,
+            Username = Player.Username,
+            Timezone = 0x3, //Moscow UTC
+            Country = 0x1F, //Brazil Code
+            UserRank = Player.UserRank,
+            Longitude = 0.0f,
+            Latitude = 0.0f,
+            GameRank = Player.Rank
+        };
 
-        public Stats Stats => GetStats();
-        public Stats GetStats()
+        public Stats Stats => new()
         {
-            return new()
+            UserId = (uint) Player.Id,
+            Action = new ChangeAction
             {
-                UserId = (uint) Player.Id,
-                Action = new ChangeAction
-                {
-                    ActionId = 0,
-                    ActionText = "PA3BODNT JIOXOB",
-                    ActionMd5 = "",
-                    ActionMods = 0,
-                    GameMode = 0,
-                    BeatmapId = 0
-                },
-                RankedScore = Player.TotalScore,
-                Accuracy = Player.Accuracy,
-                Playcount = Player.Playcount,
-                TotalScore = Player.TotalScore,
-                GameRank = Player.Rank,
-                Pp = Player.Pp
-            };
-        }
+                ActionId = 0,
+                ActionText = "PA3BODNT JIOXOB",
+                ActionMd5 = "",
+                ActionMods = 0,
+                GameMode = 0,
+                BeatmapId = 0
+            },
+            RankedScore = Player.TotalScore,
+            Accuracy = Player.Accuracy,
+            Playcount = Player.Playcount,
+            TotalScore = Player.TotalScore,
+            GameRank = Player.Rank,
+            Pp = Player.Pp
+        };
 
         public void UpdateStats()
         {
-            Queue.EnqueuePacket(new UserStats(GetStats()));
-            Queue.EnqueuePacket(new UserPresence(GetPresence()));
+            Queue.EnqueuePacket(new UserStats(Stats));
+            Queue.EnqueuePacket(new UserPresence(Presence));
         }
         #endregion
     }

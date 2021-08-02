@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
@@ -63,6 +64,13 @@ namespace Cringe.Bancho.Controllers
             PlayersPool.GetPlayer(playerId)?.UpdateStats();
 
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("players/{playerId:int}/getStats")]
+        public async Task<Stats> GetStats(int playerId)
+        {
+            return await _stats.GetUpdates(playerId);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Cringe.Bancho.Types
         }
 
         public static GlobalChat Multiplayer => new("#multiplayer", "/a/");
-        public static GlobalChat Spectate => new("#spectate", "niga");
+        public static GlobalChat Spectate => new("#spectator", "niga");
 
         public static GlobalChat SpectateCount(int count)
         {

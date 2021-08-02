@@ -68,13 +68,14 @@ namespace Cringe.Bancho.Types
 
             foreach (var viewer in Viewers)
             {
-                viewer.Queue.EnqueuePacket(new ChannelInfo(chan));
+                viewer.ChatInfo(chan);
                 viewer.Queue.EnqueuePacket(connectPacket);
                 session.Queue.EnqueuePacket(new FellowSpectatorJoined(viewer.Id));
             }
 
             Viewers.Add(session);
             Host.Queue.EnqueuePacket(new SpectatorJoined(session.Id));
+            Host.ChatInfo(chan);
         }
 
         public void Reconnect(PlayerSession session)

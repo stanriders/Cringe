@@ -22,8 +22,7 @@ namespace Cringe.Bancho.Services
             {
                 spectate = new SpectateSession(host, Destroy);
                 host.SpectateSession = spectate;
-                host.ChatConnected(GlobalChat.Spectate);
-
+                host.ChatConnected(GlobalChat.SpectateCount(1));
                 _pool.TryAdd(host.Id, spectate);
             }
 

@@ -86,9 +86,19 @@ namespace Cringe.Bancho.Services
 
             foreach (var (type, data) in packets)
             {
-                if (!_handlers.TryGetValue(type, out var request)) continue;
+                if (!_handlers.TryGetValue(type, out var request))
+                    continue;
 
-                await request.Execute(session, data);
+                try
+                {
+                    await request.Execute(session, data);
+                }
+                catch (Exception e)
+                {
+                    // we don't want a single packet crashing the rest in the queue
+                    _logger.LogError($"Packet {request.Type} failed: {e}");
+                }
+
             }
         }
     }

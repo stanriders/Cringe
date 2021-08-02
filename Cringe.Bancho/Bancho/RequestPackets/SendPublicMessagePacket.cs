@@ -23,7 +23,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             message.Sender = session.Player;
 
             Logger.LogInformation("{Token} | Sends message {Message}", session.Token, message);
-            if (message.Receiver == "#multiplayer")
+            if (message.Receiver == GlobalChat.Multiplayer.Name)
             {
                 if (session.MatchSession is not null)
                     foreach (var slot in session.MatchSession.Match.Slots)
@@ -31,6 +31,17 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 else
                     Logger.LogError("{Token} | Sends message to #multiplayer while his MatchSession is null",
                         session.Token);
+            }
+            else if (message.Receiver == GlobalChat.Spectate.Name)
+            {
+                if (session.SpectateSession is not null)
+                {
+                    foreach (var viewer in session.SpectateSession.Viewers)
+                        viewer.ReceiveMessage(message);
+                    session.SpectateSession.Host.ReceiveMessage(message);
+                }
+                else
+                    Logger.LogError("{Token} | Sends message to #spectate while his SpectateSession is null", session.Token);
             }
 
             if (!ChatService.SendGlobalMessage(message))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cringe.Bancho.Types
 {
@@ -40,7 +41,7 @@ namespace Cringe.Bancho.Types
 
         public void Invoke(Action<PlayerSession> invoke)
         {
-            SessionList.ForEach(invoke);
+            SessionList.ToList().ForEach(invoke); //TODO: proper thread-safety
         }
     }
 }

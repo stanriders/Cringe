@@ -8,26 +8,32 @@ namespace Cringe.Bancho.Services
     public class SpectateService
     {
         private readonly ILogger<SpectateService> _logger;
-        private readonly ConcurrentDictionary<int, SpectateSession> _pool;
+        public readonly ConcurrentDictionary<int, SpectateSession> Pool;
 
         public SpectateService(ILogger<SpectateService> logger)
         {
             _logger = logger;
-            _pool = new ConcurrentDictionary<int, SpectateSession>();
+            Pool = new ConcurrentDictionary<int, SpectateSession>();
         }
 
         public void StartSpectating(PlayerSession host, PlayerSession spectator)
         {
-            if (!_pool.TryGetValue(host.Id, out var spectate))
+            if (!Pool.TryGetValue(host.Id, out var spectate))
             {
+                _logger.LogDebug("SpectateService | No spectate session for {HostId}, creating new one", host.Id);
                 spectate = new SpectateSession(host, Destroy);
                 host.SpectateSession = spectate;
                 host.ChatConnected(GlobalChat.SpectateCount(1));
-                _pool.TryAdd(host.Id, spectate);
+                host.ChatInfo(GlobalChat.SpectateCount(1));
+                if (!Pool.TryAdd(host.Id, spectate))
+                {
+                    _logger.LogError("SpectateService | Can't create a session. Current sessions: {@Sessions} and the service tries to add {@Session}", Pool.Values, spectate);
+                }
             }
 
-            if (spectator.SpectateSession is not null && spectator.SpectateSession != spectate)
+            if (spectator.SpectateSession is not null)
             {
+                _logger.LogDebug("{Token} | Already in spec session {@Session}", spectator.Token, spectator.MatchSession);
                 spectator.SpectateSession.Disconnect(spectator);
             }
 
@@ -36,12 +42,11 @@ namespace Cringe.Bancho.Services
 
             spectate.Connect(spectator);
             _logger.LogDebug("{Token} | Connected to {@Spec}", spectator.Token, spectate);
-            
         }
 
         private void Destroy(int id)
         {
-            if (_pool.TryRemove(id, out var spec))
+            if (Pool.TryRemove(id, out var spec))
             {
                 spec.Host.SpectateSession = null;
                 _logger.LogDebug("SpectateService | {@Spec} removed", spec);

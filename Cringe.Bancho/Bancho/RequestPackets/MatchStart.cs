@@ -25,7 +25,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             }
 
             var match = session.MatchSession.Match;
-            if (match.Host != session.Token.PlayerId)
+            if (match.Host != session.Id)
             {
                 Logger.LogInformation("{Token} | Attempted to start match as non-host", session.Token);
 

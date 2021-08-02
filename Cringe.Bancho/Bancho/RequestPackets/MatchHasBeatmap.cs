@@ -24,7 +24,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 return Task.CompletedTask;
             }
 
-            var slot = session.MatchSession.Match.GetPlayer(session.Token.PlayerId);
+            var slot = session.MatchSession.Match.GetPlayer(session.Id);
             slot.Status = SlotStatus.not_ready;
             session.MatchSession.OnUpdateMatch();
 

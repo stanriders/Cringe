@@ -21,7 +21,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                 return Task.CompletedTask;
             }
 
-            if (session.MatchSession.Match.Host != session.Token.PlayerId)
+            if (session.MatchSession.Match.Host != session.Id)
             {
                 Logger.LogError("{Token} | Attempted to change password as non-host. Match info: {@Match}", session.Token, session.MatchSession.Match);
                 return Task.CompletedTask;

@@ -28,6 +28,7 @@ namespace Cringe.Bancho.Bancho
         protected LobbyService Lobby => _serviceProvider.GetService<LobbyService>();
         protected ChatService Chats => _serviceProvider.GetService<ChatService>();
         protected StatsService Stats => _serviceProvider.GetService<StatsService>();
+        protected SpectateService Spectate => _serviceProvider.GetService<SpectateService>();
         public abstract ClientPacketType Type { get; }
         public abstract Task Execute(PlayerSession session, byte[] data);
 

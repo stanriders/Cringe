@@ -22,9 +22,9 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (session.MatchSession is null) return Task.CompletedTask;
 
             var match = session.MatchSession.Match;
-            var slot = match.GetPlayer(session.Token.PlayerId);
+            var slot = match.GetPlayer(session.Id);
             slot.Skipped = true;
-            var skipPacket = new MatchPlayerSkipped(match.GetPlayerPosition(session.Token.PlayerId));
+            var skipPacket = new MatchPlayerSkipped(match.GetPlayerPosition(session.Id));
 
             foreach (var player in match.PlayingPlayers)
                 player.Player.Queue.EnqueuePacket(skipPacket);

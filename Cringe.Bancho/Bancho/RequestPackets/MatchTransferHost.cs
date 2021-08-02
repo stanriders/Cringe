@@ -27,7 +27,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             if (slot?.Player is null)
                 return Task.CompletedTask;
 
-            session.MatchSession.Match.Host = slot.Player.Player.Id;
+            session.MatchSession.Match.Host = slot.Player.Id;
             slot.Player.Queue.EnqueuePacket(new ResponsePackets.MatchTransferHost());
             session.MatchSession.OnUpdateMatch(true);
 

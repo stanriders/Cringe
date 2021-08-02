@@ -1,0 +1,92 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using Cringe.Bancho.Bancho.ResponsePackets;
+using Serilog;
+
+namespace Cringe.Bancho.Types
+{
+    public class SpectateSession
+    {
+        public SpectateSession(PlayerSession host, Action<int> nuke)
+        {
+            Host = host;
+            _nuke = nuke;
+            Viewers = new ConcurrentBag<PlayerSession>();
+        }
+
+        public PlayerSession Host { get; }
+        public ConcurrentBag<PlayerSession> Viewers { get; }
+        private readonly Action<int> _nuke;
+
+        public void Disconnect(PlayerSession session)
+        {
+            session.SpectateSession = null;
+
+            if (!Viewers.Contains(session))
+            {
+                Log.Error("{Token} | Attempted to disconnect from spectate", session.Token);
+                return;
+            }
+
+            if (!Viewers.TryTake(out _))
+            {
+                Log.Error("{Token} | Cannot remove from Viewers. Viewers: {@Viewers}", session.Token, Viewers);
+                return;
+            }
+
+            var chan = GlobalChat.SpectateCount(Viewers.Count);
+            var info = new ChannelInfo(chan);
+            session.Queue.EnqueuePacket(new ChannelKick(chan));
+            session.Queue.EnqueuePacket(info);
+
+            if (Viewers.IsEmpty)
+            {
+                _nuke(Host.Id);
+                return;
+            }
+
+            foreach (var viewer in Viewers)
+            {
+                viewer.Queue.EnqueuePacket(info);
+            }
+        }
+
+        public void Connect(PlayerSession session)
+        {
+            session.SpectateSession = this;
+
+            var connectPacket = new FellowSpectatorJoined(session.Id);
+            var chan = GlobalChat.SpectateCount(Viewers.Count + 1);
+            session.Queue.EnqueuePacket(new ChannelJoinSuccess(chan));
+            session.Queue.EnqueuePacket(new ChannelInfo(chan));
+
+            foreach (var viewer in Viewers)
+            {
+                viewer.Queue.EnqueuePacket(new ChannelJoinSuccess(chan));
+                viewer.Queue.EnqueuePacket(new ChannelInfo(chan));
+                viewer.Queue.EnqueuePacket(connectPacket);
+                session.Queue.EnqueuePacket(new FellowSpectatorJoined(viewer.Id));
+            }
+
+            Viewers.Add(session);
+            Host.Queue.EnqueuePacket(new SpectatorJoined(session.Id));
+        }
+
+        public void Reconnect(PlayerSession session)
+        {
+            if (!Viewers.Contains(session))
+            {
+                session.SpectateSession = null;
+                return;
+            }
+
+            Host.Queue.EnqueuePacket(new SpectatorJoined(session.Id));
+            var reconnectPacket = new FellowSpectatorJoined(session.Id);
+            foreach (var viewer in Viewers.Where(x => x != session))
+            {
+                viewer.Queue.EnqueuePacket(reconnectPacket);
+            }
+        }
+    }
+}

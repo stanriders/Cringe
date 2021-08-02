@@ -9,6 +9,7 @@ namespace Cringe.Bancho.Types
 {
     public class PlayerSession
     {
+        public int Id => Player.Id;
         public Player Player { get; set; }
 
         [NotLogged]
@@ -20,6 +21,10 @@ namespace Cringe.Bancho.Types
         [JsonIgnore]
         [NotLogged]
         public MatchSession MatchSession { get; set; }
+
+        [JsonIgnore]
+        [NotLogged]
+        public SpectateSession SpectateSession { get; set; }
 
         #region Login / Logout triggers
         public void PlayerLoggedIn(PlayerSession player)

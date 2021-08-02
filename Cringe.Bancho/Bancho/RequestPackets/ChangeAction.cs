@@ -23,7 +23,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
             Logger.LogInformation("{Token} | Changes action to {@Action}", session.Token, stats.Action);
 
-            Stats.SetUpdates(session.Token.PlayerId, stats);
+            Stats.SetUpdates(session.Id, stats);
             session.Queue.EnqueuePacket(new UserStats(stats));
             session.Queue.EnqueuePacket(new UserPresence(session.GetPresence()));
 

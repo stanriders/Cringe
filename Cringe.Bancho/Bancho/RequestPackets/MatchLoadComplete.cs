@@ -26,7 +26,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
             lock (key)
             {
-                var slot = match.GetPlayer(session.Token.PlayerId);
+                var slot = match.GetPlayer(session.Id);
                 slot.Loaded = true;
 
                 if (match.Players.Where(x => x.Status == SlotStatus.playing).Any(player => !player.Loaded))

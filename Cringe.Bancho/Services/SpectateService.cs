@@ -25,7 +25,7 @@ namespace Cringe.Bancho.Services
                 _pool.TryAdd(host.Id, spectate);
             }
 
-            if (spectator.SpectateSession != spectate)
+            if (spectator.SpectateSession is not null && spectator.SpectateSession != spectate)
             {
                 spectator.SpectateSession.Disconnect(spectator);
             }

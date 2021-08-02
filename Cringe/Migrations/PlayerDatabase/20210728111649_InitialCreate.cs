@@ -7,19 +7,19 @@ namespace Cringe.Migrations.PlayerDatabase
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Players",
-                columns: table => new
+                "Players",
+                table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>("INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Username = table.Column<string>(type: "TEXT", nullable: true),
-                    Accuracy = table.Column<float>(type: "REAL", nullable: false),
-                    Playcount = table.Column<uint>(type: "INTEGER", nullable: false),
-                    TotalScore = table.Column<ulong>(type: "INTEGER", nullable: false),
-                    Rank = table.Column<uint>(type: "INTEGER", nullable: false),
-                    Pp = table.Column<ushort>(type: "INTEGER", nullable: false),
-                    UserRank = table.Column<byte>(type: "INTEGER", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: true)
+                    Username = table.Column<string>("TEXT", nullable: true),
+                    Accuracy = table.Column<float>("REAL", nullable: false),
+                    Playcount = table.Column<uint>("INTEGER", nullable: false),
+                    TotalScore = table.Column<ulong>("INTEGER", nullable: false),
+                    Rank = table.Column<uint>("INTEGER", nullable: false),
+                    Pp = table.Column<ushort>("INTEGER", nullable: false),
+                    UserRank = table.Column<byte>("INTEGER", nullable: false),
+                    Password = table.Column<string>("TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -30,7 +30,7 @@ namespace Cringe.Migrations.PlayerDatabase
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Players");
+                "Players");
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Bancho.Types;
 using Microsoft.Extensions.Logging;

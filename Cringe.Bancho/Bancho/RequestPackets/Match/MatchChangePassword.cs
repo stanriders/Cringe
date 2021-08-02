@@ -17,19 +17,20 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
         public override Task Execute(PlayerSession session, byte[] data)
         {
             if (session.MatchSession is null)
-            {
                 return Task.CompletedTask;
-            }
 
             if (session.MatchSession.Match.Host != session.Id)
             {
-                Logger.LogError("{Token} | Attempted to change password as non-host. Match info: {@Match}", session.Token, session.MatchSession.Match);
+                Logger.LogError("{Token} | Attempted to change password as non-host. Match info: {@Match}",
+                    session.Token, session.MatchSession.Match);
+
                 return Task.CompletedTask;
             }
 
             var match = Types.Match.Parse(data);
             session.MatchSession.Match.Password = match.Password;
             session.MatchSession.OnUpdateMatch(true);
+
             return Task.CompletedTask;
         }
     }

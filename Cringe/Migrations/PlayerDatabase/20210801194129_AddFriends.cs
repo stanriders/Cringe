@@ -7,43 +7,43 @@ namespace Cringe.Migrations.PlayerDatabase
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Friends",
-                columns: table => new
+                "Friends",
+                table => new
                 {
-                    FromId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ToId = table.Column<int>(type: "INTEGER", nullable: true)
+                    FromId = table.Column<int>("INTEGER", nullable: true),
+                    ToId = table.Column<int>("INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.ForeignKey(
-                        name: "FK_Friends_Players_FromId",
-                        column: x => x.FromId,
-                        principalTable: "Players",
-                        principalColumn: "Id",
+                        "FK_Friends_Players_FromId",
+                        x => x.FromId,
+                        "Players",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Friends_Players_ToId",
-                        column: x => x.ToId,
-                        principalTable: "Players",
-                        principalColumn: "Id",
+                        "FK_Friends_Players_ToId",
+                        x => x.ToId,
+                        "Players",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friends_FromId",
-                table: "Friends",
-                column: "FromId");
+                "IX_Friends_FromId",
+                "Friends",
+                "FromId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friends_ToId",
-                table: "Friends",
-                column: "ToId");
+                "IX_Friends_ToId",
+                "Friends",
+                "ToId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Friends");
+                "Friends");
         }
     }
 }

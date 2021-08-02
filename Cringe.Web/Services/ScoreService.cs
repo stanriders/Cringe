@@ -18,14 +18,14 @@ namespace Cringe.Web.Services
 {
     public class ScoreService
     {
+        private readonly BanchoApiWrapper _banchoApiWrapper;
         private readonly BeatmapDatabaseContext _beatmapContext;
+        private readonly ILogger<ScoreService> _logger;
         private readonly PlayerDatabaseContext _playerContext;
         private readonly PlayerTopscoreStatsCache _ppCache;
         private readonly PpService _ppService;
         private readonly PlayerRankCache _rankCache;
         private readonly ScoreDatabaseContext _scoreContext;
-        private readonly BanchoApiWrapper _banchoApiWrapper;
-        private readonly ILogger<ScoreService> _logger;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
             BeatmapDatabaseContext beatmapContext, PpService ppService, PlayerTopscoreStatsCache ppCache,
@@ -41,13 +41,15 @@ namespace Cringe.Web.Services
             _logger = logger;
         }
 
-        public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit, bool failed)
+        public async Task<SubmittedScore> SubmitScore(string encodedData, string iv, string osuver, bool quit,
+            bool failed)
         {
             var score = await ProcessScoreData(DecryptScoreData(encodedData, iv, osuver));
 
             if (score is null)
             {
                 _logger.LogWarning("Failed to decrypt a score!");
+
                 return null;
             }
 
@@ -121,10 +123,12 @@ namespace Cringe.Web.Services
             if (scoreData.Length >= 16 && scoreData[0].Length == 32)
             {
                 var beatmap = await _beatmapContext.Beatmaps.FirstOrDefaultAsync(x => x.Md5 == scoreData[0]);
+
                 if (beatmap is null)
                     return null;
 
                 var player = await _playerContext.Players.FirstOrDefaultAsync(x => x.Username == scoreData[1].Trim());
+
                 if (player is null)
                     return null;
 

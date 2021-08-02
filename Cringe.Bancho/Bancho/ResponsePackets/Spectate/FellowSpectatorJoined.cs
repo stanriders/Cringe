@@ -10,6 +10,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets.Spectate
         {
             _id = id;
         }
+
         public override ServerPacketType Type => ServerPacketType.FellowSpectatorJoined;
 
         public override byte[] GetBytes()

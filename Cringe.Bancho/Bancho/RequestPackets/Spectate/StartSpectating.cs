@@ -26,6 +26,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
                 if (session.SpectateSession.Host.Id == id)
                 {
                     session.SpectateSession.Reconnect(session);
+
                     return Task.CompletedTask;
                 }
 
@@ -35,11 +36,14 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
             var host = PlayersPool.GetPlayer(id);
             if (host is null)
             {
-                Logger.LogError("{Token} | Attempted to spectate offline of non-existing player {Id}", session.Token, id);
+                Logger.LogError("{Token} | Attempted to spectate offline of non-existing player {Id}", session.Token,
+                    id);
+
                 return Task.CompletedTask;
             }
 
             Spectate.StartSpectating(host, session);
+
             return Task.CompletedTask;
         }
     }

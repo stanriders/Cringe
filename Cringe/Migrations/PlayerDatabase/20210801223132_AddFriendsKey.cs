@@ -7,28 +7,28 @@ namespace Cringe.Migrations.PlayerDatabase
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "Id",
-                table: "Friends",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: 0)
+                    "Id",
+                    "Friends",
+                    "INTEGER",
+                    nullable: false,
+                    defaultValue: 0)
                 .Annotation("Sqlite:Autoincrement", true);
 
             migrationBuilder.AddPrimaryKey(
-                name: "PK_Friends",
-                table: "Friends",
-                column: "Id");
+                "PK_Friends",
+                "Friends",
+                "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropPrimaryKey(
-                name: "PK_Friends",
-                table: "Friends");
+                "PK_Friends",
+                "Friends");
 
             migrationBuilder.DropColumn(
-                name: "Id",
-                table: "Friends");
+                "Id",
+                "Friends");
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets
 {
     public class Restart : ResponsePacket
     {
-        private int _ms;
+        private readonly int _ms;
 
         public Restart(int ms)
         {

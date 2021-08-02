@@ -31,7 +31,6 @@ namespace Cringe.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PlayerRankQuery>(entity => { entity.HasNoKey().ToView(null); });
-            modelBuilder.Entity<Friends>(entity => { entity.HasNoKey(); });
         }
     }
 }

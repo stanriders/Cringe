@@ -24,14 +24,17 @@ namespace Cringe.Bancho
             services.AddDbContext<PlayerDatabaseContext>();
             services.AddDbContext<ScoreDatabaseContext>();
             services.AddDbContext<BeatmapDatabaseContext>();
+
             services.AddSingleton<LobbyService>();
+            services.AddSingleton<StatsService>();
+
             services.AddTransient<PlayersPool>();
             services.AddTransient<ChatService>();
-            services.AddSingleton<StatsService>();
             services.AddTransient<InvokeService>();
             services.AddTransient<TokenService>();
             services.AddTransient<PlayerTopscoreStatsCache>();
             services.AddTransient<PlayerRankCache>();
+            services.AddTransient<FriendsService>();
 
             services.AddMemoryCache();
 

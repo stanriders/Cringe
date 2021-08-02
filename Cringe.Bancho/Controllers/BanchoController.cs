@@ -105,7 +105,7 @@ namespace Cringe.Bancho.Controllers
             if (!string.IsNullOrEmpty(_config["MainMenuBanner"]))
                 queue.EnqueuePacket(new MainMenuIcon(_config["MainMenuBanner"]));
 
-            queue.EnqueuePacket(new FriendsList(_database.Players.Select(x => x.Id).ToArray()));
+            queue.EnqueuePacket(new FriendsList(_database.Friends.Where(x=> x.From.Id == session.Player.Id).Select(x => x.To.Id).ToArray()));
 
             if (!string.IsNullOrEmpty(_config["LoginMessage"]))
                 queue.EnqueuePacket(new Notification(_config["LoginMessage"]));

@@ -27,9 +27,12 @@ namespace Cringe.Bancho.Services
                 new ChannelJoin(serviceProvider),
                 new ChannelPart(serviceProvider),
                 new CreateMatch(serviceProvider),
+                new FriendAdd(serviceProvider),
+                new FriendRemove(serviceProvider),
                 new JoinLobby(serviceProvider),
                 new JoinMatch(serviceProvider),
                 new LogoutPacket(serviceProvider),
+
                 new MatchChangeMods(serviceProvider),
                 new MatchChangeSettings(serviceProvider),
                 new MatchChangeSlot(serviceProvider),
@@ -48,6 +51,7 @@ namespace Cringe.Bancho.Services
                 new MatchTransferHost(serviceProvider),
                 new MatchScoreUpdate(serviceProvider),
                 new MatchComplete(serviceProvider),
+
                 new PartLobby(serviceProvider),
                 new PartMatch(serviceProvider),
                 new PingPacket(serviceProvider),

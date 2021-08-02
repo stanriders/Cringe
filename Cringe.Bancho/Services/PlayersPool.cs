@@ -50,9 +50,7 @@ namespace Cringe.Bancho.Services
             PlayerLoggedOut += session.PlayerLoggedOut;
 
             if (!Players.TryAdd(token.PlayerId, session))
-            {
                 _logger.LogCritical("{Token} | Unable to add to a concurrent dictionary of player sessions", token);
-            }
 
             _logger.LogDebug("{Token} | Connected to PlayersPool", token);
             _logger.LogDebug("Currently connected players:\n{Dump}", GetPlayersId());

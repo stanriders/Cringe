@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;

@@ -1,5 +1,4 @@
-﻿
-using Cringe.Types.Enums;
+﻿using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Types

@@ -19,8 +19,8 @@ namespace Cringe.Bancho.Controllers
     {
         private const uint protocol_version = 19;
         private readonly ChatService _chat;
-        private readonly PlayerDatabaseContext _database;
         private readonly IConfiguration _config;
+        private readonly PlayerDatabaseContext _database;
         private readonly InvokeService _invoke;
         private readonly ILogger<BanchoController> _logger;
         private readonly PlayersPool _playersPool;
@@ -105,7 +105,8 @@ namespace Cringe.Bancho.Controllers
             if (!string.IsNullOrEmpty(_config["MainMenuBanner"]))
                 queue.EnqueuePacket(new MainMenuIcon(_config["MainMenuBanner"]));
 
-            queue.EnqueuePacket(new FriendsList(_database.Friends.Where(x=> x.From.Id == session.Player.Id).Select(x => x.To.Id).ToArray()));
+            queue.EnqueuePacket(new FriendsList(_database.Friends.Where(x => x.From.Id == session.Player.Id)
+                .Select(x => x.To.Id).ToArray()));
 
             if (!string.IsNullOrEmpty(_config["LoginMessage"]))
                 queue.EnqueuePacket(new Notification(_config["LoginMessage"]));
@@ -141,6 +142,7 @@ namespace Cringe.Bancho.Controllers
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
             var session = PlayersPool.GetPlayer(token.PlayerId);
+
             if (session is null)
                 return PacketQueue.NullUser();
 

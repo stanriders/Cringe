@@ -7,25 +7,25 @@ namespace Cringe.Migrations.BeatmapDatabase
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Beatmaps",
-                columns: table => new
+                "Beatmaps",
+                table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>("INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    BeatmapSetId = table.Column<int>(type: "INTEGER", nullable: true),
-                    Mode = table.Column<int>(type: "INTEGER", nullable: false),
-                    Md5 = table.Column<string>(type: "TEXT", nullable: true),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    Artist = table.Column<string>(type: "TEXT", nullable: true),
-                    Title = table.Column<string>(type: "TEXT", nullable: true),
-                    DifficultyName = table.Column<string>(type: "TEXT", nullable: true),
-                    Creator = table.Column<string>(type: "TEXT", nullable: true),
-                    Bpm = table.Column<double>(type: "REAL", nullable: false),
-                    HpDrain = table.Column<double>(type: "REAL", nullable: false),
-                    CircleSize = table.Column<double>(type: "REAL", nullable: false),
-                    OverallDifficulty = table.Column<double>(type: "REAL", nullable: false),
-                    ApproachRate = table.Column<double>(type: "REAL", nullable: false),
-                    Length = table.Column<int>(type: "INTEGER", nullable: false)
+                    BeatmapSetId = table.Column<int>("INTEGER", nullable: true),
+                    Mode = table.Column<int>("INTEGER", nullable: false),
+                    Md5 = table.Column<string>("TEXT", nullable: true),
+                    Status = table.Column<int>("INTEGER", nullable: false),
+                    Artist = table.Column<string>("TEXT", nullable: true),
+                    Title = table.Column<string>("TEXT", nullable: true),
+                    DifficultyName = table.Column<string>("TEXT", nullable: true),
+                    Creator = table.Column<string>("TEXT", nullable: true),
+                    Bpm = table.Column<double>("REAL", nullable: false),
+                    HpDrain = table.Column<double>("REAL", nullable: false),
+                    CircleSize = table.Column<double>("REAL", nullable: false),
+                    OverallDifficulty = table.Column<double>("REAL", nullable: false),
+                    ApproachRate = table.Column<double>("REAL", nullable: false),
+                    Length = table.Column<int>("INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,7 +36,7 @@ namespace Cringe.Migrations.BeatmapDatabase
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Beatmaps");
+                "Beatmaps");
         }
     }
 }

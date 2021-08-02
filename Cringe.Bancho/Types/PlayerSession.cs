@@ -5,7 +5,6 @@ using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Types;
 using Cringe.Types.Database;
 using Destructurama.Attributed;
-using Serilog;
 
 namespace Cringe.Bancho.Types
 {

@@ -21,6 +21,7 @@ namespace Cringe.Bancho.Services
             if (!_pool.TryGetValue(host.Id, out var spectate))
             {
                 spectate = new SpectateSession(host, Destroy);
+                host.SpectateSession = spectate;
                 _pool.TryAdd(host.Id, spectate);
             }
 

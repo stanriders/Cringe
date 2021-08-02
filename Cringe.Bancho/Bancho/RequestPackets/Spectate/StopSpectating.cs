@@ -4,7 +4,7 @@ using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets
+namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
 {
     public class StopSpectating : RequestPacket
     {

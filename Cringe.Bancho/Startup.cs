@@ -26,7 +26,6 @@ namespace Cringe.Bancho
             services.AddDbContext<BeatmapDatabaseContext>();
 
             services.AddSingleton<LobbyService>();
-            services.AddSingleton<StatsService>();
             services.AddSingleton<SpectateService>();
 
             services.AddTransient<PlayersPool>();
@@ -36,6 +35,7 @@ namespace Cringe.Bancho
             services.AddTransient<PlayerTopscoreStatsCache>();
             services.AddTransient<PlayerRankCache>();
             services.AddTransient<FriendsService>();
+            services.AddTransient<StatsService>();
 
             services.AddMemoryCache();
 

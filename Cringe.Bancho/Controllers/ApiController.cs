@@ -10,10 +10,12 @@ namespace Cringe.Bancho.Controllers
     public class ApiController : ControllerBase
     {
         private readonly LobbyService _lobby;
+        private readonly StatsService _stats;
 
-        public ApiController(LobbyService lobby)
+        public ApiController(LobbyService lobby, StatsService stats)
         {
             _lobby = lobby;
+            _stats = stats;
         }
 
         [HttpPost]
@@ -47,6 +49,8 @@ namespace Cringe.Bancho.Controllers
         [Route("players/{playerId}/updateStats")]
         public IActionResult UpdatePlayerStats(int playerId)
         {
+            _stats.RemoveStats(playerId);
+
             PlayersPool.GetPlayer(playerId)?.UpdateStats();
 
             return Ok();

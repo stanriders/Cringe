@@ -1,25 +1,56 @@
-﻿using System.Collections.Concurrent;
+﻿
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Cringe.Bancho.Types;
+using Cringe.Database;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Cringe.Bancho.Services
 {
     public class StatsService
     {
-        private readonly ConcurrentDictionary<int, Stats> _stats = new();
+        private readonly IMemoryCache _memoryCache;
+        private readonly PlayerDatabaseContext _playerDatabaseContext;
 
-        public Stats GetUpdates(int id)
+        public StatsService(IMemoryCache memoryCache, PlayerDatabaseContext playerDatabaseContext)
         {
-            if (!_stats.TryGetValue(id, out var value)) return null;
+            _memoryCache = memoryCache;
+            _playerDatabaseContext = playerDatabaseContext;
+        }
 
-            _stats.TryRemove(id, out _);
+        public async Task<Stats> GetUpdates(int id)
+        {
+            if (!_memoryCache.TryGetValue(id, out Stats value))
+            {
+                var player = PlayersPool.GetPlayer(id);
+                if (player != null)
+                {
+                    var updatedPlayer = await _playerDatabaseContext.Players.Where(x => x.Id == id).SingleOrDefaultAsync();
+                    player.Player = updatedPlayer;
+
+                    var stats = player.GetStats();
+
+                    SetUpdates(id, stats);
+
+                    return stats;
+                }
+
+                return null;
+            }
 
             return value;
         }
 
         public void SetUpdates(int id, Stats newStats)
         {
-            if (!_stats.TryAdd(id, newStats))
-                _stats[id] = newStats;
+            _memoryCache.Set(id, newStats, TimeSpan.FromSeconds(120));
+        }
+
+        public void RemoveStats(int id)
+        {
+            _memoryCache.Remove(id);
         }
     }
 }

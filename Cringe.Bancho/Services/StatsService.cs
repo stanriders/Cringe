@@ -45,7 +45,7 @@ namespace Cringe.Bancho.Services
 
         public void SetUpdates(int id, Stats newStats)
         {
-            _memoryCache.Set(id, newStats, TimeSpan.FromSeconds(120));
+            _memoryCache.Set(id, newStats, TimeSpan.FromMinutes(30)); // timespan is a safeguard for stuck stats
         }
 
         public void RemoveStats(int id)

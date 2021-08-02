@@ -31,7 +31,6 @@ namespace Cringe.Bancho.Services
                 }
             }
 
-
             if (spectator.SpectateSession is not null)
             {
                 _logger.LogDebug("{Token} | Already in spec session {@Session}", spectator.Token, spectator.MatchSession);

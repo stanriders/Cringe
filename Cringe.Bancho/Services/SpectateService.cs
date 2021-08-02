@@ -9,8 +9,8 @@ namespace Cringe.Bancho.Services
     public class SpectateService
     {
         private readonly ConcurrentDictionary<int, SpectateSession> _pool;
-        private readonly Logger<SpectateService> _logger;
-        public SpectateService(Logger<SpectateService> logger)
+        private readonly ILogger<SpectateService> _logger;
+        public SpectateService(ILogger<SpectateService> logger)
         {
             _logger = logger;
             _pool = new ConcurrentDictionary<int, SpectateSession>();

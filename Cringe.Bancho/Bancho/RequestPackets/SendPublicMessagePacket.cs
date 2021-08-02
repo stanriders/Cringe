@@ -41,7 +41,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
                     session.SpectateSession.Host.ReceiveMessage(message);
                 }
                 else
-                    Logger.LogError("{Token} | Sends message to #spectate while his SpectateSession is null", session.Token);
+                    Logger.LogError("{Token} | Sends message to #spectator while his SpectateSession is null", session.Token);
             }
 
             if (!ChatService.SendGlobalMessage(message))

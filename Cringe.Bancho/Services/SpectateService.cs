@@ -22,21 +22,30 @@ namespace Cringe.Bancho.Services
             {
                 spectate = new SpectateSession(host, Destroy);
                 host.SpectateSession = spectate;
+                host.ChatConnected(GlobalChat.SpectateCount(1));
                 _pool.TryAdd(host.Id, spectate);
             }
 
-            if (spectator.SpectateSession != spectate)
+
+            if (spectator.SpectateSession is not null && spectator.SpectateSession != spectate)
+            {
                 spectator.SpectateSession.Disconnect(spectator);
 
             if (spectate.Viewers.Contains(spectator))
                 return;
 
             spectate.Connect(spectator);
+            _logger.LogDebug("{Token} | Connected to {@Spec}", spectator.Token, spectate);
         }
 
         private void Destroy(int id)
         {
-            if (_pool.TryRemove(id, out _)) return;
+            if (_pool.TryRemove(id, out var spec))
+            {
+                spec.Host.SpectateSession = null;
+                _logger.LogDebug("SpectateService | {@Spec} removed", spec);
+                return;
+            }
 
             _logger.LogError("SpectateService | Can't remove {Id} session", id);
         }

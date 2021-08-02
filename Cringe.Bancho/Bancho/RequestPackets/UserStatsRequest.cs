@@ -17,7 +17,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.UserStatsRequest;
 
-        public override Task Execute(PlayerSession session, byte[] data)
+        public override async Task Execute(PlayerSession session, byte[] data)
         {
             using var reader = new BinaryReader(new MemoryStream(data));
             var playerIds = ReadI32(reader).ToArray();
@@ -28,14 +28,12 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             {
                 if (playerId == session.Id) continue;
 
-                var stats = statsService.GetUpdates(playerId);
+                var stats = await statsService.GetUpdates(playerId);
 
                 if (stats is null) continue;
 
                 session.Queue.EnqueuePacket(new UserStats(stats));
             }
-
-            return Task.CompletedTask;
         }
     }
 }

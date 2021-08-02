@@ -41,7 +41,7 @@ namespace Cringe.Bancho.Types
 
             var chan = GlobalChat.SpectateCount(Viewers.Count);
             var info = new ChannelInfo(chan);
-            session.Queue.EnqueuePacket(new ChannelKick(chan));
+            session.ChatKick(chan);
             session.Queue.EnqueuePacket(info);
 
             if (Viewers.IsEmpty)
@@ -67,19 +67,19 @@ namespace Cringe.Bancho.Types
 
             var connectPacket = new FellowSpectatorJoined(session.Id);
             var chan = GlobalChat.SpectateCount(Viewers.Count + 1);
-            session.Queue.EnqueuePacket(new ChannelJoinSuccess(chan));
-            session.Queue.EnqueuePacket(new ChannelInfo(chan));
+            session.ChatConnected(chan);
+            session.ChatInfo(chan);
 
             foreach (var viewer in Viewers)
             {
-                viewer.Queue.EnqueuePacket(new ChannelJoinSuccess(chan));
-                viewer.Queue.EnqueuePacket(new ChannelInfo(chan));
+                viewer.ChatInfo(chan);
                 viewer.Queue.EnqueuePacket(connectPacket);
                 session.Queue.EnqueuePacket(new FellowSpectatorJoined(viewer.Id));
             }
 
             Viewers.Add(session);
             Host.Queue.EnqueuePacket(new SpectatorJoined(session.Id));
+            Host.ChatInfo(chan);
         }
 
         public void Reconnect(PlayerSession session)

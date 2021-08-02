@@ -21,7 +21,7 @@ namespace Cringe.Web.Pages.Scores
 
         public async Task OnGetAsync()
         {
-            SubmittedScore = await _context.Scores.AsNoTracking().TakeLast(100).ToListAsync();
+            SubmittedScore = await _context.Scores.AsNoTracking().OrderByDescending(x=> x.Id).Take(100).ToListAsync();
         }
     }
 }

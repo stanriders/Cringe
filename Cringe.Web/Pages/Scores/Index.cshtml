@@ -11,6 +11,9 @@
     <thead>
     <tr>
         <th>
+            @Html.DisplayNameFor(model => model.SubmittedScore[0].Id)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.SubmittedScore[0].BeatmapId)
         </th>
         <th>
@@ -77,6 +80,9 @@
     @foreach (var item in Model.SubmittedScore)
     {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
             <td>
                 <a asp-page="./Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a>
             </td>

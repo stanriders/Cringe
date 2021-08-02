@@ -136,8 +136,9 @@ namespace Cringe.Bancho.Controllers
             var token = TokenService.GetToken(HttpContext.Request.Headers["osu-token"][0]);
 
             if (token == null)
-                // force update login
-                return PacketQueue.NullUser();
+            {
+                return PacketQueue.ServerRestarted();
+            }
 
             HttpContext.Response.Headers.Add("cho-token", token.Token);
             var session = PlayersPool.GetPlayer(token.PlayerId);

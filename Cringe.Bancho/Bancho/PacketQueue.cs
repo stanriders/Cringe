@@ -50,5 +50,12 @@ namespace Cringe.Bancho.Bancho
         {
             return new(GetDataToSend(), "text/html; charset=UTF-8");
         }
+
+        public static PacketQueue ServerRestarted()
+        {
+            return new PacketQueue()
+                .EnqueuePacket(new Notification("Server has restarted, reconnecting :)"))
+                .EnqueuePacket(new Restart(0));
+        }
     }
 }

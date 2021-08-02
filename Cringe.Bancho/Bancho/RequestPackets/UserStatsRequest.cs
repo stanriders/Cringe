@@ -26,7 +26,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             var statsService = Stats;
             foreach (var playerId in playerIds)
             {
-                if (playerId == session.Token.PlayerId) continue;
+                if (playerId == session.Id) continue;
 
                 var stats = statsService.GetUpdates(playerId);
 

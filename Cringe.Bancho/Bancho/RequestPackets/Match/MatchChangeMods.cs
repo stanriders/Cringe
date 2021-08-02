@@ -31,7 +31,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             }
 
             var match = session.MatchSession;
-            var slot = match.Match.GetPlayer(session.Player.Id);
+            var slot = match.Match.GetPlayer(session.Id);
 
             if (slot is null)
             {
@@ -44,7 +44,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
 
             if (match.Match.FreeMode)
             {
-                if (match.Match.Host == session.Token.PlayerId)
+                if (match.Match.Host == session.Id)
                     match.Match.Mods = mods & Mods.SpeedChangingMods;
 
                 slot.Mods = mods & ~Mods.SpeedChangingMods;
@@ -53,7 +53,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             }
             else
             {
-                if (match.Match.Host == session.Token.PlayerId)
+                if (match.Match.Host == session.Id)
                 {
                     match.Match.Mods = mods;
                     Logger.LogDebug("{Token} | Change lobby mod to {Mod}. Match info: {@Match}", session.Token, mods,

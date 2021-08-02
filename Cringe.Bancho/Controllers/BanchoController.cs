@@ -99,7 +99,7 @@ namespace Cringe.Bancho.Controllers
             var queue = session.Queue;
 
             queue.EnqueuePacket(new ProtocolVersion(protocol_version));
-            queue.EnqueuePacket(new UserId(session.Token.PlayerId));
+            queue.EnqueuePacket(new UserId(session.Id));
             queue.EnqueuePacket(new Supporter(session.Player.UserRank));
 
             if (!string.IsNullOrEmpty(_config["MainMenuBanner"]))
@@ -116,7 +116,7 @@ namespace Cringe.Bancho.Controllers
             queue.EnqueuePacket(myPresence);
             queue.EnqueuePacket(myStats);
 
-            var bundle = PlayersPool.GetPlayersId().Where(x => x != session.Token.PlayerId).ToArray();
+            var bundle = PlayersPool.GetPlayersId().Where(x => x != session.Id).ToArray();
 
             foreach (var i in bundle)
             {

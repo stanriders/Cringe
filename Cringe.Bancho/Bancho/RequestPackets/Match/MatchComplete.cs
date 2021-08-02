@@ -23,7 +23,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 return Task.CompletedTask;
 
             var match = session.MatchSession.Match;
-            var slot = match.GetPlayer(session.Token.PlayerId);
+            var slot = match.GetPlayer(session.Id);
 
             lock (key) //I believe we may have problems without mutex
             {

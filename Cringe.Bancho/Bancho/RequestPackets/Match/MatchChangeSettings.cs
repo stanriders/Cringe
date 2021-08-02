@@ -25,7 +25,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 return Task.CompletedTask;
             }
 
-            if (session.MatchSession.Match.Host != session.Token.PlayerId)
+            if (session.MatchSession.Match.Host != session.Id)
             {
                 Logger.LogError("{Token} | User tries to change match's settings while not being a host",
                     session.Token);

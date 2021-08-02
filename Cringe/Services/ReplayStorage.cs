@@ -81,7 +81,7 @@ namespace Cringe.Services
 
             await using var stream = new MemoryStream();
 
-            await stream.WriteAsync(new byte[] { (byte) score.GameMode });
+            await stream.WriteAsync(new[] { (byte) score.GameMode });
             await stream.WriteAsync(BitConverter.GetBytes(20210728));
             await stream.WriteAsync(PackString(beatmap.Md5));
             await stream.WriteAsync(PackString(score.PlayerUsername));
@@ -94,14 +94,14 @@ namespace Cringe.Services
             await stream.WriteAsync(BitConverter.GetBytes((ushort) score.CountMiss));
             await stream.WriteAsync(BitConverter.GetBytes((int) score.Score));
             await stream.WriteAsync(BitConverter.GetBytes((ushort) score.MaxCombo));
-            await stream.WriteAsync(new byte[] { score.FullCombo ? 1 : 0});
+            await stream.WriteAsync(new[] { score.FullCombo ? (byte) 1 : (byte) 0});
             await stream.WriteAsync(BitConverter.GetBytes((int) score.Mods));
             await stream.WriteAsync(new byte[] { 0x00 });
             await stream.WriteAsync(BitConverter.GetBytes(score.PlayDateTime.Ticks));
             await stream.WriteAsync(await PackReplay(filePath));
             await stream.WriteAsync(BitConverter.GetBytes((long) scoreId));
             await stream.WriteAsync(BitConverter.GetBytes(0));
-            
+
             return stream.ToArray();
         }
 

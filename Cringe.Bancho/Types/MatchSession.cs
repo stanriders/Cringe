@@ -15,7 +15,7 @@ namespace Cringe.Bancho.Types
             match.Id = id;
             Dispose = dispose;
             Match = match;
-            Match.Host = host.Token.PlayerId;
+            Match.Host = host.Id;
         }
 
         public Match Match { get; private set; }
@@ -72,7 +72,7 @@ namespace Cringe.Bancho.Types
             session.Queue.EnqueuePacket(new ChannelKick(GlobalChat.Multiplayer));
             session.MatchSession = null;
 
-            Match.GetPlayer(session.Token.PlayerId).Wipe();
+            Match.GetPlayer(session.Id).Wipe();
             ;
             var slots = Match.Players.ToArray();
 
@@ -84,10 +84,10 @@ namespace Cringe.Bancho.Types
                 return;
             }
 
-            if (Match.Host == session.Player.Id)
+            if (Match.Host == session.Id)
             {
                 var host = slots[new Random().Next(0, slots.Length)].Player;
-                Match.Host = host.Player.Id;
+                Match.Host = host.Id;
                 host.Queue.EnqueuePacket(new MatchTransferHost());
             }
 
@@ -113,7 +113,7 @@ namespace Cringe.Bancho.Types
             var oldSlot = Match.Slots.FindIndex(x => x.Player == session);
 
             if (oldSlot == -1)
-                throw new Exception($"{session.Player.Id} tries to change the slot to {slotId} when not in the lobby");
+                throw new Exception($"{session.Id} tries to change the slot to {slotId} when not in the lobby");
 
             Match.Slots[slotId] = Match.Slots[oldSlot];
             Match.Slots[oldSlot] = slot;

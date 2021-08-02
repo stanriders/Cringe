@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using Cringe.Bancho.Bancho.ResponsePackets;
@@ -8,12 +9,12 @@ namespace Cringe.Bancho.Bancho
 {
     public class PacketQueue
     {
-        private readonly Queue<byte[]> queue = new();
+        private readonly ConcurrentQueue<byte[]> _queue = new();
 
         public byte[] GetDataToSend()
         {
             using var stream = new MemoryStream();
-            while (queue.TryDequeue(out var data) && stream.Length < 10000000)
+            while (_queue.TryDequeue(out var data) && stream.Length < 10000000)
                 stream.Write(data);
 
             return stream.ToArray();
@@ -40,7 +41,7 @@ namespace Cringe.Bancho.Bancho
             stream.Write(BitConverter.GetBytes(data.Length));
             stream.Write(data);
 
-            queue.Enqueue(stream.ToArray());
+            _queue.Enqueue(stream.ToArray());
 
             return this;
         }

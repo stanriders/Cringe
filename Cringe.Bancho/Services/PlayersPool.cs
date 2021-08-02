@@ -80,7 +80,7 @@ namespace Cringe.Bancho.Services
 
         public static IEnumerable<int> GetPlayersId()
         {
-            return GetPlayerSessions().Select(x => x.Token.PlayerId);
+            return GetPlayerSessions().Select(x => x.Id);
         }
 
         public static IEnumerable<PlayerSession> GetPlayerSessions()

@@ -26,7 +26,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 return Task.CompletedTask;
             }
 
-            if (session.MatchSession.Match.Host != session.Player.Id)
+            if (session.MatchSession.Match.Host != session.Id)
                 Logger.LogInformation("{Token} | User tries to lock slot while not being a host", session.Token);
             using var reader = new BinaryReader(new MemoryStream(data));
             var toLock = reader.ReadInt32();
@@ -47,7 +47,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 if (lockedSlot.Player is not null)
                 {
                     Logger.LogInformation("{Token} | User kicks {KickedPlayerId} with a lock", session.Token,
-                        lockedSlot.Player.Player.Id);
+                        lockedSlot.Player.Id);
                     lockedSlot.Player.Queue.EnqueuePacket(new Notification("You've been killed with a fucking lock"));
 
                     session.MatchSession.Disconnect(lockedSlot.Player);

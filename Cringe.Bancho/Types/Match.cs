@@ -38,12 +38,12 @@ namespace Cringe.Bancho.Types
 
         public Slot GetPlayer(int id)
         {
-            return Slots.FirstOrDefault(x => x.Player?.Player.Id == id);
+            return Slots.FirstOrDefault(x => x.Player?.Id == id);
         }
 
         public int GetPlayerPosition(int id)
         {
-            return Slots.FindIndex(x => x.Player?.Player.Id == id);
+            return Slots.FindIndex(x => x.Player?.Id == id);
         }
 
         public static Match Parse(byte[] data)

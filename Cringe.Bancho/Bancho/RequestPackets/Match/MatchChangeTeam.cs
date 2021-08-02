@@ -22,7 +22,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             }
 
             var match = session.MatchSession.Match;
-            var slot = match.GetPlayer(session.Token.PlayerId);
+            var slot = match.GetPlayer(session.Id);
             slot.Team = slot.Team == MatchTeams.blue ? MatchTeams.red : MatchTeams.blue;
             session.MatchSession.OnUpdateMatch();
             return Task.CompletedTask;

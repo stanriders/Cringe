@@ -21,7 +21,7 @@ namespace Cringe.Bancho.Bancho.ResponsePackets.Match
             var teams = slots.Select(x => (byte) x.Team);
             var host = Match.Host;
             var players = Match.Slots
-                .Select(x => x.Player is not null ? PackData(x.Player.Token.PlayerId) : Array.Empty<byte>())
+                .Select(x => x.Player is not null ? PackData(x.Player.Id) : Array.Empty<byte>())
                 .SelectMany(x => x).ToArray();
             var playerMods = Match.Slots.Select(x => PackData((int) x.Mods)).SelectMany(x => x);
             var mods = (int) Match.Mods;

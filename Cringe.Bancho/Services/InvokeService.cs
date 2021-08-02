@@ -58,6 +58,8 @@ namespace Cringe.Bancho.Services
                 new RequestStatusUpdate(serviceProvider),
                 new SendPrivateMessagePacket(serviceProvider),
                 new SendPublicMessagePacket(serviceProvider),
+                new StartSpectating(serviceProvider),
+                new StopSpectating(serviceProvider),
                 new UserStatsRequest(serviceProvider),
                 new UserPresenceRequest(serviceProvider)
             }.ToDictionary(x => x.Type);

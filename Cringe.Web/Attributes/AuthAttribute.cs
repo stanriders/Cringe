@@ -20,7 +20,10 @@ namespace Cringe.Web.Attributes
                     x.Username ==
                     (string) context.ActionArguments["u"])) // && x.Password == (string) context.ActionArguments["h"]
                 context.Result = new UnauthorizedResult();
-
+                
+                return;
+            }
+            
             await next.Invoke();
         }
     }

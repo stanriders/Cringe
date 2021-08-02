@@ -58,6 +58,7 @@ namespace Cringe.Bancho.Services
                 new RequestStatusUpdate(serviceProvider),
                 new SendPrivateMessagePacket(serviceProvider),
                 new SendPublicMessagePacket(serviceProvider),
+                new SpectateFrame(serviceProvider),
                 new StartSpectating(serviceProvider),
                 new StopSpectating(serviceProvider),
                 new SpectateFrame(serviceProvider),

@@ -37,11 +37,22 @@ namespace Cringe.Bancho.Services
                 spectator.SpectateSession.Disconnect(spectator);
             }
 
-            if (spectate.Viewers.Contains(spectator))
-                    return;
+            if (spectate.Viewers.ContainsKey(spectator.Id))
+                return;
 
             spectate.Connect(spectator);
             _logger.LogDebug("{Token} | Connected to {@Spec}", spectator.Token, spectate);
+        }
+
+        public void NukeOrLogout(PlayerSession session)
+        {
+            if (session.SpectateSession is null) return;
+
+            var spec = session.SpectateSession;
+            if (spec.Host == session)
+                Destroy(session.Id);
+            else
+                session.SpectateSession.Disconnect(session);
         }
 
         private void Destroy(int id)

@@ -18,14 +18,14 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         public override Task Execute(PlayerSession session, byte[] data)
         {
             var action = Types.ChangeAction.Parse(data);
-            var stats = session.GetStats();
+            var stats = session.Stats;
             stats.Action = action;
 
             Logger.LogInformation("{Token} | Changes action to {@Action}", session.Token, stats.Action);
 
             Stats.SetUpdates(session.Id, stats);
             session.Queue.EnqueuePacket(new UserStats(stats));
-            session.Queue.EnqueuePacket(new UserPresence(session.GetPresence()));
+            session.Queue.EnqueuePacket(new UserPresence(session.Presence));
 
             return Task.CompletedTask;
         }

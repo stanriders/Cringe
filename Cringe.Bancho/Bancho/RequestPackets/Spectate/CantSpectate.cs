@@ -26,7 +26,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
             var packet = new SpectatorCantSpectate(session.Id);
             session.SpectateSession.Host.Queue.EnqueuePacket(packet);
 
-            foreach (var viewer in session.SpectateSession.Viewers)
+            foreach (var viewer in session.SpectateSession.Viewers.Values)
             {
                 viewer.Queue.EnqueuePacket(packet);
             }

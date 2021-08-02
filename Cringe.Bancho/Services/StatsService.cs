@@ -30,7 +30,7 @@ namespace Cringe.Bancho.Services
                     var updatedPlayer = await _playerDatabaseContext.Players.Where(x => x.Id == id).SingleOrDefaultAsync();
                     player.Player = updatedPlayer;
 
-                    var stats = player.GetStats();
+                    var stats = player.Stats;
 
                     SetUpdates(id, stats);
 

@@ -15,24 +15,24 @@ namespace Cringe.Bancho.Types
         {
             Host = host;
             _nuke = nuke;
-            Viewers = new ConcurrentBag<PlayerSession>();
+            Viewers = new ConcurrentDictionary<int, PlayerSession>();
         }
 
         public PlayerSession Host { get; }
-        public ConcurrentBag<PlayerSession> Viewers { get; }
+        public ConcurrentDictionary<int, PlayerSession> Viewers { get; }
 
         public void Disconnect(PlayerSession session)
         {
             session.SpectateSession = null;
 
-            if (!Viewers.Contains(session))
+            if (!Viewers.ContainsKey(session.Id))
             {
                 Log.Error("{Token} | Attempted to disconnect from spectate", session.Token);
 
                 return;
             }
 
-            if (!Viewers.TryTake(out _))
+            if (!Viewers.TryRemove(session.Id, out _))
             {
                 Log.Error("{Token} | Cannot remove from Viewers. Viewers: {@Viewers}", session.Token, Viewers);
 
@@ -44,6 +44,8 @@ namespace Cringe.Bancho.Types
             session.ChatKick(chan);
             session.Queue.EnqueuePacket(info);
 
+            Host.Queue.EnqueuePacket(new SpectatorLeft(session.Id));
+
             if (Viewers.IsEmpty)
             {
                 _nuke(Host.Id);
@@ -52,13 +54,11 @@ namespace Cringe.Bancho.Types
             }
 
             var disconnectPacket = new FellowSpectatorLeft(session.Id);
-            foreach (var viewer in Viewers)
+            foreach (var viewer in Viewers.Values)
             {
                 viewer.Queue.EnqueuePacket(info);
                 viewer.Queue.EnqueuePacket(disconnectPacket);
             }
-
-            Host.Queue.EnqueuePacket(new SpectatorLeft(session.Id));
         }
 
         public void Connect(PlayerSession session)
@@ -70,21 +70,21 @@ namespace Cringe.Bancho.Types
             session.ChatConnected(chan);
             session.ChatInfo(chan);
 
-            foreach (var viewer in Viewers)
+            foreach (var viewer in Viewers.Values)
             {
                 viewer.ChatInfo(chan);
                 viewer.Queue.EnqueuePacket(connectPacket);
                 session.Queue.EnqueuePacket(new FellowSpectatorJoined(viewer.Id));
             }
 
-            Viewers.Add(session);
+            Viewers.TryAdd(session.Id, session);
             Host.Queue.EnqueuePacket(new SpectatorJoined(session.Id));
             Host.ChatInfo(chan);
         }
 
         public void Reconnect(PlayerSession session)
         {
-            if (!Viewers.Contains(session))
+            if (!Viewers.ContainsKey(session.Id))
             {
                 session.SpectateSession = null;
 
@@ -93,7 +93,7 @@ namespace Cringe.Bancho.Types
 
             Host.Queue.EnqueuePacket(new SpectatorJoined(session.Id));
             var reconnectPacket = new FellowSpectatorJoined(session.Id);
-            foreach (var viewer in Viewers.Where(x => x != session))
+            foreach (var viewer in Viewers.Values.Where(x => x != session))
                 viewer.Queue.EnqueuePacket(reconnectPacket);
         }
     }

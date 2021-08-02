@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using Cringe.Bancho.Bancho.ResponsePackets;
+using Cringe.Bancho.Bancho.ResponsePackets.Spectate;
 using Serilog;
 
 namespace Cringe.Bancho.Types
@@ -46,10 +47,14 @@ namespace Cringe.Bancho.Types
                 return;
             }
 
+            var disconnectPacket = new FellowSpectatorLeft(session.Id);
             foreach (var viewer in Viewers)
             {
                 viewer.Queue.EnqueuePacket(info);
+                viewer.Queue.EnqueuePacket(disconnectPacket);
             }
+
+            Host.Queue.EnqueuePacket(new SpectatorLeft(session.Id));
         }
 
         public void Connect(PlayerSession session)

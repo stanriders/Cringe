@@ -1,6 +1,6 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Bancho.ResponsePackets
+namespace Cringe.Bancho.Bancho.ResponsePackets.Spectate
 {
     public class SpectatorJoined : ResponsePacket
     {

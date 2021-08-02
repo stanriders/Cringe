@@ -36,11 +36,17 @@ namespace Cringe.Bancho.Services
             }
 
             spectate.Connect(spectator);
+            _logger.LogDebug("{Token} | Connected to {@Spec}", spectator.Token, spectate);
         }
 
         private void Destroy(int id)
         {
-            if (_pool.TryRemove(id, out _)) return;
+            if (_pool.TryRemove(id, out var spec))
+            {
+                spec.Host.SpectateSession = null;
+                _logger.LogDebug("SpectateService | {@Spec} removed", spec);
+                return;
+            }
 
             _logger.LogError("SpectateService | Can't remove {Id} session", id);
         }

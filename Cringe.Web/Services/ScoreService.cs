@@ -153,10 +153,6 @@ namespace Cringe.Web.Services
                 if (player is null)
                     return null;
 
-                if (!DateTime.TryParseExact(scoreData[16], "yyMMddHHmmss", CultureInfo.InvariantCulture,
-                    DateTimeStyles.None, out var date))
-                    date = DateTime.UtcNow;
-
                 var submittedScore = new ScoreBase
                 {
                     Count300 = int.Parse(scoreData[3]),
@@ -172,7 +168,7 @@ namespace Cringe.Web.Services
                     Mods = (Mods) Enum.Parse(typeof(Mods), scoreData[13]),
                     Passed = scoreData[14] == "True",
                     GameMode = (GameModes) Enum.Parse(typeof(GameModes), scoreData[15]),
-                    PlayDateTime = date,
+                    PlayDateTime = DateTime.UtcNow,
                     OsuVersion = scoreData[17].Trim(),
                     PlayerId = player.Id,
                     PlayerUsername = player.Username,

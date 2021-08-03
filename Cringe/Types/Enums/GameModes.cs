@@ -1,31 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Cringe.Attributes;
 
 namespace Cringe.Types.Enums
 {
     public enum GameModes
     {
+        [BeatconnectNaming("std")]
         [Display(Name = "osu!")]
         Osu = 0,
 
+        [BeatconnectNaming("taiko")]
         [Display(Name = "taiko")]
         Taiko = 1,
 
+        [BeatconnectNaming("ctb")]
         [Display(Name = "catch")]
         Catch = 2,
 
+        [BeatconnectNaming("mania")]
         [Display(Name = "mania")]
-        Mania = 3,
-
-        [Display(Name = "Relax osu!")]
-        RxStd = 4,
-
-        [Display(Name = "Relax taiko")]
-        RxTaiko = 5,
-
-        [Display(Name = "Relax catch")]
-        RxCatch = 6,
-
-        [Display(Name = "Autoplay Std")]
-        ApStd = 7
+        Mania = 3
     }
 }

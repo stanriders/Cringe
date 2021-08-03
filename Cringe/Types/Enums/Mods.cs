@@ -66,7 +66,7 @@ namespace Cringe.Types.Enums
         Key3 = 134217728,
         Key2 = 268435456,
 
-        [Display(Name = "NF")]
+        [Display(Name = "V2")]
         V2 = 536870912,
 
         SpeedChangingMods = DoubleTime | Nightcore | HalfTime

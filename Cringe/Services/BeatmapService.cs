@@ -36,6 +36,8 @@ namespace Cringe.Services
             return await File.ReadAllBytesAsync(beatmapPath);
         }
 
+        #region Beatmap database seeding
+
         public void SeedDatabse()
         {
             var cachePath = _configuration["BeatmapCachePath"];
@@ -45,6 +47,7 @@ namespace Cringe.Services
             var addedMaps = 0;
 
             foreach (var beatmapPath in Directory.EnumerateFiles(cachePath, "*.osu").AsParallel())
+            {
                 try
                 {
                     if (addedMaps % 10000 == 0)
@@ -90,6 +93,7 @@ namespace Cringe.Services
                 {
                     Console.WriteLine($"Beatmap seeding failed for {beatmapPath}: {e}");
                 }
+            }
 
             _dbContext.SaveChanges();
             Console.WriteLine($"Beatmap seeding finished! Added {addedMaps} maps");
@@ -180,5 +184,7 @@ namespace Cringe.Services
 
             return beatmap;
         }
+
+        #endregion
     }
 }

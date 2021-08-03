@@ -59,6 +59,7 @@ namespace Cringe.Services
             }
 
             if (AccessToken != null)
+            {
                 try
                 {
                     var json = await DownloadString($"https://osu.ppy.sh/api/v2/{request}", AccessToken.Token);
@@ -70,6 +71,7 @@ namespace Cringe.Services
                 {
                     Console.WriteLine(ex);
                 }
+            }
 
             return default;
         }
@@ -91,7 +93,7 @@ namespace Cringe.Services
             if (response.IsSuccessStatusCode)
                 return await response.Content.ReadAsStringAsync();
 
-            if (response.StatusCode == HttpStatusCode.Found || response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode is HttpStatusCode.Found or HttpStatusCode.Unauthorized)
             {
                 request = new HttpRequestMessage
                 {

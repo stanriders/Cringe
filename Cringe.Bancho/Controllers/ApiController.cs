@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper.Internal;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
@@ -32,8 +33,51 @@ namespace Cringe.Bancho.Controllers
             _playerDatabaseContext = playerDatabaseContext;
         }
 
+        #region Spectators
+        [HttpGet]
+        [Route("spec/specs")]
+        public IEnumerable<SpectateSession> GetSpecs()
+        {
+            return _spectate.Pool.Values;
+        }
+        #endregion
+
+        #region Global
         [HttpPost]
-        [Route("notification")]
+        [Route("global/notification")]
+        public IActionResult SendGlobalNotification(string text)
+        {
+            PlayersPool.GetPlayerSessions().ForAll(x => x.ReceiveNotification(text));
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("global/ids")]
+        public IEnumerable<int> GetPlayersId()
+        {
+            return PlayersPool.GetPlayersId();
+        }
+        #endregion
+
+        #region Player
+        [HttpGet]
+        [Route("player/{playerId:int}")]
+        public async Task<IActionResult> GetPlayer(int playerId)
+        {
+            var player = PlayersPool.GetPlayer(playerId).Player;
+
+            if (player is not null) return Ok(player);
+
+            player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == playerId);
+
+            if (player is null) return NotFound();
+
+            return Ok(player);
+        }
+
+        [HttpPost]
+        [Route("player/{playerId:int}/notification")]
         public IActionResult SendIngameNotification(int playerId, string text)
         {
             var queue = PlayersPool.GetPlayer(playerId)?.Queue;
@@ -43,23 +87,6 @@ namespace Cringe.Bancho.Controllers
             queue.EnqueuePacket(new Notification(text));
 
             return Ok();
-        }
-
-        #region Players
-        [HttpGet]
-        [Route("players/ids")]
-        public IEnumerable<int> GetPlayersId()
-        {
-            return PlayersPool.GetPlayersId();
-        }
-        #endregion
-
-        #region Spectators
-        [HttpGet]
-        [Route("spec/specs")]
-        public IEnumerable<SpectateSession> GetSpecs()
-        {
-            return _spectate.Pool.Values;
         }
         #endregion
 
@@ -107,7 +134,7 @@ namespace Cringe.Bancho.Controllers
 
         #region Stats
         [HttpPost]
-        [Route("players/{playerId:int}/updateStats")]
+        [Route("players/{playerId:int}")]
         public async Task<IActionResult> UpdatePlayerStats(int playerId)
         {
             _stats.RemoveStats(playerId);
@@ -123,7 +150,7 @@ namespace Cringe.Bancho.Controllers
         }
 
         [HttpGet]
-        [Route("players/{playerId:int}/getStats")]
+        [Route("players/{playerId:int}")]
         public Task<Stats> GetStats(int playerId)
         {
             return _stats.GetUpdates(playerId);

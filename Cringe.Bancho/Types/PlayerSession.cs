@@ -87,6 +87,11 @@ namespace Cringe.Bancho.Types
             if (message.Sender.Username != Token.Username)
                 Queue.EnqueuePacket(message);
         }
+
+        public void ReceiveNotification(string notification)
+        {
+            Queue.EnqueuePacket(new Notification(notification));
+        }
         #endregion
 
         #region Presence

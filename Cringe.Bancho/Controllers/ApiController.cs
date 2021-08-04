@@ -104,7 +104,7 @@ namespace Cringe.Bancho.Controllers
 
             if (player?.MatchSession is not null) return Ok(selector(player.MatchSession));
 
-            if (await _playerDatabaseContext.Players.AnyAsync(x => x.Id == playerId))
+            if (!await _playerDatabaseContext.Players.AnyAsync(x => x.Id == playerId))
                 return NotFound();
 
             return NoContent();

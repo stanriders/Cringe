@@ -30,8 +30,13 @@ namespace Cringe.Services
                 var map = Beatmap.Read(reader);
                 var diff = new DiffCalc().Calc(map, (Mods) score.Mods);
 
-                return new PPv2(new PPv2Parameters(map, diff, score.Accuracy / 100, score.CountMiss, score.MaxCombo,
+                var pp = new PPv2(new PPv2Parameters(map, diff, score.Accuracy / 100, score.CountMiss, score.MaxCombo,
                     (Mods) score.Mods)).Total;
+
+                if (!double.IsNormal(pp))
+                    pp = 0.0;
+
+                return pp;
 
             }
             catch (Exception e)

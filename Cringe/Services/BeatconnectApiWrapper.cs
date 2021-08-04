@@ -1,4 +1,5 @@
 ﻿
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Cringe.Types.BeatconnectApi;
@@ -35,6 +36,20 @@ namespace Cringe.Services
                 return JsonConvert.DeserializeObject<SearchResponse>(json);
 
             return null;
+        }
+
+        public async Task<BeatmapSet> GetBeatmapSet(int id)
+        {
+            var json = await _client.GetStringAsync($"beatmap/{id}/?token={_token}");
+            if (!string.IsNullOrEmpty(json))
+                return JsonConvert.DeserializeObject<BeatmapSet>(json);
+
+            return null;
+        }
+
+        public Task<Stream> DownloadBeatmapSet(int id, string uniqueId)
+        {
+            return _client.GetStreamAsync($"https://beatconnect.io/b/{id}/{uniqueId}");
         }
     }
 }

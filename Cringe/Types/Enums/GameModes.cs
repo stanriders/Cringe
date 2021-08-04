@@ -5,6 +5,9 @@ namespace Cringe.Types.Enums
 {
     public enum GameModes
     {
+        [BeatconnectNaming("all")]
+        All = -1,
+
         [BeatconnectNaming("std")]
         [Display(Name = "osu!")]
         Osu = 0,

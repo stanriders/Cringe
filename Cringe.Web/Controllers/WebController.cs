@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cringe.Attributes;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Types;
@@ -22,24 +24,31 @@ namespace Cringe.Web.Controllers
         private readonly ReplayStorage _replayStorage;
         private readonly ScoreDatabaseContext _scoreDatabaseContext;
         private readonly ScoreService _scoreService;
+        private readonly BeatconnectApiWrapper _beatconnectApiWrapper;
+        private readonly OsuApiWrapper _osuApiWrapper;
 
         public WebController(ScoreService scoreService,
             ScoreDatabaseContext scoreDatabaseContext,
             BeatmapDatabaseContext beatmapContext,
             ReplayStorage replayStorage,
-            PlayerDatabaseContext playerDatabaseContext)
+            PlayerDatabaseContext playerDatabaseContext,
+            BeatconnectApiWrapper beatconnectApiWrapper,
+            OsuApiWrapper osuApiWrapper)
         {
             _scoreService = scoreService;
             _scoreDatabaseContext = scoreDatabaseContext;
             _beatmapContext = beatmapContext;
             _replayStorage = replayStorage;
             _playerDatabaseContext = playerDatabaseContext;
+            _beatconnectApiWrapper = beatconnectApiWrapper;
+            _osuApiWrapper = osuApiWrapper;
         }
 
         [HttpPost("osu-error.php")]
         [HttpGet("lastfm.php")]
         [HttpGet("osu-getseasonal.php")]
         [HttpPost("osu-session.php")]
+        [HttpGet("osu-markasread.php")]
         public IActionResult EmptyAnswer()
         {
             return new OkResult();
@@ -47,17 +56,17 @@ namespace Cringe.Web.Controllers
 
         [Auth]
         [HttpGet("bancho_connect.php")]
-        public IActionResult Connect(string u, string h)
+        public IActionResult Connect([FromQuery(Name = "u")] string username, [FromQuery(Name = "h")] string password)
         {
             return new OkObjectResult("BR"); // ripple outputs player's country here, we output brazil
         }
 
         [Auth]
         [HttpGet("osu-getfriends.php")]
-        public async Task<IActionResult> GetFriends(string u, string h)
+        public async Task<IActionResult> GetFriends([FromQuery(Name = "u")] string username, [FromQuery(Name = "h")] string password)
         {
             var friends = await _playerDatabaseContext.Friends
-                .Where(x => x.From.Username == u)
+                .Where(x => x.From.Username == username)
                 .Select(x => x.To.Id)
                 .ToArrayAsync();
 
@@ -174,6 +183,71 @@ namespace Cringe.Web.Controllers
                 return NotFound();
 
             return new FileContentResult(replayData, "text/html; charset=UTF-8");
+        }
+
+        [Auth]
+        [HttpGet("osu-search.php")]
+        public async Task<IActionResult> BeatmapSetSearch([FromQuery(Name = "q")] string query,
+            [FromQuery(Name = "m")] GameModes mode,
+            [FromQuery(Name = "r")] int status,
+            [FromQuery(Name = "u")] string username,
+            [FromQuery(Name = "h")] string password)
+        {
+            var beatconnectMode = BeatconnectNamingAttribute.RetrieveNaming(mode);
+            var beatconnectStatus = DirectStatusToBeatconnectStatus(status);
+
+            if (query == "Newest")
+                query = null;
+
+            var beatmapsets = await _beatconnectApiWrapper.BeatmapSearch(query, beatconnectMode, beatconnectStatus);
+
+            // {osz name}|{artist}|{title}|{mapper}|{status}|{rating}|{rank date}|{set id}|{thread id}|{has video}|{has storyboard}|{filesize}|{filesize_novid}|diffaname@0,diffname@0\n
+
+            var responseString = $"{beatmapsets.Beatmaps.Length}\n";
+            foreach (var beatmapSet in beatmapsets.Beatmaps)
+            {
+                responseString += $"{beatmapSet.Id}.osz|{beatmapSet.Artist}|{beatmapSet.Title}|{beatmapSet.Creator}|{(int)beatmapSet.Status}|10.00000|{beatmapSet.RankedDate}|{beatmapSet.Id}|0|0|{(beatmapSet.HasStoryboard ? 1 : 0)}|0||";
+                foreach (var beatmap in beatmapSet.Beatmaps)
+                {
+                    responseString += $"{beatmap.DifficultyName}@0,";
+                }
+
+                responseString += '\n';
+            }
+
+            return new FileContentResult(Encoding.UTF8.GetBytes(responseString), "text/html; charset=UTF-8");
+        }
+
+        [Auth]
+        [HttpGet("osu-search-set.php")]
+        public async Task<IActionResult> BeatmapSearch([FromQuery(Name = "b")] int id,
+            [FromQuery(Name = "u")] string username,
+            [FromQuery(Name = "h")] string password)
+        {
+            var beatmap = await _osuApiWrapper.GetBeatmapInfo(id);
+            if (beatmap is not null)
+            {
+                // {osz name}|{artist}|{title}|{mapper}|{status}|{rating?}|{update}|{set id}|{threadid}|{hasvideo}|{hasstoryboard}|{filesize}|{filesize_novid}
+
+                var responseString =
+                    $"{beatmap.BeatmapSetId}.osz|{beatmap.BeatmapSet.Artist}|{beatmap.BeatmapSet.Title}|{beatmap.BeatmapSet.CreatorName}|{beatmap.BeatmapSet.Status}|10.0|2021-05-12 18:33:23|{beatmap.BeatmapSetId}|0|0|0|0|";
+
+                return new FileContentResult(Encoding.UTF8.GetBytes(responseString), "text/html; charset=UTF-8");
+            }
+
+            return NotFound();
+        }
+
+        private string DirectStatusToBeatconnectStatus(int status)
+        {
+            return status switch
+            {
+                2 => "pending",
+                3 => "qualified",
+                5 => "graveyard",
+                8 => "loved",
+                _ => "ranked"
+            };
         }
     }
 }

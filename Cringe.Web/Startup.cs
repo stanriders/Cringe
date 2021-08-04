@@ -30,6 +30,7 @@ namespace Cringe.Web
             services.AddTransient<PpService>();
             services.AddTransient<OsuApiWrapper>();
             services.AddTransient<BanchoApiWrapper>();
+            services.AddTransient<BeatconnectApiWrapper>();
             services.AddTransient<PlayerTopscoreStatsCache>();
             services.AddTransient<PlayerRankCache>();
             services.AddTransient<ReplayStorage>();
@@ -39,6 +40,10 @@ namespace Cringe.Web
             services.AddHttpClient<BanchoApiWrapper>(client =>
             {
                 client.BaseAddress = new Uri(Configuration["BanchoApiAddress"] ?? "http://127.0.0.1");
+            });
+            services.AddHttpClient<BeatconnectApiWrapper>(client =>
+            {
+                client.BaseAddress = new Uri("https://beatconnect.io/api/");
             });
 
             services.AddMemoryCache();

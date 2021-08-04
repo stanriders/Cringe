@@ -21,9 +21,6 @@ namespace Cringe.Types.BeatconnectApi
         [JsonProperty("submitted_date")]
         public DateTime SubmittedDate { get; set; }
 
-        //[JsonProperty("last_updated")]
-        //public string LastUpdated { get; set; }
-
         [JsonProperty("ranked_date")]
         public DateTime RankedDate { get; set; }
 

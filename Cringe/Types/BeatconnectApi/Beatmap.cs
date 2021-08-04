@@ -9,9 +9,6 @@ namespace Cringe.Types.BeatconnectApi
         [JsonProperty("id")]
         public long Id { get; set; }
 
-        [JsonProperty("mode")]
-        public GameModes Mode { get; set; }
-
         [JsonProperty("mode_int")]
         public long ModeInt { get; set; }
 
@@ -47,9 +44,6 @@ namespace Cringe.Types.BeatconnectApi
 
         [JsonProperty("count_total")]
         public long? CountTotal { get; set; }
-
-        //[JsonProperty("last_updated")]
-        //public string LastUpdated { get; set; }
 
         [JsonProperty("status")]
         public RankedStatus Status { get; set; }

@@ -14,11 +14,10 @@ namespace Cringe.Web.Attributes
             var dbContext = context.HttpContext.RequestServices.GetService<PlayerDatabaseContext>();
 
             if (dbContext is null ||
-                !context.ActionArguments.ContainsKey("u") ||
-                !context.ActionArguments.ContainsKey("h") ||
+                !context.ActionArguments.ContainsKey("username") ||
+                !context.ActionArguments.ContainsKey("password") ||
                 !await dbContext.Players.AnyAsync(x =>
-                    x.Username ==
-                    (string) context.ActionArguments["u"])) // && x.Password == (string) context.ActionArguments["h"]
+                    x.Username == (string) context.ActionArguments["username"])) // && x.Password == (string) context.ActionArguments["h"]
             {
                 context.Result = new UnauthorizedResult();
 

@@ -68,6 +68,7 @@ namespace Cringe.Services
             if (beatmap is null)
                 return null;
 
+            // ReSharper disable once UseStringInterpolation
             var scoreData = string.Format("{0}p{1}o{2}o{3}t{4}a{5}r{6}e{7}y{8}o{9}u{10}{11}{12}",
                 score.Count100 + score.Count300, score.Count50,
                 score.CountGeki, score.CountKatu, score.CountMiss,

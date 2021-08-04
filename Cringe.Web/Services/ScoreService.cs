@@ -101,15 +101,15 @@ namespace Cringe.Web.Services
             score.Player.Playcount++;
             score.Player.TotalScore += (ulong) score.Score;
 
+            await _playerContext.SaveChangesAsync();
+            await _scoreContext.SaveChangesAsync();
+
             if (submittedScore is not null)
             {
                 score.Id = submittedScore.Id;
 
                 _logger.LogDebug($"Wrote score #{score.Id} to database");
             }
-
-            await _playerContext.SaveChangesAsync();
-            await _scoreContext.SaveChangesAsync();
 
             return score;
         }

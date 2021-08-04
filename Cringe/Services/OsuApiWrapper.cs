@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cringe.Types.OsuApi;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Cringe.Services
@@ -13,13 +14,16 @@ namespace Cringe.Services
     public class OsuApiWrapper
     {
         private static AccessToken AccessToken;
+
         private readonly HttpClient _client;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<OsuApiWrapper> _logger;
 
-        public OsuApiWrapper(HttpClient client, IConfiguration configuration)
+        public OsuApiWrapper(HttpClient client, IConfiguration configuration, ILogger<OsuApiWrapper> logger)
         {
             _client = client;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task DownloadBeatmap(int beatmapId)
@@ -39,6 +43,13 @@ namespace Cringe.Services
 
         private async Task<T> MakeApiRequest<T>(string request)
         {
+            if (string.IsNullOrEmpty(_configuration["osuAPIClientId"]) ||
+                string.IsNullOrEmpty(_configuration["osuAPIClientSecret"]))
+            {
+                _logger.LogWarning("Beatconnect API key is not set!");
+                return default;
+            }
+
             if (AccessToken == null || AccessToken.Expired)
             {
                 var authRequest = new
@@ -48,6 +59,8 @@ namespace Cringe.Services
                     grant_type = "client_credentials",
                     scope = "public"
                 };
+
+                _logger.LogDebug("Updating osu!API access token...");
 
                 var authJson = await _client.PostAsync("https://osu.ppy.sh/oauth/token",
                     new StringContent(JsonConvert.SerializeObject(authRequest), Encoding.UTF8, "application/json"));

@@ -10,12 +10,16 @@ namespace Cringe.Bancho.Types
 {
     public class PlayerSession
     {
+        [JsonIgnore]
+        [NotLogged]
         public int Id => Player.Id;
         public Player Player { get; set; }
 
+        [JsonIgnore]
         [NotLogged]
         public UserToken Token { get; set; }
 
+        [JsonIgnore]
         [NotLogged]
         public PacketQueue Queue { get; } = new();
 

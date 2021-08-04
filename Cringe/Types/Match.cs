@@ -1,4 +1,5 @@
-﻿using Cringe.Types.Enums;
+﻿using System.Text.Json.Serialization;
+using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Types
@@ -7,6 +8,8 @@ namespace Cringe.Types
     {
         public short Id { get; set; }
         public string Name { get; set; }
+
+        [JsonIgnore]
         public string Password { get; set; }
         public int Host { get; set; }
         public int MapId { get; set; }

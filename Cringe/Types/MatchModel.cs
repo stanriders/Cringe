@@ -12,6 +12,9 @@ namespace Cringe.Types
 
         [JsonIgnore]
         public string Password { get; set; }
+
+        public string Embed => $"osump://{Id}";
+
         public int Host { get; set; }
         public int MapId { get; set; }
         public string MapMd5 { get; set; }

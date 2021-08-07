@@ -41,26 +41,26 @@ namespace Cringe.Bancho.Controllers
         #endregion
 
         #region Global
+        [HttpGet]
+        [Route("players/all/online")]
+        public IEnumerable<int> GetOnlinePlayersId()
+        {
+            return PlayersPool.GetPlayersId();
+        }
+
         [HttpPost]
-        [Route("global/notification")]
+        [Route("players/all/notification")]
         public IActionResult SendGlobalNotification(string text)
         {
             PlayersPool.GetPlayerSessions().ForAll(x => x.ReceiveNotification(text));
 
             return Ok();
         }
-
-        [HttpGet]
-        [Route("global/ids")]
-        public IEnumerable<int> GetPlayersId()
-        {
-            return PlayersPool.GetPlayersId();
-        }
         #endregion
 
         #region Player
         [HttpGet]
-        [Route("player/{playerId:int}")]
+        [Route("players/{playerId:int}")]
         public async Task<IActionResult> GetPlayer(int playerId)
         {
             var player = PlayersPool.GetPlayer(playerId).Player;
@@ -75,58 +75,16 @@ namespace Cringe.Bancho.Controllers
         }
 
         [HttpPost]
-        [Route("player/{playerId:int}/notification")]
+        [Route("players/{playerId:int}/notification")]
         public IActionResult SendIngameNotification(int playerId, string text)
         {
-            var queue = PlayersPool.GetPlayer(playerId)?.Queue;
+            var session = PlayersPool.GetPlayer(playerId);
 
-            if (queue is null) return BadRequest();
+            if (session is null) return BadRequest();
 
-            queue.EnqueuePacket(new Notification(text));
+            session.ReceiveNotification(text);
 
             return Ok();
-        }
-        #endregion
-
-        #region Multiplayer
-        [HttpGet]
-        [Route("lobby/matches")]
-        public IEnumerable<MatchSession> GetMatches()
-        {
-            return _lobby.Sessions.Values;
-        }
-
-        private async Task<IActionResult> Wrapper(int playerId, Func<MatchSession, object> selector)
-        {
-            var player = PlayersPool.GetPlayer(playerId);
-
-            if (player?.MatchSession is not null) return Ok(selector(player.MatchSession));
-
-            if (!await _playerDatabaseContext.Players.AnyAsync(x => x.Id == playerId))
-                return NotFound();
-
-            return NoContent();
-        }
-
-        [HttpGet]
-        [Route("lobby/matches/{playerId:int}")]
-        public async Task<IActionResult> GetMultiplayerMatch(int playerId)
-        {
-            return await Wrapper(playerId, session => session);
-        }
-
-        [HttpGet]
-        [Route("lobby/matches/{playerId:int}/is_host")]
-        public async Task<IActionResult> MultiplayerIsHost(int playerId)
-        {
-            return await Wrapper(playerId, session => session.Match.Host == playerId);
-        }
-
-        [HttpGet]
-        [Route("lobby/matches/{playerId:int}/status")]
-        public async Task<IActionResult> MultiplayerIsPlaying(int playerId)
-        {
-            return await Wrapper(playerId, session => session.Match.GetPlayer(playerId).Status);
         }
         #endregion
 
@@ -153,5 +111,48 @@ namespace Cringe.Bancho.Controllers
             return _stats.GetUpdates(playerId);
         }
         #endregion
+
+        #region Multiplayer
+        [HttpGet]
+        [Route("lobby/matches")]
+        public IEnumerable<MatchSession> GetMatches()
+        {
+            return _lobby.Sessions.Values;
+        }
+
+        [HttpGet]
+        [Route("lobby/matches/{playerId:int}")]
+        public Task<IActionResult> GetMultiplayerMatch(int playerId)
+        {
+            return MatchWrapper(playerId, session => session);
+        }
+
+        [HttpGet]
+        [Route("lobby/matches/{playerId:int}/is_host")]
+        public Task<IActionResult> MultiplayerIsHost(int playerId)
+        {
+            return MatchWrapper(playerId, session => session.Match.Host == playerId);
+        }
+
+        [HttpGet]
+        [Route("lobby/matches/{playerId:int}/status")]
+        public Task<IActionResult> MultiplayerIsPlaying(int playerId)
+        {
+            return MatchWrapper(playerId, session => session.Match.GetPlayer(playerId).Status);
+        }
+        #endregion
+
+
+        private async Task<IActionResult> MatchWrapper(int playerId, Func<MatchSession, object> selector)
+        {
+            var player = PlayersPool.GetPlayer(playerId);
+
+            if (player?.MatchSession is not null) return Ok(selector(player.MatchSession));
+
+            if (!await _playerDatabaseContext.Players.AnyAsync(x => x.Id == playerId))
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }

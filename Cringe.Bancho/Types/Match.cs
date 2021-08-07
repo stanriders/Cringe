@@ -12,7 +12,7 @@ namespace Cringe.Bancho.Types
     {
         public List<Slot> Slots { get; set; } = new int[16].Select(_ => new Slot()).ToList();
         public IEnumerable<Slot> Players => Slots.Where(x => x.Player is not null);
-        public IEnumerable<Slot> PlayingPlayers => Players.Where(x => x.Status == SlotStatus.playing);
+        public IEnumerable<Slot> PlayingPlayers => Players.Where(x => x.Status == SlotStatus.Playing);
 
         public static Match NullMatch => new()
         {
@@ -71,7 +71,7 @@ namespace Cringe.Bancho.Types
 
             foreach (var slot in lobby.Slots) slot.Team = (MatchTeams) reader.ReadByte();
 
-            foreach (var slot in lobby.Slots.Where(slot => (byte) (slot.Status & SlotStatus.has_player) != 0))
+            foreach (var slot in lobby.Slots.Where(slot => (byte) (slot.Status & SlotStatus.HasPlayer) != 0))
                 reader.ReadInt32();
 
             lobby.Host = reader.ReadInt32();

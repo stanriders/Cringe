@@ -2,8 +2,8 @@
 {
     public enum MatchTeams : byte
     {
-        neutral = 0,
-        blue = 1,
-        red = 2
+        Neutral = 0,
+        Blue = 1,
+        Red = 2
     }
 }

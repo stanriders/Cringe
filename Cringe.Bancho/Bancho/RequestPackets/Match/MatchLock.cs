@@ -31,9 +31,9 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             using var reader = new BinaryReader(new MemoryStream(data));
             var toLock = reader.ReadInt32();
             var lockedSlot = session.MatchSession.Match.Slots[toLock];
-            if (lockedSlot.Status == SlotStatus.locked)
+            if (lockedSlot.Status == SlotStatus.Locked)
             {
-                lockedSlot.Status = SlotStatus.open;
+                lockedSlot.Status = SlotStatus.Open;
             }
             else
             {
@@ -53,7 +53,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                     session.MatchSession.Disconnect(lockedSlot.Player);
                 }
 
-                lockedSlot.Status = SlotStatus.locked;
+                lockedSlot.Status = SlotStatus.Locked;
             }
 
             session.MatchSession.OnUpdateMatch(true);

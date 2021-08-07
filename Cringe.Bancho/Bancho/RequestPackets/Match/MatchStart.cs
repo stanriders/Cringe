@@ -35,15 +35,15 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             match.InProgress = true;
             foreach (var player in match.Players)
             {
-                if (player.Status == SlotStatus.no_map) continue;
+                if (player.Status == SlotStatus.NoMap) continue;
 
-                player.Status = SlotStatus.playing;
+                player.Status = SlotStatus.Playing;
             }
 
             var response = new ResponsePackets.Match.MatchStart(match);
             foreach (var player in match.Players)
             {
-                if (player.Status != SlotStatus.playing) continue;
+                if (player.Status != SlotStatus.Playing) continue;
 
                 player.Player.Queue.EnqueuePacket(response);
             }

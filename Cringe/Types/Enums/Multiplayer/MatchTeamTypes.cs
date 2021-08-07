@@ -2,9 +2,9 @@
 {
     public enum MatchTeamTypes : byte
     {
-        head_to_head = 0,
-        tag_coop = 1,
-        team_vs = 2,
-        tag_team_vs = 3
+        HeadToHead = 0,
+        TagCoop = 1,
+        TeamVs = 2,
+        TagTeamVs = 3
     }
 }

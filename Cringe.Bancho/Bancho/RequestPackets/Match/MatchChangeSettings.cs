@@ -68,7 +68,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             {
                 foreach (var player in sessionMatch.Players)
                 {
-                    player.Status = SlotStatus.not_ready;
+                    player.Status = SlotStatus.NotReady;
                     sessionMatch.MapId = -1;
                     sessionMatch.MapMd5 = "";
                     sessionMatch.Name = "";
@@ -89,9 +89,9 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
 
             if (match.TeamTypes != sessionMatch.TeamTypes)
             {
-                var team = match.TeamTypes is MatchTeamTypes.head_to_head or MatchTeamTypes.tag_coop
-                    ? MatchTeams.neutral
-                    : MatchTeams.red;
+                var team = match.TeamTypes is MatchTeamTypes.HeadToHead or MatchTeamTypes.TagCoop
+                    ? MatchTeams.Neutral
+                    : MatchTeams.Red;
                 foreach (var player in sessionMatch.Players)
                     player.Team = team;
 

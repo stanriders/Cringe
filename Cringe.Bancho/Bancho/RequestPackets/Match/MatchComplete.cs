@@ -27,20 +27,20 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
 
             lock (key) //I believe we may have problems without mutex
             {
-                slot.Status = SlotStatus.complete;
+                slot.Status = SlotStatus.Complete;
 
-                if (match.Slots.Any(x => x.Status == SlotStatus.playing))
+                if (match.Slots.Any(x => x.Status == SlotStatus.Playing))
                     return Task.CompletedTask;
             }
 
             match.InProgress = false;
             foreach (var player in match.Players)
             {
-                if (player.Status != SlotStatus.complete) continue;
+                if (player.Status != SlotStatus.Complete) continue;
 
                 player.Loaded = false;
                 player.Skipped = false;
-                player.Status = SlotStatus.not_ready;
+                player.Status = SlotStatus.NotReady;
                 player.Player.Queue.EnqueuePacket(new ResponsePackets.Match.MatchComplete());
             }
 

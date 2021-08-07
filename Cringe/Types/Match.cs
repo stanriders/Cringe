@@ -17,8 +17,8 @@ namespace Cringe.Types
         public string MapName { get; set; }
         public GameModes Mode { get; set; } = GameModes.Osu;
         public bool FreeMode { get; set; }
-        public MatchWinConditions WinConditions { get; set; } = MatchWinConditions.score;
-        public MatchTeamTypes TeamTypes { get; set; } = MatchTeamTypes.head_to_head;
+        public MatchWinConditions WinConditions { get; set; } = MatchWinConditions.Score;
+        public MatchTeamTypes TeamTypes { get; set; } = MatchTeamTypes.HeadToHead;
         public bool InProgress { get; set; }
         public Mods Mods { get; set; }
     }

@@ -15,8 +15,8 @@ namespace Cringe.Bancho.Types
         public void Wipe()
         {
             Player = null;
-            Status = SlotStatus.open;
-            Team = MatchTeams.neutral;
+            Status = SlotStatus.Open;
+            Team = MatchTeams.Neutral;
             Mods = Mods.None;
         }
 

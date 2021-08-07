@@ -29,7 +29,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 return Task.CompletedTask;
             }
 
-            slot.Status = SlotStatus.ready;
+            slot.Status = SlotStatus.Ready;
             session.MatchSession.OnUpdateMatch(true);
 
             return Task.CompletedTask;

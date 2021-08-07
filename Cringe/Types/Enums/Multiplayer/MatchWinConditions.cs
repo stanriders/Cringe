@@ -2,9 +2,9 @@
 {
     public enum MatchWinConditions
     {
-        score = 0,
-        accuracy = 1,
-        combo = 2,
-        scorev2 = 3
+        Score = 0,
+        Accuracy = 1,
+        Combo = 2,
+        Scorev2 = 3
     }
 }

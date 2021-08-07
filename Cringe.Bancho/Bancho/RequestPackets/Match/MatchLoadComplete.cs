@@ -29,7 +29,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 var slot = match.GetPlayer(session.Id);
                 slot.Loaded = true;
 
-                if (match.Players.Where(x => x.Status == SlotStatus.playing).Any(player => !player.Loaded))
+                if (match.Players.Where(x => x.Status == SlotStatus.Playing).Any(player => !player.Loaded))
                     return Task.CompletedTask;
             }
 

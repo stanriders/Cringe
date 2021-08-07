@@ -58,7 +58,7 @@ namespace Cringe.Bancho.Types
             }
 
             slot.Player = session;
-            slot.Status = SlotStatus.not_ready;
+            slot.Status = SlotStatus.NotReady;
             session.MatchSession = this;
 
             UpdateMatch += session.UpdateMatch;

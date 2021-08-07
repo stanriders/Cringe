@@ -26,7 +26,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
 
             var match = session.MatchSession.Match;
             var slot = match.GetPlayer(session.Id);
-            slot.Status = SlotStatus.no_map;
+            slot.Status = SlotStatus.NoMap;
             session.MatchSession.OnUpdateMatch();
 
             return Task.CompletedTask;

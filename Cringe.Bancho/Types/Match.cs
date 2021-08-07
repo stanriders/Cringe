@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using Cringe.Bancho.Bancho;
 using Cringe.Types;
+using Cringe.Types.Database;
 using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
 
@@ -10,9 +12,16 @@ namespace Cringe.Bancho.Types
 {
     public class Match : MatchModel
     {
+        public override Player[] Players => OccupiedSlots.Select(x => x.Player.Player).ToArray();
+
+        [JsonIgnore]
         public List<Slot> Slots { get; set; } = new int[16].Select(_ => new Slot()).ToList();
-        public IEnumerable<Slot> Players => Slots.Where(x => x.Player is not null);
-        public IEnumerable<Slot> PlayingPlayers => Players.Where(x => x.Status == SlotStatus.Playing);
+
+        [JsonIgnore]
+        public IEnumerable<Slot> OccupiedSlots => Slots.Where(x => x.Player is not null);
+
+        [JsonIgnore]
+        public IEnumerable<Slot> PlayingPlayers => OccupiedSlots.Where(x => x.Status == SlotStatus.Playing);
 
         public static Match NullMatch => new()
         {

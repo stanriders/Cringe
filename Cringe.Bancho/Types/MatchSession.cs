@@ -74,7 +74,7 @@ namespace Cringe.Bancho.Types
 
             Match.GetPlayer(session.Id).Wipe();
             ;
-            var slots = Match.Players.ToArray();
+            var slots = Match.OccupiedSlots.ToArray();
 
             if (slots.Length == 0)
             {

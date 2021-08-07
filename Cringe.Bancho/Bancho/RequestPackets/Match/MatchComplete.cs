@@ -34,7 +34,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             }
 
             match.InProgress = false;
-            foreach (var player in match.Players)
+            foreach (var player in match.OccupiedSlots)
             {
                 if (player.Status != SlotStatus.Complete) continue;
 

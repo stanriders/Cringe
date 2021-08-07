@@ -41,7 +41,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 sessionMatch.FreeMode = match.FreeMode;
                 if (match.FreeMode)
                 {
-                    foreach (var slot in sessionMatch.Players)
+                    foreach (var slot in sessionMatch.OccupiedSlots)
                         slot.Mods = sessionMatch.Mods & ~Mods.SpeedChangingMods;
 
                     sessionMatch.Mods &= Mods.SpeedChangingMods;
@@ -59,14 +59,14 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
 
                     sessionMatch.Mods &= Mods.SpeedChangingMods;
                     sessionMatch.Mods |= host.Mods;
-                    foreach (var player in sessionMatch.Players)
+                    foreach (var player in sessionMatch.OccupiedSlots)
                         player.Mods = Mods.None;
                 }
             }
 
             if (match.MapId == -1)
             {
-                foreach (var player in sessionMatch.Players)
+                foreach (var player in sessionMatch.OccupiedSlots)
                 {
                     player.Status = SlotStatus.NotReady;
                     sessionMatch.MapId = -1;
@@ -92,7 +92,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 var team = match.TeamTypes is MatchTeamTypes.HeadToHead or MatchTeamTypes.TagCoop
                     ? MatchTeams.Neutral
                     : MatchTeams.Red;
-                foreach (var player in sessionMatch.Players)
+                foreach (var player in sessionMatch.OccupiedSlots)
                     player.Team = team;
 
                 sessionMatch.TeamTypes = match.TeamTypes;

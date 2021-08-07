@@ -29,11 +29,11 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
                 var slot = match.GetPlayer(session.Id);
                 slot.Loaded = true;
 
-                if (match.Players.Where(x => x.Status == SlotStatus.Playing).Any(player => !player.Loaded))
+                if (match.OccupiedSlots.Where(x => x.Status == SlotStatus.Playing).Any(player => !player.Loaded))
                     return Task.CompletedTask;
             }
 
-            foreach (var player in match.Players)
+            foreach (var player in match.OccupiedSlots)
                 player.Player.Queue.EnqueuePacket(new ResponsePackets.Match.MatchLoadComplete());
 
             return Task.CompletedTask;

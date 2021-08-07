@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Cringe.Types.Database;
 using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
 
@@ -21,5 +22,7 @@ namespace Cringe.Types
         public MatchTeamTypes TeamTypes { get; set; } = MatchTeamTypes.HeadToHead;
         public bool InProgress { get; set; }
         public Mods Mods { get; set; }
+
+        public virtual Player[] Players { get; set; }
     }
 }

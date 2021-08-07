@@ -21,7 +21,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             if (session.MatchSession is null) return Task.CompletedTask;
 
             var packet = new MatchPlayerFailed(session.MatchSession.Match.GetPlayerPosition(session.Id));
-            foreach (var player in session.MatchSession.Match.Players.Where(x => x.Status == SlotStatus.Playing))
+            foreach (var player in session.MatchSession.Match.PlayingPlayers)
                 player.Player.Queue.EnqueuePacket(packet);
 
             return Task.CompletedTask;

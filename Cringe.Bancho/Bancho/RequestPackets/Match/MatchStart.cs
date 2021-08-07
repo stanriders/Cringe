@@ -33,7 +33,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             }
 
             match.InProgress = true;
-            foreach (var player in match.Players)
+            foreach (var player in match.OccupiedSlots)
             {
                 if (player.Status == SlotStatus.NoMap) continue;
 
@@ -41,7 +41,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
             }
 
             var response = new ResponsePackets.Match.MatchStart(match);
-            foreach (var player in match.Players)
+            foreach (var player in match.OccupiedSlots)
             {
                 if (player.Status != SlotStatus.Playing) continue;
 

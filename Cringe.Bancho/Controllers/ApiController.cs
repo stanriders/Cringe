@@ -73,7 +73,7 @@ namespace Cringe.Bancho.Controllers
             await _ppCache.UpdatePlayerStats(player);
             await _playerDatabaseContext.SaveChangesAsync();
 
-            PlayersPool.GetPlayer(playerId)?.UpdateStats();
+            PlayersPool.GetPlayer(playerId)?.UpdateStats(await _stats.GetUpdates(playerId));
 
             return Ok();
         }

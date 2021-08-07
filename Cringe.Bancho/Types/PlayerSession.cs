@@ -118,9 +118,9 @@ namespace Cringe.Bancho.Types
             Pp = Player.Pp
         };
 
-        public void UpdateStats()
+        public void UpdateStats(Stats stats)
         {
-            Queue.EnqueuePacket(new UserStats(Stats));
+            Queue.EnqueuePacket(new UserStats(stats));
             Queue.EnqueuePacket(new UserPresence(Presence));
         }
         #endregion

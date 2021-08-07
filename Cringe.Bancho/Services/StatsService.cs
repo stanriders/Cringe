@@ -36,7 +36,7 @@ namespace Cringe.Bancho.Services
                     var stats = player.Stats;
                     var topscoreStats = await _topscoreStatsCache.GetPlayerTopscoreStats(id);
                     stats.Pp = (ushort) topscoreStats.Pp;
-                    stats.Accuracy = (float) topscoreStats.Accuracy;
+                    stats.Accuracy = (float) (topscoreStats.Accuracy / 100.0f);
 
                     SetUpdates(id, stats);
 

@@ -131,8 +131,8 @@ namespace Cringe.Bancho.Controllers
         #endregion
 
         #region Stats
-        [HttpPost]
-        [Route("players/{playerId:int}")]
+        [HttpGet]
+        [Route("players/{playerId:int}/stats/refresh")]
         public async Task<IActionResult> UpdatePlayerStats(int playerId)
         {
             _stats.RemoveStats(playerId);
@@ -147,7 +147,7 @@ namespace Cringe.Bancho.Controllers
         }
 
         [HttpGet]
-        [Route("players/{playerId:int}")]
+        [Route("players/{playerId:int}/stats")]
         public Task<Stats> GetStats(int playerId)
         {
             return _stats.GetUpdates(playerId);

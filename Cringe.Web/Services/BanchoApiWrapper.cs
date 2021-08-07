@@ -50,7 +50,7 @@ namespace Cringe.Web.Services
 
         public Task UpdatePlayerStats(int playerId)
         {
-            return _client.PostAsync($"api/players/{playerId}/updateStats", null!);
+            return _client.GetAsync($"api/players/{playerId}/stats/refresh");
         }
     }
 }

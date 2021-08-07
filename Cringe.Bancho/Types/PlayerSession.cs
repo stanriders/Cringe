@@ -10,12 +10,16 @@ namespace Cringe.Bancho.Types
 {
     public class PlayerSession
     {
+        [JsonIgnore]
+        [NotLogged]
         public int Id => Player.Id;
         public Player Player { get; set; }
 
+        [JsonIgnore]
         [NotLogged]
         public UserToken Token { get; set; }
 
+        [JsonIgnore]
         [NotLogged]
         public PacketQueue Queue { get; } = new();
 
@@ -82,6 +86,11 @@ namespace Cringe.Bancho.Types
         {
             if (message.Sender.Username != Token.Username)
                 Queue.EnqueuePacket(message);
+        }
+
+        public void ReceiveNotification(string notification)
+        {
+            Queue.EnqueuePacket(new Notification(notification));
         }
         #endregion
 

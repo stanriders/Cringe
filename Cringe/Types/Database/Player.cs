@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Cringe.Types.Enums;
 
 namespace Cringe.Types.Database
@@ -18,6 +19,8 @@ namespace Cringe.Types.Database
         public uint Rank { get; set; }
         public ushort Pp { get; set; }
         public UserRanks UserRank { get; set; }
+
+        [JsonIgnore]
         public string Password { get; set; }
 
         public static Player DummyPlayer => new()
@@ -36,7 +39,7 @@ namespace Cringe.Types.Database
             var player = DummyPlayer;
             player.Username = username;
 
-            //TODO: crypt the password 
+            //TODO: crypt the password
             player.Password = password;
 
             return player;

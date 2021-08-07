@@ -33,7 +33,7 @@ namespace Cringe.Bancho
             services.AddTransient<InvokeService>();
             services.AddTransient<TokenService>();
             services.AddTransient<PlayerTopscoreStatsCache>();
-            services.AddTransient<PlayerRankCache>();
+            services.AddTransient<PlayerRankRetriever>();
             services.AddTransient<FriendsService>();
             services.AddTransient<StatsService>();
 

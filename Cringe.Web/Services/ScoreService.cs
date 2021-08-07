@@ -28,10 +28,11 @@ namespace Cringe.Web.Services
         private readonly ScoreDatabaseContext _scoreContext;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _memoryCache;
+        private readonly PlayerRankRetriever _rankRetriever;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
             BeatmapDatabaseContext beatmapContext, PpService ppService, BanchoApiWrapper banchoApiWrapper,
-            ILogger<ScoreService> logger, IMapper mapper, IMemoryCache memoryCache)
+            ILogger<ScoreService> logger, IMapper mapper, IMemoryCache memoryCache, PlayerRankRetriever rankRetriever)
         {
             _scoreContext = scoreContext;
             _playerContext = playerContext;
@@ -41,6 +42,7 @@ namespace Cringe.Web.Services
             _logger = logger;
             _mapper = mapper;
             _memoryCache = memoryCache;
+            _rankRetriever = rankRetriever;
         }
 
         public async Task<ScoreBase> SubmitScore(string encodedData, string iv, string osuver, bool quit,
@@ -92,6 +94,8 @@ namespace Cringe.Web.Services
 
                 submittedScore = _mapper.Map<SubmittedScore>(score);
                 await _scoreContext.Scores.AddAsync(submittedScore);
+
+                await _rankRetriever.UpdatePlayerRank(score.Player);
 
                 // send score as a notif to confirm submission
                 await _banchoApiWrapper.SendNotification(score.Player.Id, $"{Math.Round(score.Pp, 2)} pp");

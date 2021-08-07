@@ -18,18 +18,16 @@ namespace Cringe.Bancho.Controllers
         private readonly LobbyService _lobby;
         private readonly PlayerDatabaseContext _playerDatabaseContext;
         private readonly PlayerTopscoreStatsCache _ppCache;
-        private readonly PlayerRankCache _rankCache;
         private readonly SpectateService _spectate;
         private readonly StatsService _stats;
 
         public ApiController(LobbyService lobby, StatsService stats, SpectateService spectate,
-            PlayerTopscoreStatsCache ppCache, PlayerRankCache rankCache, PlayerDatabaseContext playerDatabaseContext)
+            PlayerTopscoreStatsCache ppCache, PlayerDatabaseContext playerDatabaseContext)
         {
             _lobby = lobby;
             _stats = stats;
             _spectate = spectate;
             _ppCache = ppCache;
-            _rankCache = rankCache;
             _playerDatabaseContext = playerDatabaseContext;
         }
 
@@ -141,10 +139,9 @@ namespace Cringe.Bancho.Controllers
 
             var player = await _playerDatabaseContext.Players.FirstOrDefaultAsync(x => x.Id == playerId);
             await _ppCache.UpdatePlayerStats(player);
-            await _rankCache.UpdatePlayerRank(player);
             await _playerDatabaseContext.SaveChangesAsync();
 
-            PlayersPool.GetPlayer(playerId)?.UpdateStats();
+            PlayersPool.GetPlayer(playerId)?.UpdateStats(await _stats.GetUpdates(playerId));
 
             return Ok();
         }

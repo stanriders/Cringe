@@ -15,10 +15,10 @@ namespace Cringe.Bancho.Bancho.RequestPackets
 
         public override ClientPacketType Type => ClientPacketType.ChangeAction;
 
-        public override Task Execute(PlayerSession session, byte[] data)
+        public override async Task Execute(PlayerSession session, byte[] data)
         {
             var action = Types.ChangeAction.Parse(data);
-            var stats = session.Stats;
+            var stats = await Stats.GetUpdates(session.Id);
             stats.Action = action;
 
             Logger.LogInformation("{Token} | Changes action to {@Action}", session.Token, stats.Action);
@@ -26,8 +26,6 @@ namespace Cringe.Bancho.Bancho.RequestPackets
             Stats.SetUpdates(session.Id, stats);
             session.Queue.EnqueuePacket(new UserStats(stats));
             session.Queue.EnqueuePacket(new UserPresence(session.Presence));
-
-            return Task.CompletedTask;
         }
     }
 }

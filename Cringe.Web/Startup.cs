@@ -32,7 +32,7 @@ namespace Cringe.Web
             services.AddTransient<BanchoApiWrapper>();
             services.AddTransient<BeatconnectApiWrapper>();
             services.AddTransient<PlayerTopscoreStatsCache>();
-            services.AddTransient<PlayerRankCache>();
+            services.AddTransient<PlayerRankRetriever>();
             services.AddTransient<ReplayStorage>();
             services.AddTransient<ScoreService>();
 

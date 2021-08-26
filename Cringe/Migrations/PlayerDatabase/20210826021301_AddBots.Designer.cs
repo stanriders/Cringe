@@ -3,14 +3,16 @@ using System;
 using Cringe.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Cringe.Migrations.PlayerDatabase
 {
     [DbContext(typeof(PlayerDatabaseContext))]
-    partial class PlayerDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210826021301_AddBots")]
+    partial class AddBots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

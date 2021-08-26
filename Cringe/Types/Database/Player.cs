@@ -19,6 +19,7 @@ namespace Cringe.Types.Database
         public uint Rank { get; set; }
         public ushort Pp { get; set; }
         public UserRanks UserRank { get; set; }
+        public Bot Bot { get; set; }
 
         [JsonIgnore]
         public string Password { get; set; }

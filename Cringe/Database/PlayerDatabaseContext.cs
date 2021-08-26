@@ -19,6 +19,8 @@ namespace Cringe.Database
 
         public DbSet<Player> Players { get; set; }
 
+        public DbSet<Bot> Bots { get; set; }
+
         public DbSet<PlayerRankQuery> PlayerRankQuery { get; set; }
 
         public DbSet<Friends> Friends { get; set; }

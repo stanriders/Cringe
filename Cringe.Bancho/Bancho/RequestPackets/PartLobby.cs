@@ -14,7 +14,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.PartLobby;
-        protected override string ApiPath => "user/channels/part";
+        protected override string ApiPath => "channels/part";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

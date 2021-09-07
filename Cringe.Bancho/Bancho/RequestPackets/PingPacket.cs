@@ -12,6 +12,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.Ping;
+        protected override string ApiPath => "user/ping";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

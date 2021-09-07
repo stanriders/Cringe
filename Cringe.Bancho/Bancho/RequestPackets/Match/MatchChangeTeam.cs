@@ -6,7 +6,7 @@ using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match
 {
-    public class MatchChangeTeam : RequestPacket
+    public class MatchChangeTeam : MatchChanged
     {
         public MatchChangeTeam(IServiceProvider serviceProvider) : base(serviceProvider)
         {

@@ -13,6 +13,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match
         }
 
         public override ClientPacketType Type => ClientPacketType.CreateMatch;
+        protected override string ApiPath => "match/created";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

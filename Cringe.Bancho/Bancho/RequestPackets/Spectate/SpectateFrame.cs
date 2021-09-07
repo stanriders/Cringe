@@ -14,6 +14,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
         }
 
         public override ClientPacketType Type => ClientPacketType.SpectateFrames;
+        protected override string ApiPath => "spectate/frame";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

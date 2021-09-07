@@ -7,7 +7,7 @@ using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match
 {
-    public class MatchComplete : RequestPacket
+    public class MatchComplete : MatchChanged
     {
         public static object key = new();
 

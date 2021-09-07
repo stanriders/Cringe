@@ -15,6 +15,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.SendPublicMessage;
+        protected override string ApiPath => "user/messages/send/public";
 
         public override async Task Execute(PlayerSession session, byte[] data)
         {

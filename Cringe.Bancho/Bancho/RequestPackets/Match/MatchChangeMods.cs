@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match
 {
-    public class MatchChangeMods : RequestPacket
+    public class MatchChangeMods : MatchChanged
     {
         public MatchChangeMods(IServiceProvider serviceProvider) : base(serviceProvider)
         {

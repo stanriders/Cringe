@@ -15,6 +15,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.ChannelJoin;
+        protected override string ApiPath => "user/channels/join";
 
         public override async Task Execute(PlayerSession session, byte[] data)
         {

@@ -17,6 +17,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.FriendRemove;
+        protected override string ApiPath => "user/friends/remove";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

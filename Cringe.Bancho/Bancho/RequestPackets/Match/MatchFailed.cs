@@ -8,7 +8,7 @@ using Cringe.Types.Enums.Multiplayer;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match
 {
-    public class MatchFailed : RequestPacket
+    public class MatchFailed : MatchChanged
     {
         public MatchFailed(IServiceProvider serviceProvider) : base(serviceProvider)
         {

@@ -14,6 +14,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.Logout;
+        protected override string ApiPath => "user/logout";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

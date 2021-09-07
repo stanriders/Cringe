@@ -16,6 +16,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.UserStatsRequest;
+        protected override string ApiPath => "user/status/stats/request";
 
         public override async Task Execute(PlayerSession session, byte[] data)
         {

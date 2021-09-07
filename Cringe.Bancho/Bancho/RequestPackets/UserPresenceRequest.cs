@@ -17,6 +17,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.UserPresenceRequest;
+        protected override string ApiPath => "user/status/presence/request";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

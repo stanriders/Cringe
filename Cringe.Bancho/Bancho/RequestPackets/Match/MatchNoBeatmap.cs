@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match
 {
-    public class MatchNoBeatmap : RequestPacket
+    public class MatchNoBeatmap : MatchChanged
     {
         public MatchNoBeatmap(IServiceProvider serviceProvider) : base(serviceProvider)
         {

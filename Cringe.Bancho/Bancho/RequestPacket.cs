@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Cringe.Bancho.Services;
+using Cringe.Bancho.Services.Bots;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Cringe.Utils;
@@ -24,12 +25,14 @@ namespace Cringe.Bancho.Bancho
             Logger = _serviceProvider.GetService<ILogger<RequestPacket>>(); //TODO: idk if it works
         }
 
+        protected IBotService Bots => _serviceProvider.GetService<IBotService>();
         protected PlayersPool Pool => _serviceProvider.GetService<PlayersPool>();
         protected LobbyService Lobby => _serviceProvider.GetService<LobbyService>();
         protected ChatService Chats => _serviceProvider.GetService<ChatService>();
         protected StatsService Stats => _serviceProvider.GetService<StatsService>();
         protected SpectateService Spectate => _serviceProvider.GetService<SpectateService>();
         public abstract ClientPacketType Type { get; }
+        protected abstract string ApiPath { get; }
         public abstract Task Execute(PlayerSession session, byte[] data);
 
         public static string ReadString(Stream stream)

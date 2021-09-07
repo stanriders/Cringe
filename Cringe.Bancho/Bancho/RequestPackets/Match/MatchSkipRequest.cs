@@ -7,7 +7,7 @@ using Cringe.Types.Enums;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match
 {
-    public class MatchSkipRequest : RequestPacket
+    public class MatchSkipRequest : MatchChanged
     {
         private readonly object key = new();
 

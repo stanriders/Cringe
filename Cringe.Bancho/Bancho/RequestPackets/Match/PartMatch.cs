@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match
 {
-    public class PartMatch : RequestPacket
+    public class PartMatch : MatchChanged
     {
         public PartMatch(IServiceProvider serviceProvider) : base(serviceProvider)
         {

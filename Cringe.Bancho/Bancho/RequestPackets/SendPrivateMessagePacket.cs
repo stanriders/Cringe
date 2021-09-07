@@ -14,6 +14,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.SendPrivateMessage;
+        protected override string ApiPath => "user/messages/send/private";
 
         public override async Task Execute(PlayerSession session, byte[] data)
         {

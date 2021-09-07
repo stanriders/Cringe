@@ -6,7 +6,7 @@ using Cringe.Types.Enums;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match
 {
-    public class MatchTransferHost : RequestPacket
+    public class MatchTransferHost : MatchChanged
     {
         public MatchTransferHost(IServiceProvider serviceProvider) : base(serviceProvider)
         {

@@ -17,6 +17,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets
         }
 
         public override ClientPacketType Type => ClientPacketType.FriendAdd;
+        protected override string ApiPath => "user/friends/add";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

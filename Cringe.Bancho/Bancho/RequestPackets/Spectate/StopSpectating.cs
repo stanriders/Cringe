@@ -13,7 +13,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
         }
 
         public override ClientPacketType Type => ClientPacketType.StopSpectating;
-        protected override string ApiPath => "spectate/stop";
+        protected override string ApiPath => "spectate/status";
 
         public override Task Execute(PlayerSession session, byte[] data)
         {

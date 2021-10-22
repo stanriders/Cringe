@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types.Database;
+using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,7 @@ namespace Cringe.Web.Pages.Players
             if (Player == null) return NotFound();
 
             Scores = await _scoreContext.Scores
-                .Where(x => x.PlayerId == Player.Id)
+                .Where(x => x.PlayerId == Player.Id && !x.Mods.HasFlag(Mods.Relax))
                 .Take(100)
                 .OrderByDescending(x => x.Pp)
                 .ToArrayAsync();

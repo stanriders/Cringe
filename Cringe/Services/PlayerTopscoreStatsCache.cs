@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Types;
 using Cringe.Types.Database;
+using Cringe.Types.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -54,7 +55,7 @@ namespace Cringe.Services
         private async Task<PlayerTopscoreStats> RefreshStats(int playerId)
         {
             var topScores = await _scoreDatabaseContext.Scores
-                .Where(x => x.PlayerId == playerId)
+                .Where(x => x.PlayerId == playerId && !x.Mods.HasFlag(Mods.Relax))
                 .OrderByDescending(x => x.Pp)
                 .Select(x => new {x.Pp, x.Accuracy})
                 .Take(100)

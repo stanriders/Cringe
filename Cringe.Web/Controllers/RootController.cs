@@ -1,4 +1,5 @@
 ﻿
+using System.IO;
 using System.Threading.Tasks;
 using Cringe.Services;
 using Cringe.Web.Attributes;
@@ -35,8 +36,11 @@ namespace Cringe.Web.Controllers
             {
                 _logger.LogInformation("User {Username} is downloading beatmapset {Id}", username, id);
 
-                await using var stream = await _beatconnectApiWrapper.DownloadBeatmapSet(intId, setInfo.UniqueId);
-                return new FileStreamResult(stream, "application/x-osu-archive");
+                await using var inStream = await _beatconnectApiWrapper.DownloadBeatmapSet(intId, setInfo.UniqueId);
+                await using var outStream = new MemoryStream();
+                await inStream.CopyToAsync(outStream);
+                outStream.Seek(0, SeekOrigin.Begin);
+                return new FileStreamResult(outStream, "application/x-osu-archive");
             }
 
             _logger.LogInformation("User {Username} failed to download beatmapset {Id}", username, id);

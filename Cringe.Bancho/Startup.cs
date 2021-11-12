@@ -37,6 +37,7 @@ namespace Cringe.Bancho
             services.AddTransient<FriendsService>();
             services.AddTransient<StatsService>();
 
+            services.AddHostedService<AutoDisconnectService>();
             services.AddMemoryCache();
 
             services.AddControllers();

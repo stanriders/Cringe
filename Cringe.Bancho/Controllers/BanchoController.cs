@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho;
@@ -145,6 +146,7 @@ namespace Cringe.Bancho.Controllers
             if (session is null)
                 return PacketQueue.NullUser();
 
+            session.LastUpdate = DateTime.Now;
             await using var inStream = new MemoryStream();
             await Request.Body.CopyToAsync(inStream);
             var data = inStream.ToArray();

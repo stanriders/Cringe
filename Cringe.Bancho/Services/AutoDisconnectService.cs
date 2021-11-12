@@ -24,8 +24,7 @@ namespace Cringe.Bancho.Services
         private void TimerCallback(object o)
         {
             var players = PlayersPool.GetPlayerSessions().ToList();
-            var date = DateTime.Now;
-            foreach (var player in players.Where(player => date - player.LastUpdate < TimeSpan.FromMinutes(5)))
+            foreach (var player in players.Where(player => player.LastUpdate.AddMinutes(5) < DateTime.Now))
             {
                 _pool.Disconnect(player.Token);
             }

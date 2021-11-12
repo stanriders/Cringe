@@ -42,7 +42,8 @@ namespace Cringe.Bancho.Services
             var session = new PlayerSession
             {
                 Player = player,
-                Token = token
+                Token = token,
+                LastUpdate = DateTime.Now
             };
 
             OnPlayerLoggedIn(session);

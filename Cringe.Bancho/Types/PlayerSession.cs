@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Bancho.ResponsePackets.Match;
@@ -14,6 +15,8 @@ namespace Cringe.Bancho.Types
         [NotLogged]
         public int Id => Player.Id;
         public Player Player { get; set; }
+
+        public DateTime LastUpdate { get; set; }
 
         [JsonIgnore]
         [NotLogged]

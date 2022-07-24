@@ -7,6 +7,7 @@ using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.RequestPackets;
 using Cringe.Bancho.Bancho.RequestPackets.Match;
 using Cringe.Bancho.Bancho.RequestPackets.Spectate;
+using Cringe.Bancho.Bancho.RequestPackets.Tournament;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Microsoft.Extensions.Logging;
@@ -64,7 +65,9 @@ namespace Cringe.Bancho.Services
                 new StopSpectating(serviceProvider),
                 new CantSpectate(serviceProvider),
                 new UserStatsRequest(serviceProvider),
-                new UserPresenceRequest(serviceProvider)
+                new UserPresenceRequest(serviceProvider),
+
+                new TournamentMatchInfoRequest(serviceProvider)
             }.ToDictionary(x => x.Type);
         }
 

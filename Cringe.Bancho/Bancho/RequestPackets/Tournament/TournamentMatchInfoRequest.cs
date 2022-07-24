@@ -25,8 +25,7 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Tournament
 
             if (lobby is null)
             {
-                session.Queue.EnqueuePacket(new MatchJoinFail());
-                session.Queue.EnqueuePacket(new Notification("Lobbeshnika nema, on nyuknulsya D:"));
+                session.Queue.EnqueuePacket(new Notification("Lobbeshnik zakonchilsya"));
 
                 return Task.CompletedTask;
             }

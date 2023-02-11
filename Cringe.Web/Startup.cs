@@ -35,6 +35,7 @@ namespace Cringe.Web
             services.AddTransient<PlayerRankRetriever>();
             services.AddTransient<ReplayStorage>();
             services.AddTransient<ScoreService>();
+            services.AddTransient<FlagsService>();
 
             services.AddHttpClient<OsuApiWrapper>();
             services.AddHttpClient<BanchoApiWrapper>(client =>

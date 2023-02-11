@@ -1,0 +1,51 @@
+﻿@page
+@model Cringe.Web.Pages.Scores.FlagsModel
+
+@{
+    ViewData["Title"] = "Score flags";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SubmittedScore[0].Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SubmittedScore[0].BeatmapId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SubmittedScore[0].PlayerUsername)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SubmittedScore[0].Mods)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SubmittedScore[0].Flags)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.SubmittedScore)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    <a asp-page="/Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a>
+                </td>
+                <td>
+                    <a asp-page="/Players/Index" asp-route-id="@item.PlayerId">@item.PlayerUsername</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mods)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Flags)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

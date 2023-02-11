@@ -29,7 +29,7 @@ namespace Cringe.Bancho
             }
             catch (Exception ex)
             {
-                Log.Fatal("Howizi????? {Ex}", ex.Message);
+                Log.Fatal(ex, "Howizi?????");
             }
             finally
             {

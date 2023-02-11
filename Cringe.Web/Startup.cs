@@ -52,8 +52,7 @@ namespace Cringe.Web
 
             services.AddAutoMapper(typeof(MappingProfile));
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
             services.AddControllers();
             services.AddRazorPages();

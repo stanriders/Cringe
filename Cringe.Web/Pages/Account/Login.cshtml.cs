@@ -75,11 +75,14 @@ namespace Cringe.Web.Pages.Account
 
                 var claims = new List<Claim>
                 {
-                    new(ClaimTypes.Name, user.Id.ToString()),
-                    new("Username", user.Username),
+                    new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new(ClaimTypes.Name, user.Username),
                 };
 
-                claims.AddRange(user.UserRank.ToString().Split(',').Select(x=> new Claim(ClaimTypes.Role, x.Trim())));
+                claims.AddRange(user.UserRank
+                                    .ToString()
+                                    .Split(',')
+                                    .Select(x=> new Claim(ClaimTypes.Role, x.Trim())));
 
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);

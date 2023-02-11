@@ -1,4 +1,6 @@
 ﻿@page "{id?}"
+@using Cringe.Types.Enums
+@using Cringe.Types.OsuApi
 @model Cringe.Web.Pages.Players.DetailsModel
 
 @{
@@ -124,6 +126,9 @@
     </table>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Player.Id">Edit</a> |
+@if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
+{
+    <a asp-page="./Edit" asp-route-id="@Model.Player.Id">Edit</a>  
+}
     <a asp-page="./Listing">Back to List</a>
 </div>

@@ -3,6 +3,7 @@ using Cringe.Database;
 using Cringe.Mappings;
 using Cringe.Services;
 using Cringe.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -51,6 +52,8 @@ namespace Cringe.Web
 
             services.AddAutoMapper(typeof(MappingProfile));
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+
             services.AddControllers();
             services.AddRazorPages();
         }
@@ -73,6 +76,9 @@ namespace Cringe.Web
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

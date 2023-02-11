@@ -1,4 +1,6 @@
 ﻿@page
+@using Cringe.Types.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Cringe.Web.Pages.Scores.IndexModel
 
 @{
@@ -144,8 +146,11 @@
                 @Html.DisplayFor(modelItem => item.Pp)
             </td>
             <td>
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> 
+            @if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
+            {
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            }
             </td>
         </tr>
     }

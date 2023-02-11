@@ -109,6 +109,11 @@ namespace Cringe.Utils
             return ReadLEB128Unsigned(stream, out _);
         }
 
+        public static ulong ReadLEB128Unsigned(this BinaryReader stream)
+        {
+            return ReadLEB128Unsigned(stream.BaseStream, out _);
+        }
+
         public static ulong ReadLEB128Unsigned(this Stream stream, out int bytes)
         {
             bytes = 0;

@@ -2,10 +2,10 @@
 @model Cringe.Web.Pages.Scores.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Scores";
 }
 
-<h1>Index</h1>
+<h1>Scores</h1>
 
 <table class="table">
     <thead>
@@ -84,10 +84,10 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                <a asp-page="./Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a>
+                <a asp-page="/Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a>
             </td>
             <td>
-                <a asp-page="./Players/Index" asp-route-id="@item.PlayerId">@item.PlayerUsername</a>
+                <a asp-page="/Players/Index" asp-route-id="@item.PlayerId">@item.PlayerUsername</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Count300)

@@ -29,10 +29,11 @@ namespace Cringe.Web.Services
         private readonly IMapper _mapper;
         private readonly IMemoryCache _memoryCache;
         private readonly PlayerRankRetriever _rankRetriever;
+        private readonly FlagsService _flagsService;
 
         public ScoreService(ScoreDatabaseContext scoreContext, PlayerDatabaseContext playerContext,
             BeatmapDatabaseContext beatmapContext, PpService ppService, BanchoApiWrapper banchoApiWrapper,
-            ILogger<ScoreService> logger, IMapper mapper, IMemoryCache memoryCache, PlayerRankRetriever rankRetriever)
+            ILogger<ScoreService> logger, IMapper mapper, IMemoryCache memoryCache, PlayerRankRetriever rankRetriever, FlagsService flagsService)
         {
             _scoreContext = scoreContext;
             _playerContext = playerContext;
@@ -43,6 +44,7 @@ namespace Cringe.Web.Services
             _mapper = mapper;
             _memoryCache = memoryCache;
             _rankRetriever = rankRetriever;
+            _flagsService = flagsService;
         }
 
         public async Task<ScoreBase> SubmitScore(string encodedData, string iv, string osuver, bool quit,
@@ -70,6 +72,9 @@ namespace Cringe.Web.Services
 
             // disallow duplicates for 1 minute
             _memoryCache.Set(scoreUniqueHash, 0, TimeSpan.FromMinutes(1));
+
+            if (_flagsService.DecodeFlags(score.OsuVersion) != ScoreFlags.Clean)
+                _logger.LogWarning("Possibly cheated score!");
 
             score.Quit = quit;
             score.Failed = !quit && failed;

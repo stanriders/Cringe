@@ -35,7 +35,7 @@
                 @if (User.Identity?.IsAuthenticated ?? false)
                 {
                     <li>
-                        <a asp-page="/Players/Index" asp-route-id="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value">
+                            <a asp-page="/Players/Index" asp-route-id="@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value">
                             <img src="https://a.stanr.info/@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value" width="24" /> @User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value
                         </a>
                     </li>

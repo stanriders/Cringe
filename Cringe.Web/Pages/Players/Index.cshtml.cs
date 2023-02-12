@@ -52,7 +52,7 @@ namespace Cringe.Web.Pages.Players
 
             RecentScores = await _scoreContext.RecentScores
                 .Where(x => x.PlayerId == Player.Id)
-                .Take(100)
+                .Take(10)
                 .OrderByDescending(x => x.PlayDateTime)
                 .ToArrayAsync();
 

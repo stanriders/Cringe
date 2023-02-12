@@ -8,7 +8,7 @@
 }
 
 <div>
-    <h4>@Model.Player.Username</h4>
+    <h4><img src="https://a.stanr.info/@Model.Player.Id" width="64px"/> @Model.Player.Username</h4>
     <hr/>
     <dl class="row">
         <dt class="col-sm-2">
@@ -71,7 +71,7 @@
         {
             <tr>
                 <td>
-                        (@Html.DisplayFor(modelItem => item.Rank)) <a asp-page="/Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a> (@Html.DisplayFor(m => item.Accuracy))<br /><small>@(item.MaxCombo)x (@item.Count300 / @item.Count100 / @item.Count50 / @item.CountMiss)</small>
+                    (@Html.DisplayFor(modelItem => item.Rank)) <a asp-page="/Beatmaps/Index" asp-route-id="@item.BeatmapId">@item.BeatmapTitle</a> (@Html.DisplayFor(m => item.Accuracy))<br /><small>@(item.MaxCombo)x (@item.Count300 / @item.Count100 / @item.Count50 / @item.CountMiss)</small>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Mods)
@@ -83,7 +83,7 @@
                     <time class="timeago" datetime="@Html.DisplayFor(modelItem => item.PlayDateTime) UTC">@Html.DisplayFor(modelItem => item.PlayDateTime)</time>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Pp)
+                    <b>@Html.DisplayFor(modelItem => item.Pp)</b>
                 </td>
             </tr>
         }
@@ -118,7 +118,7 @@
                     <time class="timeago" datetime="@Html.DisplayFor(modelItem => item.PlayDateTime)">@Html.DisplayFor(modelItem => item.PlayDateTime)</time>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Pp)
+                    <b>@Html.DisplayFor(modelItem => item.Pp)</b>
                 </td>
             </tr>
         }

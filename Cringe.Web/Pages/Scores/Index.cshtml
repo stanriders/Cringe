@@ -8,8 +8,8 @@
 }
 
 <h1>Scores</h1>
-
-<table class="table">
+<div class="table-responsive">
+<table class="table table-condensed">
     <thead>
     <tr>
         <th>
@@ -55,9 +55,6 @@
             @Html.DisplayNameFor(model => model.SubmittedScore[0].Mods)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SubmittedScore[0].Passed)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.SubmittedScore[0].GameMode)
         </th>
         <th>
@@ -65,12 +62,6 @@
         </th>
         <th>
             @Html.DisplayNameFor(model => model.SubmittedScore[0].OsuVersion)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SubmittedScore[0].Quit)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SubmittedScore[0].Failed)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.SubmittedScore[0].Pp)
@@ -125,34 +116,26 @@
                 @Html.DisplayFor(modelItem => item.Mods)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Passed)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.GameMode)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PlayDateTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.OsuVersion)
+                @item.OsuVersion.Substring(0, 8)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Failed)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Pp)
+                <b>@Html.DisplayFor(modelItem => item.Pp)</b>
             </td>
             <td>
                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> 
-            @if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
-            {
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            }
+                @if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
+                {
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                }
             </td>
         </tr>
     }
     </tbody>
 </table>
+</div>

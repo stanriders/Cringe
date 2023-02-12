@@ -136,9 +136,5 @@
     </dl>
 </div>
 <div>
-@if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
-{
-    <a asp-page="./Edit" asp-route-id="@Model.SubmittedScore.Id">Edit</a> 
-}
     <a asp-page="./Index">Back to List</a>
 </div>

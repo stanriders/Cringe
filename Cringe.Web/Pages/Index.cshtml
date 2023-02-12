@@ -44,7 +44,7 @@ Online players: @string.Join(", ", Model.OnlinePlayers)
                 <time class="timeago" datetime="@Html.DisplayFor(modelItem => Model.Scores[i].PlayDateTime)">@Html.DisplayFor(modelItem => Model.Scores[i].PlayDateTime)</time>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => Model.Scores[i].Pp)
+                    <b>@Html.DisplayFor(modelItem => Model.Scores[i].Pp)</b>
             </td>
         </tr>
     }

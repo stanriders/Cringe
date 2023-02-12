@@ -2,6 +2,7 @@ using System;
 using Cringe.Database;
 using Cringe.Mappings;
 using Cringe.Services;
+using Cringe.Web.Mappings;
 using Cringe.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -50,7 +51,7 @@ namespace Cringe.Web
 
             services.AddMemoryCache();
 
-            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(typeof(MappingProfile), typeof(FrontendMappingProfile));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 

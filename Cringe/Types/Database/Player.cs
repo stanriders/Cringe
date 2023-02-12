@@ -38,6 +38,7 @@ namespace Cringe.Types.Database
         public static Player Generate(string username, string password)
         {
             var player = DummyPlayer;
+            player.UserRank = UserRanks.Normal | UserRanks.Supporter | UserRanks.BAT | UserRanks.TournamentStaff;
             player.Username = username;
 
             //TODO: crypt the password

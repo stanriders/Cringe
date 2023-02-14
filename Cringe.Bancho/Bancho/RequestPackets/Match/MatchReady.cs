@@ -18,12 +18,12 @@ public class MatchReadyHandler : IRequestHandler<MatchReady>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchReady request, CancellationToken cancellationToken)
+    public Task Handle(MatchReady request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         _lobby.Transform(matchId, x => x.Ready(_session.Id));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

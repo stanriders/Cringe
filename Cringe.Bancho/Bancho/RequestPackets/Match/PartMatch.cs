@@ -21,16 +21,16 @@ public class PartMatchHandler : IRequestHandler<PartMatch>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(PartMatch request, CancellationToken cancellationToken)
+    public Task Handle(PartMatch request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         _lobby.LeaveLobby(_session.Id, matchId);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 
-public class PartMatch : RequestPacket, IRequest<Unit>
+public class PartMatch : RequestPacket, IRequest
 {
     public override ClientPacketType Type => ClientPacketType.PartMatch;
 }

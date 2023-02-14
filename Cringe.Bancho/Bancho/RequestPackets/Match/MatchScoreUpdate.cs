@@ -19,7 +19,7 @@ public class MatchScoreUpdateHandler : IRequestHandler<MatchScoreUpdate>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchScoreUpdate request, CancellationToken cancellationToken)
+    public Task Handle(MatchScoreUpdate request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         var playerPosition = _lobby.GetValue(matchId, x => x.PlayerPosition(_session.Id));
@@ -32,7 +32,7 @@ public class MatchScoreUpdateHandler : IRequestHandler<MatchScoreUpdate>
             player.Player.Queue.EnqueuePacket(packet);
             */
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

@@ -30,7 +30,7 @@ public class StartSpectatingHandler : IRequestHandler<StartSpectatingRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(StartSpectatingRequest request, CancellationToken cancellationToken)
+    public Task Handle(StartSpectatingRequest request, CancellationToken cancellationToken)
     {
         if (_session.SpectateSession is not null)
         {
@@ -39,7 +39,7 @@ public class StartSpectatingHandler : IRequestHandler<StartSpectatingRequest>
                 _logger.LogDebug("{Token} | Reconnecting to {@Spec}", _session.Token, _session.SpectateSession);
                 _session.SpectateSession.Reconnect(_session);
 
-                return Unit.Task;
+                return Task.CompletedTask;
             }
 
             _logger.LogDebug("{Token} | Disconnecting from {@Spec}", _session.Token, _session.SpectateSession);
@@ -52,12 +52,12 @@ public class StartSpectatingHandler : IRequestHandler<StartSpectatingRequest>
             _logger.LogError("{Token} | Attempted to spectate offline of non-existing player {Id}", _session.Token,
                 request.Id);
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
         _logger.LogDebug("{Token} | Connecting to {@Host}", _session.Token, host);
         _spectate.StartSpectating(host, _session);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

@@ -27,12 +27,12 @@ public class ChannelJoinHandler : IRequestHandler<ChannelJoinRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(ChannelJoinRequest request, CancellationToken cancellationToken)
+    public Task Handle(ChannelJoinRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{Token} | Connecting to the {Chat} chat", _session.Token, request.Chat);
         var chat = ChatService.GetChat(request.Chat);
         chat?.Connect(_session);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

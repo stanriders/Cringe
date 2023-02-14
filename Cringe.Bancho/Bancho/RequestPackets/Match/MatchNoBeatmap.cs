@@ -20,12 +20,12 @@ public class MatchNoBeatmapHandler : IRequestHandler<MatchNoBeatmap>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchNoBeatmap request, CancellationToken cancellationToken)
+    public Task Handle(MatchNoBeatmap request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         _lobby.Transform(matchId, x => x.NoBeatmap(_session.Id));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

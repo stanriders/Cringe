@@ -22,7 +22,7 @@ public class MatchCompleteHandler : IRequestHandler<MatchComplete>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchComplete request, CancellationToken cancellationToken)
+    public Task Handle(MatchComplete request, CancellationToken cancellationToken)
     {
         var match = _lobby.FindMatch(_session.Id);
         lock (_lock)
@@ -30,7 +30,7 @@ public class MatchCompleteHandler : IRequestHandler<MatchComplete>
             _lobby.Transform(match, x => x.Complete(_session.Id));
         }
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

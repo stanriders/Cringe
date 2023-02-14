@@ -37,12 +37,12 @@ public class SendPrivateMessageHandler : IRequestHandler<SendPrivateMessageReque
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(SendPrivateMessageRequest request, CancellationToken cancellationToken)
+    public Task Handle(SendPrivateMessageRequest request, CancellationToken cancellationToken)
     {
         var message = new Message(request.Text, _session.Player, request.Receiver);
         _logger.LogInformation("{Token} | Sends the message {Message}", _session.Token, message);
         _chat.SendPrivateMessage(message);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

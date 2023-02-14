@@ -19,12 +19,12 @@ public class MatchChangeTeamHandler : IRequestHandler<MatchChangeTeam>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchChangeTeam request, CancellationToken cancellationToken)
+    public Task Handle(MatchChangeTeam request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         _lobby.Transform(matchId, match => match.ChangeTeam(_session.Id));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

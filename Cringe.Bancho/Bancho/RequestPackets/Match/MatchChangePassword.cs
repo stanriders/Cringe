@@ -22,13 +22,13 @@ public class MatchChangePasswordHandler : IRequestHandler<MatchChangePassword>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchChangePassword request, CancellationToken cancellationToken)
+    public Task Handle(MatchChangePassword request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         _lobby.Transform(matchId, x => x.SetPassword(_session.Id, request.Match.Password));
         _logger.LogInformation("{Token} | Changes password for match {matchId}", _session.Token, matchId);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

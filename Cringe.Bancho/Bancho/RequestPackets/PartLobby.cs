@@ -24,11 +24,11 @@ public class PartLobby :  IRequestHandler<PartLobbyRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(PartLobbyRequest request, CancellationToken cancellationToken)
+    public Task Handle(PartLobbyRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{Token} | Logged out the lobby", _session.Token);
         ChatService.GetChat(ChatService.LobbyName)?.Disconnect(_session);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

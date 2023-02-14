@@ -22,12 +22,12 @@ public class MatchChangeModsHandler : IRequestHandler<MatchChangeMods>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchChangeMods request, CancellationToken cancellationToken)
+    public Task Handle(MatchChangeMods request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         _lobby.Transform(matchId, match => match.SetMods(_session.Id, request.Mods));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

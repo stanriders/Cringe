@@ -22,10 +22,10 @@ public class StatusUpdateRequestHandler : IRequestHandler<StatusUpdateRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(StatusUpdateRequest request, CancellationToken cancellationToken)
+    public Task Handle(StatusUpdateRequest request, CancellationToken cancellationToken)
     {
         _session.Queue.EnqueuePacket(new UserStats(_session.Stats));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

@@ -30,12 +30,10 @@ public class FriendRemoveHandler : IRequestHandler<FriendRemoveRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public async Task<Unit> Handle(FriendRemoveRequest request, CancellationToken cancellationToken)
+    public async Task Handle(FriendRemoveRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{Token} | Removing friend {Friend}...", _session.Token, request.FriendId);
 
         await _friendsService.RemoveFriend(_session.Id, request.FriendId);
-
-        return Unit.Value;
     }
 }

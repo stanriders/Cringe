@@ -18,16 +18,16 @@ public class MatchStartHandler : IRequestHandler<MatchStart>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchStart request, CancellationToken cancellationToken)
+    public Task Handle(MatchStart request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         _lobby.Transform(matchId, x => x.Start(_session.Id));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 
-public class MatchStart : RequestPacket, IRequest<Unit>
+public class MatchStart : RequestPacket, IRequest
 {
     public override ClientPacketType Type => ClientPacketType.MatchStart;
 }

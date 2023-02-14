@@ -27,7 +27,7 @@ public class TournamentMatchInfoHandler : IRequestHandler<TournamentMatchInfoReq
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(TournamentMatchInfoRequest request, CancellationToken cancellationToken)
+    public Task Handle(TournamentMatchInfoRequest request, CancellationToken cancellationToken)
     {
         var lobby = _lobby.GetValue((short) request.TournamentId, x => x);
 
@@ -35,12 +35,12 @@ public class TournamentMatchInfoHandler : IRequestHandler<TournamentMatchInfoReq
         {
             _session.Queue.EnqueuePacket(new Notification("Lobbeshnik zakonchilsya"));
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
 
         _session.UpdateMatch(lobby);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

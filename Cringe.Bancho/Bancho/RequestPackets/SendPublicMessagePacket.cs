@@ -35,7 +35,7 @@ public class SendPublicMessageHandler : IRequestHandler<SendPublicMessageRequest
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(SendPublicMessageRequest request, CancellationToken cancellationToken)
+    public Task Handle(SendPublicMessageRequest request, CancellationToken cancellationToken)
     {
         var message = new Message(request.Text, _session.Player, request.Receiver);
         _logger.LogInformation("{Token} | Sends message {Message}", _session.Token, message);
@@ -69,6 +69,6 @@ public class SendPublicMessageHandler : IRequestHandler<SendPublicMessageRequest
         if (!ChatService.SendGlobalMessage(message))
             _logger.LogWarning("{Token} | User tries to send a message {Message}", _session.Token, message);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

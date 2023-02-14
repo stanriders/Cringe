@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
@@ -21,7 +19,7 @@ public class MatchSkipHandler : IRequestHandler<MatchSkipRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchSkipRequest request, CancellationToken cancellationToken)
+    public Task Handle(MatchSkipRequest request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         lock (_lock)
@@ -29,11 +27,11 @@ public class MatchSkipHandler : IRequestHandler<MatchSkipRequest>
             _lobby.Transform(matchId, x => x.Skip(_session.Id));
         }
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 
-public class MatchSkipRequest : RequestPacket, IRequest<Unit>
+public class MatchSkipRequest : RequestPacket, IRequest
 {
     public override ClientPacketType Type => ClientPacketType.MatchSkipRequest;
 }

@@ -25,7 +25,7 @@ public class JoinMatchHandler : IRequestHandler<JoinMatch>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(JoinMatch request, CancellationToken cancellationToken)
+    public Task Handle(JoinMatch request, CancellationToken cancellationToken)
     {
         try
         {
@@ -34,7 +34,7 @@ public class JoinMatchHandler : IRequestHandler<JoinMatch>
             _session.Queue.EnqueuePacket(new MatchJoinSuccess(match));
             _session.Queue.EnqueuePacket(new ChannelJoinSuccess(GlobalChat.Multiplayer));
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
         catch (Exception)
         {

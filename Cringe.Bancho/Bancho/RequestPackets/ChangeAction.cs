@@ -32,7 +32,7 @@ public class ChangeActionHandler : IRequestHandler<ChangeActionRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public async Task<Unit> Handle(ChangeActionRequest request, CancellationToken cancellationToken)
+    public async Task Handle(ChangeActionRequest request, CancellationToken cancellationToken)
     {
         var stats = await _stats.GetUpdates(_session.Id);
         stats.Action = request.Action;
@@ -42,7 +42,5 @@ public class ChangeActionHandler : IRequestHandler<ChangeActionRequest>
         _stats.SetUpdates(_session.Id, stats);
         _session.Queue.EnqueuePacket(new UserStats(stats));
         _session.Queue.EnqueuePacket(new UserPresence(_session.Presence));
-
-        return Unit.Value;
     }
 }

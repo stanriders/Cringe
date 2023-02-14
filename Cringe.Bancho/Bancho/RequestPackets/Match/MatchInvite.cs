@@ -21,7 +21,7 @@ public class MatchInviteHandler : IRequestHandler<MatchInvite>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchInvite request, CancellationToken cancellationToken)
+    public Task Handle(MatchInvite request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         var (matchName, matchPassword) = _lobby.GetValue(matchId, x => (x.RoomName, x.Password));
@@ -31,14 +31,14 @@ public class MatchInviteHandler : IRequestHandler<MatchInvite>
         {
             _session.Queue.EnqueuePacket(new Notification("User is not online"));
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
         var embed = $"Zahodi pojugama: [osump://{matchId}/{matchPassword} {matchName}]";
         user.Queue.EnqueuePacket(
             new ResponsePackets.Match.MatchInvite(_session.Player, user.Player.Username, embed));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

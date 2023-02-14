@@ -33,7 +33,7 @@ public class CreateMatchHandler : IRequestHandler<CreateMatchRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(CreateMatchRequest request, CancellationToken cancellationToken)
+    public Task Handle(CreateMatchRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -49,6 +49,6 @@ public class CreateMatchHandler : IRequestHandler<CreateMatchRequest>
             throw;
         }
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

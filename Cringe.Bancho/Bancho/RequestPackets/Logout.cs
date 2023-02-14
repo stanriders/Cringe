@@ -34,7 +34,7 @@ public class Logout : IRequestHandler<LogoutRequest>
         _stats = stats;
     }
 
-    public Task<Unit> Handle(LogoutRequest request, CancellationToken cancellationToken)
+    public Task Handle(LogoutRequest request, CancellationToken cancellationToken)
     {
         if (!_pool.Disconnect(_session.Token))
             _logger.LogWarning("{Token} | Failed to disconnect", _session.Token);
@@ -46,6 +46,6 @@ public class Logout : IRequestHandler<LogoutRequest>
         _logger.LogInformation("{Token} | User logged out.\nConnected users are\n{Users}", _session.Token,
             string.Join(",", PlayersPool.GetPlayersId()));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

@@ -31,7 +31,7 @@ public class UserStatsRequestHandler : IRequestHandler<UserStatsRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public async Task<Unit> Handle(UserStatsRequest request, CancellationToken cancellationToken)
+    public async Task Handle(UserStatsRequest request, CancellationToken cancellationToken)
     {
         _logger.LogDebug("{Token} | Receive stats for these players: {Ids}", _session.Token,
             string.Join(",", request.Users));
@@ -46,7 +46,5 @@ public class UserStatsRequestHandler : IRequestHandler<UserStatsRequest>
 
             _session.Queue.EnqueuePacket(new UserStats(stats));
         }
-
-        return Unit.Value;
     }
 }

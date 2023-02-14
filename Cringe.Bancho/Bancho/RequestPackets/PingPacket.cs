@@ -12,8 +12,8 @@ public class PingPacketRequest : RequestPacket, IRequest
 
 public class PingPacket : IRequestHandler<PingPacketRequest>
 {
-    public Task<Unit> Handle(PingPacketRequest request, CancellationToken cancellationToken)
+    public Task Handle(PingPacketRequest request, CancellationToken cancellationToken)
     {
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

@@ -30,7 +30,7 @@ public class UserPresenceRequestHandler : IRequestHandler<UserPresenceRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(UserPresenceRequest request, CancellationToken cancellationToken)
+    public Task Handle(UserPresenceRequest request, CancellationToken cancellationToken)
     {
         _logger.LogDebug("{Token} | Receive user presence for the players {Ids}", _session.Token,
             string.Join(",", request.Users));
@@ -41,6 +41,6 @@ public class UserPresenceRequestHandler : IRequestHandler<UserPresenceRequest>
             _session.Queue.EnqueuePacket(new UserPresence(user.Presence));
         }
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

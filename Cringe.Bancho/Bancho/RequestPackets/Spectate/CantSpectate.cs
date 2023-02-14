@@ -25,13 +25,13 @@ public class CantSpectateHandler : IRequestHandler<CantSpectateRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(CantSpectateRequest request, CancellationToken cancellationToken)
+    public Task Handle(CantSpectateRequest request, CancellationToken cancellationToken)
     {
         if (_session.SpectateSession is null)
         {
             _logger.LogError("{Token} | Can't spectate... foryle", _session.Token);
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
         var packet = new SpectatorCantSpectate(_session.Id);
@@ -42,6 +42,6 @@ public class CantSpectateHandler : IRequestHandler<CantSpectateRequest>
             viewer.Queue.EnqueuePacket(packet);
         }
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

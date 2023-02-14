@@ -18,12 +18,12 @@ public class MatchLockHandler : IRequestHandler<MatchLock>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(MatchLock request, CancellationToken cancellationToken)
+    public Task Handle(MatchLock request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
         _lobby.Transform(matchId, x => x.LockSlot(_session.Id, request.SlotId));
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }
 

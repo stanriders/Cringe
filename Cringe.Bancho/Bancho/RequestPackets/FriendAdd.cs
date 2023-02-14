@@ -31,12 +31,10 @@ public class FriendAddHandler : IRequestHandler<FriendAddRequest>
     }
 
 
-    public async Task<Unit> Handle(FriendAddRequest request, CancellationToken cancellationToken)
+    public async Task Handle(FriendAddRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{Token} | Adding friend {Friend}...", _session.Token, request.FriendId);
 
         await _friendsService.AddFriend(_session.Player.Id, request.FriendId);
-
-        return Unit.Value;
     }
 }

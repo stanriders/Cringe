@@ -27,11 +27,11 @@ public class ChannelPartHandler : IRequestHandler<ChannelPartRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(ChannelPartRequest request, CancellationToken cancellationToken)
+    public Task Handle(ChannelPartRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{Token} | Leaves the {Chat} chat", _session.Token, request.Chat);
         ChatService.GetChat(request.Chat)?.Disconnect(_session);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

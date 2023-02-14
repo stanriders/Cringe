@@ -22,15 +22,13 @@ public class MatchFailedHandler : IRequestHandler<MatchFailed>
         _session = currentPlayerProvider.Session;
     }
 
-    public async Task<Unit> Handle(MatchFailed request, CancellationToken cancellationToken)
+    public async Task Handle(MatchFailed request, CancellationToken cancellationToken)
     {
         //TODO: extract it to domain events
         var matchId = _lobby.FindMatch(_session.Id);
         await _mediator.Publish(new MatchFailedEvent(matchId,
                 _lobby.GetValue(matchId, v => v.PlayerPosition(_session.Id))),
             cancellationToken);
-
-        return Unit.Value;
     }
 }
 

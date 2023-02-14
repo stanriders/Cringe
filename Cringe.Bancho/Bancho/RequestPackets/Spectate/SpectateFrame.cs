@@ -25,7 +25,7 @@ public class SpectateFrameHandler : IRequestHandler<SpectateFrameRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(SpectateFrameRequest request, CancellationToken cancellationToken)
+    public Task Handle(SpectateFrameRequest request, CancellationToken cancellationToken)
     {
         var spec = _session.SpectateSession;
 
@@ -33,15 +33,15 @@ public class SpectateFrameHandler : IRequestHandler<SpectateFrameRequest>
         {
             _logger.LogError("{Token} | SpectateSession is null and SpectateFrame is invoked", _session.Token);
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
-        if (spec.Host.Id != _session.Id) return Unit.Task;
+        if (spec.Host.Id != _session.Id) return Task.CompletedTask;
 
         var frame = new SpectateFrames(request.Payload);
         foreach (var viewer in spec.Viewers.Values)
             viewer.Queue.EnqueuePacket(frame);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

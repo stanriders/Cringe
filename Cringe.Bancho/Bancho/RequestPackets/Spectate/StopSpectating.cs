@@ -24,17 +24,17 @@ public class StopSpectatingHandler : IRequestHandler<StopSpectatingCommand>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task<Unit> Handle(StopSpectatingCommand request, CancellationToken cancellationToken)
+    public Task Handle(StopSpectatingCommand request, CancellationToken cancellationToken)
     {
         if (_session.SpectateSession is null)
         {
             _logger.LogError("{Token} | Attempted to stop spectating as non-spectator", _session.Token);
 
-            return Unit.Task;
+            return Task.CompletedTask;
         }
 
         _session.SpectateSession.Disconnect(_session);
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

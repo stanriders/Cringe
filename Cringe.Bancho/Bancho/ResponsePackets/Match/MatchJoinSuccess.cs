@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Cringe.Types.Enums;
+﻿using Cringe.Types.Enums;
 
 namespace Cringe.Bancho.Bancho.ResponsePackets.Match;
 

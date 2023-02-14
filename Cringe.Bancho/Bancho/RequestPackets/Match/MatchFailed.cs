@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Bancho.Events.Multiplayer;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;

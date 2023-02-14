@@ -1,5 +1,4 @@
 ﻿using Cringe.Types.Enums;
-using MediatR;
 
 namespace Cringe.Bancho.Bancho.ResponsePackets.Match;
 

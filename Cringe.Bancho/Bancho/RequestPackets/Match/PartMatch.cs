@@ -1,12 +1,9 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using SQLitePCL;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match;
 

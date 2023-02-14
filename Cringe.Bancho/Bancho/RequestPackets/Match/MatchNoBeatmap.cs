@@ -3,9 +3,7 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Cringe.Types.Enums.Multiplayer;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Cringe.Bancho.Bancho.RequestPackets.Match;
 

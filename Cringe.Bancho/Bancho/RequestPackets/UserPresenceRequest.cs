@@ -1,36 +1,46 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets
+namespace Cringe.Bancho.Bancho.RequestPackets;
+
+public class UserPresenceRequest : RequestPacket, IRequest
 {
-    public class UserPresenceRequest : RequestPacket
+    [PeppyField]
+    public int[] Users { get; init; }
+
+    public override ClientPacketType Type => ClientPacketType.UserPresenceRequest;
+}
+
+public class UserPresenceRequestHandler : IRequestHandler<UserPresenceRequest>
+{
+    private readonly ILogger<UserPresenceRequestHandler> _logger;
+    private readonly PlayerSession _session;
+
+    public UserPresenceRequestHandler(
+        ILogger<UserPresenceRequestHandler> logger,
+        CurrentPlayerProvider currentPlayerProvider)
     {
-        public UserPresenceRequest(IServiceProvider serviceProvider) : base(serviceProvider)
+        _logger = logger;
+        _session = currentPlayerProvider.Session;
+    }
+
+    public Task<Unit> Handle(UserPresenceRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogDebug("{Token} | Receive user presence for the players {Ids}", _session.Token,
+            string.Join(",", request.Users));
+
+        foreach (var id in request.Users)
         {
+            var user = PlayersPool.GetPlayer(id);
+            _session.Queue.EnqueuePacket(new UserPresence(user.Presence));
         }
 
-        public override ClientPacketType Type => ClientPacketType.UserPresenceRequest;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var ids = ReadI32(reader).ToArray();
-            Logger.LogDebug("{Token} | Receive user presence for the players {Ids}", session.Token,
-                string.Join(",", ids));
-            foreach (var id in ids)
-            {
-                var user = PlayersPool.GetPlayer(id);
-                session.Queue.EnqueuePacket(new UserPresence(user.Presence));
-            }
-
-            return Task.CompletedTask;
-        }
+        return Unit.Task;
     }
 }

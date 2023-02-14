@@ -1,21 +1,20 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Bancho.ResponsePackets.Spectate
+namespace Cringe.Bancho.Bancho.ResponsePackets.Spectate;
+
+public class SpectatorLeft : ResponsePacket
 {
-    public class SpectatorLeft : ResponsePacket
+    private readonly int _id;
+
+    public SpectatorLeft(int id)
     {
-        private readonly int _id;
+        _id = id;
+    }
 
-        public SpectatorLeft(int id)
-        {
-            _id = id;
-        }
+    public override ServerPacketType Type => ServerPacketType.SpectatorLeft;
 
-        public override ServerPacketType Type => ServerPacketType.SpectatorLeft;
-
-        public override byte[] GetBytes()
-        {
-            return PackData(_id);
-        }
+    public override byte[] GetBytes()
+    {
+        return PackData(_id);
     }
 }

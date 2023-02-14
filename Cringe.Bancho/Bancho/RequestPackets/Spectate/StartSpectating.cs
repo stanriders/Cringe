@@ -1,53 +1,63 @@
-﻿using System;
-using System.IO;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
+namespace Cringe.Bancho.Bancho.RequestPackets.Spectate;
+
+public class StartSpectatingRequest : RequestPacket, IRequest
 {
-    public class StartSpectating : RequestPacket
+    [PeppyField]
+    public int Id { get; init; }
+
+    public override ClientPacketType Type => ClientPacketType.StartSpectating;
+}
+
+public class StartSpectatingHandler : IRequestHandler<StartSpectatingRequest>
+{
+    private readonly ILogger<CantSpectateHandler> _logger;
+    private readonly SpectateService _spectate;
+    private readonly PlayerSession _session;
+
+    public StartSpectatingHandler(ILogger<CantSpectateHandler> logger, CurrentPlayerProvider currentPlayerProvider,
+        SpectateService spectate)
     {
-        public StartSpectating(IServiceProvider serviceProvider) : base(serviceProvider)
+        _logger = logger;
+        _spectate = spectate;
+        _session = currentPlayerProvider.Session;
+    }
+
+    public Task<Unit> Handle(StartSpectatingRequest request, CancellationToken cancellationToken)
+    {
+        if (_session.SpectateSession is not null)
         {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.StartSpectating;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var id = reader.ReadInt32();
-
-            if (session.SpectateSession is not null)
+            if (_session.SpectateSession.Host.Id == request.Id)
             {
-                if (session.SpectateSession.Host.Id == id)
-                {
-                    Logger.LogDebug("{Token} | Reconnecting to {@Spec}", session.Token, session.SpectateSession);
-                    session.SpectateSession.Reconnect(session);
+                _logger.LogDebug("{Token} | Reconnecting to {@Spec}", _session.Token, _session.SpectateSession);
+                _session.SpectateSession.Reconnect(_session);
 
-                    return Task.CompletedTask;
-                }
-
-                Logger.LogDebug("{Token} | Disconnecting from {@Spec}", session.Token, session.SpectateSession);
-                session.SpectateSession.Disconnect(session);
+                return Unit.Task;
             }
 
-            var host = PlayersPool.GetPlayer(id);
-            if (host is null)
-            {
-                Logger.LogError("{Token} | Attempted to spectate offline of non-existing player {Id}", session.Token,
-                    id);
-
-                return Task.CompletedTask;
-            }
-
-            Logger.LogDebug("{Token} | Connecting to {@Host}", session.Token, host);
-            Spectate.StartSpectating(host, session);
-
-            return Task.CompletedTask;
+            _logger.LogDebug("{Token} | Disconnecting from {@Spec}", _session.Token, _session.SpectateSession);
+            _session.SpectateSession.Disconnect(_session);
         }
+
+        var host = PlayersPool.GetPlayer(request.Id);
+        if (host is null)
+        {
+            _logger.LogError("{Token} | Attempted to spectate offline of non-existing player {Id}", _session.Token,
+                request.Id);
+
+            return Unit.Task;
+        }
+
+        _logger.LogDebug("{Token} | Connecting to {@Host}", _session.Token, host);
+        _spectate.StartSpectating(host, _session);
+
+        return Unit.Task;
     }
 }

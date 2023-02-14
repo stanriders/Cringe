@@ -1,30 +1,34 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchChangeTeamHandler : IRequestHandler<MatchChangeTeam>
 {
-    public class MatchChangeTeam : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchChangeTeamHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchChangeTeam(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchChangeTeam;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session is null)
-                return Task.CompletedTask;
-
-            var match = session.MatchSession.Match;
-            var slot = match.GetPlayer(session.Id);
-            slot.Team = slot.Team == MatchTeams.Blue ? MatchTeams.Red : MatchTeams.Blue;
-            session.MatchSession.OnUpdateMatch();
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public Task<Unit> Handle(MatchChangeTeam request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+        _lobby.Transform(matchId, match => match.ChangeTeam(_session.Id));
+
+        return Unit.Task;
+    }
+}
+
+public class MatchChangeTeam : RequestPacket, IRequest
+{
+    public override ClientPacketType Type => ClientPacketType.MatchChangeTeam;
 }

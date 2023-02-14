@@ -1,40 +1,36 @@
-﻿using System;
-using System.IO;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Microsoft.Extensions.Logging;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchChangeSlotHandler : IRequestHandler<MatchChangeSlot>
 {
-    public class MatchChangeSlot : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchChangeSlotHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchChangeSlot(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchChangeSlot;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.MatchSession is null)
-            {
-                Logger.LogError("{Token} | User tries to change the slot while his MatchSession is null",
-                    session.Token);
-
-                return Task.CompletedTask;
-            }
-
-            var match = session.MatchSession;
-
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var slot = reader.ReadInt32();
-
-            match.ChangeSlot(session, slot);
-
-            Logger.LogDebug("{Token} | User changes the slot. Match info: {@Match}", session.Token, match);
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public Task<Unit> Handle(MatchChangeSlot request, CancellationToken cancellationToken)
+    {
+        var match = _lobby.FindMatch(_session.Id);
+        _lobby.Transform(match, x => x.ChangeSlot(_session.Id, request.SlotId));
+
+        return Unit.Task;
+    }
+}
+
+public class MatchChangeSlot : RequestPacket, IRequest
+{
+    [PeppyField]
+    public int SlotId { get; set; }
+
+    public override ClientPacketType Type => ClientPacketType.MatchChangeSlot;
 }

@@ -1,47 +1,51 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Microsoft.Extensions.Logging;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchInviteHandler : IRequestHandler<MatchInvite>
 {
-    public class MatchInvite : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchInviteHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchInvite(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchInvite;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var id = reader.ReadInt32();
-            if (session.MatchSession is null)
-            {
-                Logger.LogError("{Token} | Invite while not in match", session.Token);
-
-                return Task.CompletedTask;
-            }
-
-            var user = PlayersPool.GetPlayer(id);
-            if (user is null)
-            {
-                session.Queue.EnqueuePacket(new Notification("User is not online"));
-
-                return Task.CompletedTask;
-            }
-
-            var embed = $"Zahodi pojugama: [{session.MatchSession.Match.Embed} {session.MatchSession.Match.Name}]";
-            Logger.LogInformation("{Token} | Invited {UserName} to the match", session.Token, user.Player.Username);
-            user.Queue.EnqueuePacket(
-                new ResponsePackets.Match.MatchInvite(session.Player, user.Player.Username, embed));
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public Task<Unit> Handle(MatchInvite request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+        var (matchName, matchPassword) = _lobby.GetValue(matchId, x => (x.RoomName, x.Password));
+
+        var user = PlayersPool.GetPlayer(request.ReceiverId);
+        if (user is null)
+        {
+            _session.Queue.EnqueuePacket(new Notification("User is not online"));
+
+            return Unit.Task;
+        }
+
+        var embed = $"Zahodi pojugama: [osump://{matchId}/{matchPassword} {matchName}]";
+        user.Queue.EnqueuePacket(
+            new ResponsePackets.Match.MatchInvite(_session.Player, user.Player.Username, embed));
+
+        return Unit.Task;
+    }
+}
+
+public class MatchInvite : RequestPacket, IRequest
+{
+    [PeppyField]
+    public int ReceiverId { get; init; }
+
+    public override ClientPacketType Type => ClientPacketType.MatchInvite;
 }

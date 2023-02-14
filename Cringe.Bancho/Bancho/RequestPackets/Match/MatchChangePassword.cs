@@ -1,37 +1,41 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchChangePasswordHandler : IRequestHandler<MatchChangePassword>
 {
-    public class MatchChangePassword : RequestPacket
+    private readonly ILogger<MatchChangeModsHandler> _logger;
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchChangePasswordHandler(ILogger<MatchChangeModsHandler> logger, LobbyService lobby,
+        CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchChangePassword(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchChangePassword;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.MatchSession is null)
-                return Task.CompletedTask;
-
-            if (session.MatchSession.Match.Host != session.Id)
-            {
-                Logger.LogError("{Token} | Attempted to change password as non-host. Match info: {@Match}",
-                    session.Token, session.MatchSession.Match);
-
-                return Task.CompletedTask;
-            }
-
-            var match = Types.Match.Parse(data);
-            session.MatchSession.Match.Password = match.Password;
-            session.MatchSession.OnUpdateMatch(true);
-
-            return Task.CompletedTask;
-        }
+        _logger = logger;
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public Task<Unit> Handle(MatchChangePassword request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+        _lobby.Transform(matchId, x => x.SetPassword(_session.Id, request.Match.Password));
+        _logger.LogInformation("{Token} | Changes password for match {matchId}", _session.Token, matchId);
+
+        return Unit.Task;
+    }
+}
+
+public class MatchChangePassword : RequestPacket, IRequest
+{
+    [PeppyField]
+    public Types.Match Match { get; set; }
+
+    public override ClientPacketType Type => ClientPacketType.MatchChangePassword;
 }

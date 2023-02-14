@@ -1,21 +1,20 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Bancho.ResponsePackets
+namespace Cringe.Bancho.Bancho.ResponsePackets;
+
+public class FriendsList : ResponsePacket
 {
-    public class FriendsList : ResponsePacket
+    private readonly int[] friends;
+
+    public FriendsList(int[] _friends)
     {
-        private readonly int[] friends;
+        friends = _friends;
+    }
 
-        public FriendsList(int[] _friends)
-        {
-            friends = _friends;
-        }
+    public override ServerPacketType Type => ServerPacketType.FriendsList;
 
-        public override ServerPacketType Type => ServerPacketType.FriendsList;
-
-        public override byte[] GetBytes()
-        {
-            return PackData(friends);
-        }
+    public override byte[] GetBytes()
+    {
+        return PackData(friends);
     }
 }

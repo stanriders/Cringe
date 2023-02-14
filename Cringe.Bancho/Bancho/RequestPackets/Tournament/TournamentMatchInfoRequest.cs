@@ -1,38 +1,46 @@
-using System;
-using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
-using Cringe.Bancho.Bancho.ResponsePackets.Match;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Tournament
+namespace Cringe.Bancho.Bancho.RequestPackets.Tournament;
+
+public class TournamentMatchInfoRequest : RequestPacket, IRequest
 {
-    public class TournamentMatchInfoRequest : RequestPacket
+    [PeppyField]
+    public int TournamentId { get; set; }
+
+    public override ClientPacketType Type => ClientPacketType.TournamentMatchInfoRequest;
+}
+
+public class TournamentMatchInfoHandler : IRequestHandler<TournamentMatchInfoRequest>
+{
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public TournamentMatchInfoHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public TournamentMatchInfoRequest(IServiceProvider serviceProvider) : base(serviceProvider)
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
+    }
+
+    public Task<Unit> Handle(TournamentMatchInfoRequest request, CancellationToken cancellationToken)
+    {
+        var lobby = _lobby.GetValue((short) request.TournamentId, x => x);
+
+        if (lobby is null)
         {
+            _session.Queue.EnqueuePacket(new Notification("Lobbeshnik zakonchilsya"));
+
+            return Unit.Task;
         }
 
-        public override ClientPacketType Type => ClientPacketType.TournamentMatchInfoRequest;
 
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var id = reader.ReadInt32();
+        _session.UpdateMatch(lobby);
 
-            var lobby = Lobby.GetSession(id);
-
-            if (lobby is null)
-            {
-                session.Queue.EnqueuePacket(new Notification("Lobbeshnik zakonchilsya"));
-
-                return Task.CompletedTask;
-            }
-
-
-            session.UpdateMatch(lobby.Match);
-            return Task.CompletedTask;
-        }
+        return Unit.Task;
     }
 }

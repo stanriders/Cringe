@@ -1,30 +1,40 @@
-﻿using System;
-using System.Linq;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets.Match;
+using Cringe.Bancho.Events.Multiplayer;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Cringe.Types.Enums.Multiplayer;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchFailedHandler : IRequestHandler<MatchFailed>
 {
-    public class MatchFailed : RequestPacket
+    private readonly IMediator _mediator;
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchFailedHandler(IMediator mediator, LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchFailed(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchFailed;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.MatchSession is null) return Task.CompletedTask;
-
-            var packet = new MatchPlayerFailed(session.MatchSession.Match.GetPlayerPosition(session.Id));
-            foreach (var player in session.MatchSession.Match.PlayingPlayers)
-                player.Player.Queue.EnqueuePacket(packet);
-
-            return Task.CompletedTask;
-        }
+        _mediator = mediator;
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public async Task<Unit> Handle(MatchFailed request, CancellationToken cancellationToken)
+    {
+        //TODO: extract it to domain events
+        var matchId = _lobby.FindMatch(_session.Id);
+        await _mediator.Publish(new MatchFailedEvent(matchId,
+                _lobby.GetValue(matchId, v => v.PlayerPosition(_session.Id))),
+            cancellationToken);
+
+        return Unit.Value;
+    }
+}
+
+public class MatchFailed : RequestPacket, IRequest
+{
+    public override ClientPacketType Type => ClientPacketType.MatchFailed;
 }

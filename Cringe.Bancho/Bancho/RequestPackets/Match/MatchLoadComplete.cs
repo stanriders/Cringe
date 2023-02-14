@@ -1,42 +1,38 @@
-﻿using System;
-using System.Linq;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Cringe.Types.Enums.Multiplayer;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchLoadCompleteHandler : IRequestHandler<MatchLoadComplete>
 {
-    public class MatchLoadComplete : RequestPacket
+    private readonly object _key = new();
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchLoadCompleteHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        private readonly object key = new();
-
-        public MatchLoadComplete(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchLoadComplete;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.MatchSession is null)
-                return Task.CompletedTask;
-
-            var match = session.MatchSession.Match;
-
-            lock (key)
-            {
-                var slot = match.GetPlayer(session.Id);
-                slot.Loaded = true;
-
-                if (match.OccupiedSlots.Where(x => x.Status == SlotStatus.Playing).Any(player => !player.Loaded))
-                    return Task.CompletedTask;
-            }
-
-            foreach (var player in match.OccupiedSlots)
-                player.Player.Queue.EnqueuePacket(new ResponsePackets.Match.MatchLoadComplete());
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public Task<Unit> Handle(MatchLoadComplete request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+
+        lock (_key)
+        {
+            _lobby.Transform(matchId, x => x.LoadComplete(_session.Id));
+        }
+
+        return Unit.Task;
+    }
+}
+
+public class MatchLoadComplete : RequestPacket, IRequest
+{
+    public override ClientPacketType Type => ClientPacketType.MatchLoadComplete;
 }

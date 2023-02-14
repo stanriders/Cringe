@@ -1,21 +1,20 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Bancho.ResponsePackets.Spectate
+namespace Cringe.Bancho.Bancho.ResponsePackets.Spectate;
+
+public class SpectatorJoined : ResponsePacket
 {
-    public class SpectatorJoined : ResponsePacket
+    private readonly int _playerId;
+
+    public SpectatorJoined(int playerId)
     {
-        private readonly int _playerId;
+        _playerId = playerId;
+    }
 
-        public SpectatorJoined(int playerId)
-        {
-            _playerId = playerId;
-        }
+    public override ServerPacketType Type => ServerPacketType.SpectatorJoined;
 
-        public override ServerPacketType Type => ServerPacketType.SpectatorJoined;
-
-        public override byte[] GetBytes()
-        {
-            return PackData(_playerId);
-        }
+    public override byte[] GetBytes()
+    {
+        return PackData(_playerId);
     }
 }

@@ -1,24 +1,31 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets
+namespace Cringe.Bancho.Bancho.RequestPackets;
+
+public class StatusUpdateRequest : RequestPacket, IRequest
 {
-    public class RequestStatusUpdate : RequestPacket
+    public override ClientPacketType Type => ClientPacketType.RequestStatusUpdate;
+}
+
+public class StatusUpdateRequestHandler : IRequestHandler<StatusUpdateRequest>
+{
+    private readonly PlayerSession _session;
+
+    public StatusUpdateRequestHandler(CurrentPlayerProvider currentPlayerProvider)
     {
-        public RequestStatusUpdate(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
+        _session = currentPlayerProvider.Session;
+    }
 
-        public override ClientPacketType Type => ClientPacketType.RequestStatusUpdate;
+    public Task<Unit> Handle(StatusUpdateRequest request, CancellationToken cancellationToken)
+    {
+        _session.Queue.EnqueuePacket(new UserStats(_session.Stats));
 
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            session.Queue.EnqueuePacket(new UserStats(session.Stats));
-
-            return Task.CompletedTask;
-        }
+        return Unit.Task;
     }
 }

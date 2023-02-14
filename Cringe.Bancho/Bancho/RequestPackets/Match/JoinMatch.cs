@@ -1,56 +1,57 @@
 ﻿using System;
-using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Bancho.ResponsePackets.Match;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class JoinMatchHandler : IRequestHandler<JoinMatch>
 {
-    public class JoinMatch : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly ILogger<JoinMatch> _logger;
+    private readonly PlayerSession _session;
+
+    public JoinMatchHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider,
+        ILogger<JoinMatch> logger)
     {
-        public JoinMatch(IServiceProvider serviceProvider) : base(serviceProvider)
+        _lobby = lobby;
+        _logger = logger;
+        _session = currentPlayerProvider.Session;
+    }
+
+    public Task<Unit> Handle(JoinMatch request, CancellationToken cancellationToken)
+    {
+        try
         {
+            var match = _lobby.JoinLobby(_session.Id, (short) request.MatchId, request.Password);
+
+            _session.Queue.EnqueuePacket(new MatchJoinSuccess(match));
+            _session.Queue.EnqueuePacket(new ChannelJoinSuccess(GlobalChat.Multiplayer));
+
+            return Unit.Task;
         }
-
-        public override ClientPacketType Type => ClientPacketType.JoinMatch;
-
-        public override Task Execute(PlayerSession session, byte[] data)
+        catch (Exception)
         {
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var id = reader.ReadInt32();
-            var password = ReadString(reader.BaseStream);
+            _session.Queue.EnqueuePacket(new MatchJoinFail());
 
-            if (session.MatchSession is not null)
-            {
-                session.Queue.EnqueuePacket(new MatchJoinFail());
-                session.Queue.EnqueuePacket(new Notification("Sory bro server slomalsya :D"));
-                Logger.LogCritical(
-                    "{Token} | User connecting to the match while his MatchSession is not null ({MatchId})",
-                    session.Token, id);
-
-                return Task.CompletedTask;
-            }
-
-            var match = Lobby.GetSession(id);
-            if (match is null)
-            {
-                session.Queue.EnqueuePacket(new MatchJoinFail());
-                session.Queue.EnqueuePacket(new Notification("Lobbeshnika nema, on nyuknulsya D:"));
-
-                return Task.CompletedTask;
-            }
-
-            if (match.ConnectWithPassword(session, password))
-                Logger.LogInformation("{Token} | Connected to the match | {@Match}", session.Token, match);
-            else
-                Logger.LogInformation(
-                    "{Token} | Tried to connect to match with wrong password ({HisPassword}) ({RealPassword})",
-                    session.Token, password, match.Match.Password);
-
-            return Task.CompletedTask;
+            throw;
         }
     }
+}
+
+public class JoinMatch : RequestPacket, IRequest
+{
+    [PeppyField]
+    public int MatchId { get; init; }
+
+    [PeppyField]
+    public string Password { get; init; }
+
+    public override ClientPacketType Type => ClientPacketType.JoinMatch;
 }

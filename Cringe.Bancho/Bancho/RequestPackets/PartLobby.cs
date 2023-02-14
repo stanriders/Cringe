@@ -1,27 +1,34 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets
+namespace Cringe.Bancho.Bancho.RequestPackets;
+
+public class PartLobbyRequest : RequestPacket, IRequest
 {
-    public class PartLobby : RequestPacket
+    public override ClientPacketType Type => ClientPacketType.PartLobby;
+}
+
+public class PartLobby :  IRequestHandler<PartLobbyRequest>
+{
+    private readonly ILogger<PartLobby> _logger;
+    private readonly PlayerSession _session;
+
+    public PartLobby(CurrentPlayerProvider currentPlayerProvider, ILogger<PartLobby> logger, LobbyService lobby)
     {
-        public PartLobby(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
+        _logger = logger;
+        _session = currentPlayerProvider.Session;
+    }
 
-        public override ClientPacketType Type => ClientPacketType.PartLobby;
+    public Task<Unit> Handle(PartLobbyRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("{Token} | Logged out the lobby", _session.Token);
+        ChatService.GetChat(ChatService.LobbyName)?.Disconnect(_session);
 
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            Logger.LogInformation("{Token} | Logged out the lobby", session.Token);
-            ChatService.GetChat(ChatService.LobbyName)?.Disconnect(session);
-            Lobby.Disconnect(session);
-
-            return Task.CompletedTask;
-        }
+        return Unit.Task;
     }
 }

@@ -1,31 +1,40 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Spectate
+namespace Cringe.Bancho.Bancho.RequestPackets.Spectate;
+
+public class StopSpectatingCommand : RequestPacket, IRequest
 {
-    public class StopSpectating : RequestPacket
+    public override ClientPacketType Type => ClientPacketType.StopSpectating;
+}
+
+public class StopSpectatingHandler : IRequestHandler<StopSpectatingCommand>
+{
+    private readonly ILogger<CantSpectateHandler> _logger;
+    private readonly PlayerSession _session;
+
+    public StopSpectatingHandler(ILogger<CantSpectateHandler> logger, CurrentPlayerProvider currentPlayerProvider)
     {
-        public StopSpectating(IServiceProvider serviceProvider) : base(serviceProvider)
+        _logger = logger;
+        _session = currentPlayerProvider.Session;
+    }
+
+    public Task<Unit> Handle(StopSpectatingCommand request, CancellationToken cancellationToken)
+    {
+        if (_session.SpectateSession is null)
         {
+            _logger.LogError("{Token} | Attempted to stop spectating as non-spectator", _session.Token);
+
+            return Unit.Task;
         }
 
-        public override ClientPacketType Type => ClientPacketType.StopSpectating;
+        _session.SpectateSession.Disconnect(_session);
 
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.SpectateSession is null)
-            {
-                Logger.LogError("{Token} | Attempted to stop spectating as non-spectator", session.Token);
-
-                return Task.CompletedTask;
-            }
-
-            session.SpectateSession.Disconnect(session);
-
-            return Task.CompletedTask;
-        }
+        return Unit.Task;
     }
 }

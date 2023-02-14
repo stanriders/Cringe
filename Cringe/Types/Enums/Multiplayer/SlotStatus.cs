@@ -13,6 +13,5 @@ public enum SlotStatus : byte
     Playing = 32,
     Complete = 64,
     Quit = 128,
-    HasPlayer = NotReady | Ready | NoMap | Playing | Complete,
-    Loading = 33,
+    HasPlayer = NotReady | Ready | NoMap | Playing | Complete
 }

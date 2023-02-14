@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Cringe.Bancho.Bancho;
+using Cringe.Bancho.Events.Multiplayer;
+using Cringe.Types.Common;
 using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
 
@@ -20,7 +22,7 @@ public class Map
     public string MapHash { get; set; } = null!;
 }
 
-public class Match : IDependant
+public class Match : BaseEntity, IDependant
 {
     [PeppyField]
     public short Id { get; set; }
@@ -42,18 +44,15 @@ public class Match : IDependant
     [Secret]
     public string Password { get; set; }
 
-    private List<Slot> _slots;
-
     public List<Slot> Slots
     {
         get
         {
-            if (_slots is not null) return _slots;
+            var slots = new List<Slot>();
 
-            _slots = new List<Slot>();
             for (var i = 0; i < 16; i++)
             {
-                _slots.Add(new Slot
+                slots.Add(new Slot
                 {
                     Status = (SlotStatus) _slotStatus[i],
                     Team = (MatchTeams) _slotTeams[i],
@@ -61,7 +60,7 @@ public class Match : IDependant
                 });
             }
 
-            return _slots;
+            return slots;
         }
     }
 
@@ -112,6 +111,7 @@ public class Match : IDependant
     public int Seed { get; set; }
 
     private int _skipCounter = 0;
+    private int _loadingCounter = 0;
 
     public int? Dependency(string propertyName)
     {
@@ -123,7 +123,6 @@ public class Match : IDependant
         };
     }
 
-    #region Behaviour
     private void AssertHost(int playerId)
     {
         if (playerId != HostId)
@@ -145,6 +144,19 @@ public class Match : IDependant
         }
 
         throw new Exception($"Player {playerId} is not in the match");
+    }
+
+    private int PlayerIdOnSlot(int slotId)
+    {
+        var playerIndex = 0;
+        for (var i = 0; i < slotId; i++)
+        {
+            if (!SlotIsNotEmpty(_slotStatus[slotId])) continue;
+
+            playerIndex++;
+        }
+
+        return playerIndex;
     }
 
     private int PlayerSlotId(int playerId)
@@ -193,11 +205,16 @@ public class Match : IDependant
         throw new Exception("No empty slot was found");
     }
 
+    private void AddMatchUpdatedEvent()
+    {
+        var players = _playerIds.ToList();
+        AddEvent(new MatchUpdatedEvent(Id, players));
+    }
+
+    #region Behaviour
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Global
     public void AddPlayer(int playerId, string password)
     {
-        InvalidateSlots();
-
         if (Password != "" && Password != password)
         {
             throw new Exception("Incorrect password");
@@ -215,6 +232,8 @@ public class Match : IDependant
         {
             _slotTeams[firstAvailableSlot] = (byte) MatchTeams.Red;
         }
+
+        AddMatchUpdatedEvent();
     }
 
     private void RemovePlayerOnSlot(int slotId, int playerId)
@@ -224,7 +243,15 @@ public class Match : IDependant
         _slotTeams[slotId] = (byte) MatchTeams.Neutral;
         _slotMods[slotId] = (byte) Mods.None;
 
+
         if (playerId != HostId) return;
+
+        if (_playerIds.Length == 0)
+        {
+            AddEvent(new MatchDisbandedEvent(Id));
+
+            return;
+        }
 
         for (var i = 0; i < _slotStatus.Length; i++)
         {
@@ -233,25 +260,18 @@ public class Match : IDependant
                 TransferHost(i);
             }
         }
+
+        AddMatchUpdatedEvent();
     }
 
     public void RemovePlayer(int playerId)
     {
-        InvalidateSlots();
-
         var slotId = PlayerSlotId(playerId);
         RemovePlayerOnSlot(slotId, playerId);
     }
 
-    private void InvalidateSlots()
-    {
-        _slots = null;
-    }
-
     public void SetMods(int playerId, Mods mods)
     {
-        InvalidateSlots();
-
         if (IsFreeMode)
         {
             if (HostId == playerId)
@@ -260,18 +280,22 @@ public class Match : IDependant
             var playerSlot = PlayerSlotId(playerId);
             _slotMods[playerSlot] = (byte) (mods & ~Mods.SpeedChangingMods);
 
+            AddMatchUpdatedEvent();
+
             return;
         }
 
         AssertHost(playerId);
-
         Mods = mods;
+
+        AddMatchUpdatedEvent();
     }
 
     public void SetPassword(int playerId, string newPassword)
     {
         AssertHost(playerId);
         Password = newPassword;
+        AddMatchUpdatedEvent();
     }
 
     public void ChangeSlot(int playerId, int slotId)
@@ -302,12 +326,12 @@ public class Match : IDependant
         }
 
         _playerIds = slots.Where(x => x.PlayerId is not null).Select(x => x.PlayerId.Value).ToArray();
+        AddMatchUpdatedEvent();
     }
 
     public void ChangeSettings(int playerId, Match newMatch)
     {
         AssertHost(playerId);
-        InvalidateSlots();
 
         if (newMatch.IsFreeMode != IsFreeMode)
         {
@@ -370,6 +394,7 @@ public class Match : IDependant
 
         WinConditions = newMatch.WinConditions;
         RoomName = newMatch.RoomName;
+        AddMatchUpdatedEvent();
     }
 
     public void ChangeTeam(int playerId)
@@ -379,8 +404,6 @@ public class Match : IDependant
             throw new Exception("Match is not in team mode to change team");
         }
 
-        InvalidateSlots();
-
         var slotId = PlayerSlotId(playerId);
         var prevTeam = (MatchTeams) _slotTeams[slotId];
         _slotTeams[slotId] = (byte) (prevTeam switch
@@ -388,6 +411,7 @@ public class Match : IDependant
             MatchTeams.Red => MatchTeams.Blue,
             _ => MatchTeams.Blue
         });
+        AddMatchUpdatedEvent();
     }
 
     public void Complete(int playerId)
@@ -406,14 +430,15 @@ public class Match : IDependant
             _slotStatus[i] = (byte) SlotStatus.NotReady;
         }
 
-        //TODO: add events
-        //player.Player.Queue.EnqueuePacket(new ResponsePackets.Match.MatchComplete());
+        AddEvent(new MatchCompletedEvent(this));
+        AddMatchUpdatedEvent();
     }
 
     private void ChangeStatus(int playerId, SlotStatus status)
     {
         var slotId = PlayerSlotId(playerId);
         _slotStatus[slotId] = (byte) status;
+        AddMatchUpdatedEvent();
     }
 
     public void HasBeatmap(int playerId)
@@ -436,46 +461,40 @@ public class Match : IDependant
         ChangeStatus(playerId, SlotStatus.Ready);
     }
 
-    private int PlayerIdOnSlot(int slotId)
-    {
-        var playerIndex = 0;
-        for (var i = 0; i < slotId; i++)
-        {
-            if (!SlotIsNotEmpty(_slotStatus[slotId])) continue;
-
-            playerIndex++;
-        }
-
-        return playerIndex;
-    }
-
     public void Start(int playerId)
     {
         AssertHost(playerId);
 
         InProgress = true;
+        _skipCounter = 0;
+        _loadingCounter = 0;
+
         var playingPlayers = new List<int>();
         for (var i = 0; i < _slotStatus.Length; i++)
         {
             if (_slotStatus[i] != (byte) SlotStatus.Ready && _slotStatus[i] != (byte) SlotStatus.NotReady) continue;
 
-            _slotStatus[i] = (byte) SlotStatus.Loading;
+            _skipCounter++;
+            _loadingCounter++;
             playingPlayers.Add(PlayerIdOnSlot(i));
         }
 
-        //TODO: domain event on playingPlayers MatchStart
+
+        AddEvent(new MatchStartEvent(playingPlayers));
     }
 
     public void LoadComplete(int playerId)
     {
         var playerSlot = PlayerSlotId(playerId);
         _slotStatus[playerSlot] = (byte) SlotStatus.Playing;
-        if (_slotStatus.Any(x => x == (byte) SlotStatus.Loading))
+        _loadingCounter--;
+        if (_loadingCounter != 0)
         {
             return;
         }
 
         //TODO: MatchLoadComplete
+        AddEvent(new MatchLoadComplete(_playerIds.ToList()));
         //player.Player.Queue.EnqueuePacket(new ResponsePackets.Match.MatchComplete());
     }
 
@@ -485,6 +504,7 @@ public class Match : IDependant
         if (_slotStatus[slotId] == (byte) SlotStatus.Locked)
         {
             _slotStatus[slotId] = (byte) SlotStatus.Open;
+            AddMatchUpdatedEvent();
 
             return;
         }
@@ -494,6 +514,7 @@ public class Match : IDependant
             _slotStatus[slotId] = (byte) SlotStatus.Locked;
             _slotTeams[slotId] = 0;
             _slotMods[slotId] = 0;
+            AddMatchUpdatedEvent();
 
             return;
         }
@@ -510,13 +531,14 @@ public class Match : IDependant
 
     public void Skip(int playerId)
     {
-        _skipCounter++;
+        _skipCounter--;
         //TODO: event PlayerSkipped
+        AddEvent(new MatchPlayerSkippedEvent(_playerIds.ToList()));
 
-        var playingCount = _slotStatus.Count(x => x == (byte) SlotStatus.Playing);
-        if (_skipCounter == playingCount)
+        if (_skipCounter == 0)
         {
             //TODO: event Skip
+            AddEvent(new MatchSkippedEvent(_playerIds.ToList()));
         }
     }
 
@@ -530,6 +552,7 @@ public class Match : IDependant
         HostId = PlayerIdOnSlot(slotId);
 
         //TODO: event next host id
+        AddEvent(new MatchHostTransferedEvent(_playerIds.ToList()));
     }
 
     public void TransferHost(int playerId, int nextHostSlotId)

@@ -103,6 +103,6 @@ public class ForceRemovePlayerFromLobbyOnPlayerLeftEventHandler : INotificationH
             // ignored
         }
 
-        return Unit.Task;
+        return Task.CompletedTask;
     }
 }

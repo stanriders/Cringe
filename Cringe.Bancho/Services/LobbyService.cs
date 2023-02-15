@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Events;
+using Cringe.Bancho.Events.Multiplayer;
 using Cringe.Bancho.Types;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -52,7 +53,7 @@ public class LobbyService
             return match.Key;
         }
 
-        throw new Exception("ахахахаа ты где?");
+        throw new Exception("ty gde ;D");
     }
 
     public Match JoinLobby(int userId, short matchId, string password)
@@ -69,6 +70,11 @@ public class LobbyService
         match.RemovePlayer(userId);
 
         return match;
+    }
+
+    public void RemoveMatch(short matchId)
+    {
+        _pool.TryRemove(matchId, out _);
     }
 
     private Match AssertLobbyExistence(short matchId)
@@ -102,6 +108,23 @@ public class ForceRemovePlayerFromLobbyOnPlayerLeftEventHandler : INotificationH
         {
             // ignored
         }
+
+        return Task.CompletedTask;
+    }
+}
+
+public class RemoveMatchOnDisbandHandler : INotificationHandler<MatchDisbandedEvent>
+{
+    private readonly LobbyService _lobby;
+
+    public RemoveMatchOnDisbandHandler(LobbyService lobby)
+    {
+        _lobby = lobby;
+    }
+
+    public Task Handle(MatchDisbandedEvent notification, CancellationToken cancellationToken)
+    {
+        _lobby.RemoveMatch(notification.MatchId);
 
         return Task.CompletedTask;
     }

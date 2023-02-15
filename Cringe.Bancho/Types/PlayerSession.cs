@@ -45,16 +45,6 @@ public class PlayerSession
     #endregion
 
     #region Lobby
-    public void NewMatch(Match match)
-    {
-        Queue.EnqueuePacket(new NewMatch(match));
-    }
-
-    public void DisposeMatch(Match match)
-    {
-        Queue.EnqueuePacket(new DisposeMatch(match));
-    }
-
     public void UpdateMatch(Match match)
     {
         Queue.EnqueuePacket(new UpdateMatch(match));

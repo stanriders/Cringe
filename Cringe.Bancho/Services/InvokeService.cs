@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Bancho.ResponsePackets;
 using Cringe.Bancho.Types;
+using Cringe.Types.Common;
 using Cringe.Types.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -67,6 +68,25 @@ public class InvokeService
                 _logger.LogError(e, "Packet {packet} failed", request.Name);
                 session.Queue.EnqueuePacket(new Notification(e.Message));
             }
+
+            _ = Task.Run(async () =>
+            {
+                await GlobalEventTracker.Process.WaitAsync();
+                foreach (var @event in GlobalEventTracker.Events)
+                {
+                    try
+                    {
+                        await _mediator.Publish(@event);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Unhandled exception on event handling");
+                    }
+                }
+
+                GlobalEventTracker.ClearEvents();
+                GlobalEventTracker.Process.Release();
+            });
         }
     }
 }

@@ -1,6 +1,8 @@
+using System.Reflection;
 using Cringe.Bancho.Services;
 using Cringe.Database;
 using Cringe.Services;
+using Cringe.Types.Common;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +24,9 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddMediatR(typeof(Startup));
+        services.AddMediatR(x =>
+            x.RegisterServicesFromAssembly(typeof(Startup).Assembly)
+                .RegisterServicesFromAssembly(typeof(BaseEvent).Assembly));
 
         services.AddDbContext<PlayerDatabaseContext>();
         services.AddDbContext<ScoreDatabaseContext>();

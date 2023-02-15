@@ -30,6 +30,7 @@ public class Match : BaseEntity, IDependant
     [PeppyField]
     public bool InProgress { get; set; }
 
+
     [PeppyField]
     private byte _padding { get; set; }
 
@@ -69,11 +70,11 @@ public class Match : BaseEntity, IDependant
 
     [PeppyField]
     [ConstantSized(16)]
-    private byte[] _slotStatus { get; } = Array.Empty<byte>();
+    private byte[] _slotStatus { get; set; } = Array.Empty<byte>();
 
     [PeppyField]
     [ConstantSized(16)]
-    private byte[] _slotTeams { get; } = Array.Empty<byte>();
+    private byte[] _slotTeams { get; set; } = Array.Empty<byte>();
 
     [PeppyField]
     [DependentSized]
@@ -95,13 +96,8 @@ public class Match : BaseEntity, IDependant
     public MatchTeamTypes TeamType { get; set; }
 
     [PeppyField]
-    private byte _freeModeByte { get; set; }
+    public bool FreeMode { get; private set; }
 
-    public bool IsFreeMode
-    {
-        get => _freeModeByte == 1;
-        set => _freeModeByte = value ? (byte) 1 : (byte) 0;
-    }
 
     [PeppyField]
     [DependentSized]
@@ -118,10 +114,12 @@ public class Match : BaseEntity, IDependant
         return propertyName switch
         {
             nameof(_playerIds) => _slotStatus.Count(SlotIsNotEmpty),
-            nameof(_slotMods) => IsFreeMode ? 16 : 0,
+            nameof(_slotMods) => FreeMode ? 16 : 0,
             _ => null
         };
     }
+
+    public List<int> Players => _playerIds.ToList();
 
     private void AssertHost(int playerId)
     {
@@ -207,8 +205,7 @@ public class Match : BaseEntity, IDependant
 
     private void AddMatchUpdatedEvent()
     {
-        var players = _playerIds.ToList();
-        AddEvent(new MatchUpdatedEvent(Id, players));
+        AddEvent(new MatchUpdatedEvent(this));
     }
 
     #region Behaviour
@@ -272,7 +269,7 @@ public class Match : BaseEntity, IDependant
 
     public void SetMods(int playerId, Mods mods)
     {
-        if (IsFreeMode)
+        if (FreeMode)
         {
             if (HostId == playerId)
                 Mods = mods & Mods.SpeedChangingMods;
@@ -333,12 +330,12 @@ public class Match : BaseEntity, IDependant
     {
         AssertHost(playerId);
 
-        if (newMatch.IsFreeMode != IsFreeMode)
+        if (newMatch.FreeMode != FreeMode)
         {
-            IsFreeMode = newMatch.IsFreeMode;
+            FreeMode = newMatch.FreeMode;
 
             //If we converted from non-freemode to freemode
-            if (newMatch.IsFreeMode)
+            if (newMatch.FreeMode)
             {
                 for (var i = 0; i < _slotMods.Length; i++)
                 {
@@ -430,7 +427,7 @@ public class Match : BaseEntity, IDependant
             _slotStatus[i] = (byte) SlotStatus.NotReady;
         }
 
-        AddEvent(new MatchCompletedEvent(this));
+        AddEvent(new MatchCompletedEvent(_playerIds.ToList()));
         AddMatchUpdatedEvent();
     }
 
@@ -474,19 +471,20 @@ public class Match : BaseEntity, IDependant
         {
             if (_slotStatus[i] != (byte) SlotStatus.Ready && _slotStatus[i] != (byte) SlotStatus.NotReady) continue;
 
+            _slotStatus[i] = (byte) SlotStatus.Playing;
+
             _skipCounter++;
             _loadingCounter++;
             playingPlayers.Add(PlayerIdOnSlot(i));
         }
 
 
-        AddEvent(new MatchStartEvent(playingPlayers));
+        AddEvent(new MatchStartEvent(playingPlayers, this));
+        AddMatchUpdatedEvent();
     }
 
     public void LoadComplete(int playerId)
     {
-        var playerSlot = PlayerSlotId(playerId);
-        _slotStatus[playerSlot] = (byte) SlotStatus.Playing;
         _loadingCounter--;
         if (_loadingCounter != 0)
         {
@@ -533,7 +531,7 @@ public class Match : BaseEntity, IDependant
     {
         _skipCounter--;
         //TODO: event PlayerSkipped
-        AddEvent(new MatchPlayerSkippedEvent(_playerIds.ToList()));
+        AddEvent(new MatchPlayerSkippedEvent(_playerIds.ToList(), PlayerSlotId(playerId)));
 
         if (_skipCounter == 0)
         {
@@ -552,7 +550,7 @@ public class Match : BaseEntity, IDependant
         HostId = PlayerIdOnSlot(slotId);
 
         //TODO: event next host id
-        AddEvent(new MatchHostTransferedEvent(_playerIds.ToList()));
+        AddEvent(new MatchHostTransferredEvent(_playerIds.ToList()));
     }
 
     public void TransferHost(int playerId, int nextHostSlotId)

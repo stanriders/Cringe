@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Types;
 using Cringe.Database;
 using Cringe.Services;
@@ -28,6 +29,24 @@ public class PlayersPool
     }
 
     public static ConcurrentDictionary<int, PlayerSession> Players { get; } = new();
+
+    public static void Notify(int playerId, ResponsePacket packet)
+    {
+        if (!Players.TryGetValue(playerId, out var session))
+        {
+            return;
+        }
+
+        session.Queue.EnqueuePacket(packet);
+    }
+
+    public static void Notify(IEnumerable<int> players, ResponsePacket packet)
+    {
+        foreach (var player in players)
+        {
+            Notify(player, packet);
+        }
+    }
 
     public async Task<bool> Connect(UserToken token)
     {

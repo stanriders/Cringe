@@ -25,9 +25,8 @@ public class MatchFailedHandler : IRequestHandler<MatchFailed>
     {
         //TODO: extract it to domain events
         var matchId = _lobby.FindMatch(_session.Id);
-        await _mediator.Publish(new MatchFailedEvent(matchId,
-                _lobby.GetValue(matchId, v => v.PlayerPosition(_session.Id))),
-            cancellationToken);
+        var (players, slot) = _lobby.GetValue(matchId, v => (v.Players, v.PlayerPosition(_session.Id)));
+        await _mediator.Publish(new MatchFailedEvent(players, slot), cancellationToken);
     }
 }
 

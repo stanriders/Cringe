@@ -6,14 +6,14 @@ public class MatchJoinSuccess : ResponsePacket
 {
     public MatchJoinSuccess(Types.Match match)
     {
-        Match = match;
+        _match = match;
     }
 
-    public Types.Match Match { get; }
+    private Types.Match _match { get; }
     public override ServerPacketType Type => ServerPacketType.MatchJoinSuccess;
 
     public override byte[] GetBytes()
     {
-        return PeppyConverter.Serialize(Match);
+        return PeppyConverter.Serialize(_match);
     }
 }

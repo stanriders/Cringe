@@ -97,19 +97,19 @@ public static class PeppyConverter
             return string.IsNullOrEmpty(s) ? new byte[] { 0 } : ConvertString("");
         }
 
-        if (type == typeof(int))
-            return BitConverter.GetBytes((int) obj);
-
         if (type == typeof(byte))
-            return BitConverter.GetBytes((byte) obj);
-
-        if (type == typeof(long))
-            return BitConverter.GetBytes((long) obj);
+            return new[] { Convert.ToByte(obj) };
 
         if (type == typeof(short))
-            return BitConverter.GetBytes((short) obj);
+            return BitConverter.GetBytes(Convert.ToInt16(obj));
 
-        return Array.Empty<byte>();
+        if (type == typeof(int))
+            return BitConverter.GetBytes(Convert.ToInt32(obj));
+
+        if (type == typeof(long))
+            return BitConverter.GetBytes(Convert.ToInt64(obj));
+
+        throw new ArgumentOutOfRangeException(nameof(type), $"Type: {type.Name} is not supported for serialization");
     }
 
     private static object ReadPrimitive(Type type, BinaryReader reader)
@@ -132,6 +132,11 @@ public static class PeppyConverter
         if (type == typeof(int))
         {
             return reader.ReadInt32();
+        }
+
+        if (type == typeof(uint))
+        {
+            return reader.ReadUInt32();
         }
 
         if (type == typeof(string))
@@ -183,7 +188,7 @@ public static class PeppyConverter
     {
         var obj = Activator.CreateInstance(type);
         var properties = type
-            .GetProperties(BindingFlags.Instance)
+            .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             .Where(x => x.GetCustomAttribute(typeof(PeppyField)) is not null);
 
         foreach (var property in properties)
@@ -199,7 +204,7 @@ public static class PeppyConverter
     public static byte[] Serialize(object obj, bool secretContext = false)
     {
         var properties = obj.GetType()
-            .GetProperties(BindingFlags.Instance)
+            .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             .Where(x => x.GetCustomAttribute(typeof(PeppyField)) is not null);
 
         using var stream = new MemoryStream();
@@ -212,7 +217,9 @@ public static class PeppyConverter
             if (type.IsEnum)
             {
                 var enumType = property.GetCustomAttribute<EnumTypeAttribute>();
-                stream.Write(WritePrimitive(enumType!.Type, value));
+                var underlyingType = Enum.GetUnderlyingType(type);
+                var underlyingValue = Convert.ChangeType(value, underlyingType);
+                stream.Write(WritePrimitive(enumType!.Type, underlyingValue));
 
                 continue;
             }

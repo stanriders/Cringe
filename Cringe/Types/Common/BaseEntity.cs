@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-
 namespace Cringe.Types.Common;
 
 public class BaseEntity
 {
+    /*
     private readonly List<BaseEvent> _events = new();
     public IReadOnlyList<BaseEvent> Events => _events.AsReadOnly();
 
@@ -15,5 +14,11 @@ public class BaseEntity
     public void ClearEvents()
     {
         _events.Clear();
+    }
+    */
+
+    public void AddEvent(BaseEvent @event)
+    {
+        GlobalEventTracker.AddEvent(@event);
     }
 }

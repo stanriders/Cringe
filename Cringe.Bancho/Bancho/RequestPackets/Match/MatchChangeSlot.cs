@@ -18,12 +18,10 @@ public class MatchChangeSlotHandler : IRequestHandler<MatchChangeSlot>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(MatchChangeSlot request, CancellationToken cancellationToken)
+    public async Task Handle(MatchChangeSlot request, CancellationToken cancellationToken)
     {
         var match = _lobby.FindMatch(_session.Id);
-        _lobby.Transform(match, x => x.ChangeSlot(_session.Id, request.SlotId));
-
-        return Task.CompletedTask;
+        await _lobby.Transform(match, x => x.ChangeSlot(_session.Id, request.SlotId));
     }
 }
 

@@ -18,12 +18,10 @@ public class MatchTransferHostHandler : IRequestHandler<MatchTransferHost>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(MatchTransferHost request, CancellationToken cancellationToken)
+    public async Task Handle(MatchTransferHost request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
-        _lobby.Transform(matchId, x => x.TransferHost(_session.Id, request.SlotId));
-
-        return Task.CompletedTask;
+        await _lobby.Transform(matchId, x => x.TransferHost(_session.Id, request.SlotId));
     }
 }
 

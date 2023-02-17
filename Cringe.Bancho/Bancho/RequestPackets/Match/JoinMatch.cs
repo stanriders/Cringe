@@ -25,16 +25,14 @@ public class JoinMatchHandler : IRequestHandler<JoinMatch>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(JoinMatch request, CancellationToken cancellationToken)
+    public async Task Handle(JoinMatch request, CancellationToken cancellationToken)
     {
         try
         {
-            var match = _lobby.JoinLobby(_session.Id, (short) request.MatchId, request.Password);
+            var match = await _lobby.JoinLobby(_session.Id, (short) request.MatchId, request.Password);
 
             _session.Queue.EnqueuePacket(new MatchJoinSuccess(match));
             _session.Queue.EnqueuePacket(new ChannelJoinSuccess(GlobalChat.Multiplayer));
-
-            return Task.CompletedTask;
         }
         catch (Exception)
         {

@@ -9,7 +9,6 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match;
 
 public class MatchSkipHandler : IRequestHandler<MatchSkipRequest>
 {
-    private static readonly object _lock = new();
     private readonly LobbyService _lobby;
     private readonly PlayerSession _session;
 
@@ -19,15 +18,10 @@ public class MatchSkipHandler : IRequestHandler<MatchSkipRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(MatchSkipRequest request, CancellationToken cancellationToken)
+    public async Task Handle(MatchSkipRequest request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
-        lock (_lock)
-        {
-            _lobby.Transform(matchId, x => x.Skip(_session.Id));
-        }
-
-        return Task.CompletedTask;
+        await _lobby.Transform(matchId, x => x.Skip(_session.Id));
     }
 }
 

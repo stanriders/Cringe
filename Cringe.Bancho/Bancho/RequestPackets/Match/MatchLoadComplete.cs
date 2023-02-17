@@ -9,7 +9,6 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match;
 
 public class MatchLoadCompleteHandler : IRequestHandler<MatchLoadComplete>
 {
-    private readonly object _key = new();
     private readonly LobbyService _lobby;
     private readonly PlayerSession _session;
 
@@ -19,16 +18,10 @@ public class MatchLoadCompleteHandler : IRequestHandler<MatchLoadComplete>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(MatchLoadComplete request, CancellationToken cancellationToken)
+    public async Task Handle(MatchLoadComplete request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
-
-        lock (_key)
-        {
-            _lobby.Transform(matchId, x => x.LoadComplete(_session.Id));
-        }
-
-        return Task.CompletedTask;
+        await _lobby.Transform(matchId, x => x.LoadComplete(_session.Id));
     }
 }
 

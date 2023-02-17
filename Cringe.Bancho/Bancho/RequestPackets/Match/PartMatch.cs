@@ -18,12 +18,10 @@ public class PartMatchHandler : IRequestHandler<PartMatch>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(PartMatch request, CancellationToken cancellationToken)
+    public async Task Handle(PartMatch request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
-        _lobby.LeaveLobby(_session.Id, matchId);
-
-        return Task.CompletedTask;
+        await _lobby.LeaveLobby(_session.Id, matchId);
     }
 }
 

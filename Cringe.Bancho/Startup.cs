@@ -32,7 +32,9 @@ public class Startup
         services.AddDbContext<ScoreDatabaseContext>();
         services.AddDbContext<BeatmapDatabaseContext>();
 
-        services.AddSingleton<LobbyService>();
+        services.AddScoped<LobbyService>();
+        services.AddScoped<IPublishingStrategy, MediatrPublishingStrategy>();
+
         services.AddSingleton<SpectateService>();
 
         services.AddTransient<PlayersPool>();

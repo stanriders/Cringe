@@ -33,12 +33,12 @@ public class CreateMatchHandler : IRequestHandler<CreateMatchRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(CreateMatchRequest request, CancellationToken cancellationToken)
+    public async Task Handle(CreateMatchRequest request, CancellationToken cancellationToken)
     {
         try
         {
             var match = _lobby.CreateLobby(request.Match);
-            match.AddPlayer(_session.Id, request.Match.Password);
+            await _lobby.JoinLobby(_session.Id, match.Id, match.Password);
 
             _session.Queue.EnqueuePacket(new MatchJoinSuccess(match));
             _session.Queue.EnqueuePacket(new ChannelJoinSuccess(GlobalChat.Multiplayer));
@@ -50,7 +50,5 @@ public class CreateMatchHandler : IRequestHandler<CreateMatchRequest>
 
             throw;
         }
-
-        return Task.CompletedTask;
     }
 }

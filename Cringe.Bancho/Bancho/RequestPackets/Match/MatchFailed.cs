@@ -10,23 +10,19 @@ namespace Cringe.Bancho.Bancho.RequestPackets.Match;
 
 public class MatchFailedHandler : IRequestHandler<MatchFailed>
 {
-    private readonly IMediator _mediator;
     private readonly LobbyService _lobby;
     private readonly PlayerSession _session;
 
-    public MatchFailedHandler(IMediator mediator, LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
+    public MatchFailedHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        _mediator = mediator;
         _lobby = lobby;
         _session = currentPlayerProvider.Session;
     }
 
     public async Task Handle(MatchFailed request, CancellationToken cancellationToken)
     {
-        //TODO: extract it to domain events
         var matchId = _lobby.FindMatch(_session.Id);
-        var (players, slot) = _lobby.GetValue(matchId, v => (v.Players, v.PlayerPosition(_session.Id)));
-        await _mediator.Publish(new MatchFailedEvent(players, slot), cancellationToken);
+        await _lobby.Transform(matchId, x => x.Failed(_session.Id));
     }
 }
 

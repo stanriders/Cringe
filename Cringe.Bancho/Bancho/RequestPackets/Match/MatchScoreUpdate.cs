@@ -21,15 +21,14 @@ public class MatchScoreUpdateHandler : IRequestHandler<MatchScoreUpdate>
     public Task Handle(MatchScoreUpdate request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
-        var playerPosition = _lobby.GetValue(matchId, x => x.PlayerPosition(_session.Id));
+        var (playerPosition, cpp) =
+            _lobby.GetValue(matchId, x => (x.PlayerSlotIndex(_session.Id), x.CurrentlyPlayingPlayers));
 
         request.Payload[4] = (byte) playerPosition;
         var packet = new ResponsePackets.Match.MatchScoreUpdate(request.Payload);
-        //TODO: dispatching
-        /*
-        foreach (var player in session.MatchSession.Match.PlayingPlayers)
-            player.Player.Queue.EnqueuePacket(packet);
-            */
+
+        //IGNORE dispatching because we it to be as fast as possible
+        PlayersPool.Notify(cpp, packet);
 
         return Task.CompletedTask;
     }

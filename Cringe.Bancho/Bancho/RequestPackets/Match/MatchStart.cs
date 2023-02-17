@@ -18,12 +18,10 @@ public class MatchStartHandler : IRequestHandler<MatchStart>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(MatchStart request, CancellationToken cancellationToken)
+    public async Task Handle(MatchStart request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
-        _lobby.Transform(matchId, x => x.Start(_session.Id));
-
-        return Task.CompletedTask;
+        await _lobby.Transform(matchId, x => x.Start(_session.Id));
     }
 }
 

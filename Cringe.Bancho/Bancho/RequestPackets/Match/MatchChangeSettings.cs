@@ -18,12 +18,10 @@ public class MatchChangeSettingsHandler : IRequestHandler<MatchChangeSettings>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(MatchChangeSettings request, CancellationToken cancellationToken)
+    public async Task Handle(MatchChangeSettings request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
-        _lobby.Transform(matchId, match => match.ChangeSettings(_session.Id, request.Match));
-
-        return Task.CompletedTask;
+        await _lobby.Transform(matchId, match => match.ChangeSettings(_session.Id, request.Match));
     }
 }
 

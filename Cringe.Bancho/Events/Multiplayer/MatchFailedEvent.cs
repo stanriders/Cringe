@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets.Match;
@@ -8,7 +7,7 @@ using MediatR;
 
 namespace Cringe.Bancho.Events.Multiplayer;
 
-public record MatchFailedEvent(List<int> Players, int SlotId) : BaseEvent;
+public record MatchFailedEvent(int[] Players, int SlotId) : BaseEvent;
 
 public class NotifyPlayersOnMatchFailed : INotificationHandler<MatchFailedEvent>
 {

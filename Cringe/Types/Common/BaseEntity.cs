@@ -16,12 +16,12 @@ public class BaseEntity
 
     public async Task Dispatch(Action<BaseEntity> action, Func<IReadOnlyList<BaseEvent>, Task> dispatch)
     {
-        List<BaseEvent> _localEvents;
+        List<BaseEvent> localEvents;
         await _executionLock.WaitAsync();
         try
         {
             action(this);
-            _localEvents = _events.ToList();
+            localEvents = new List<BaseEvent>(_events);
             _events.Clear();
         }
         finally
@@ -31,7 +31,7 @@ public class BaseEntity
 
         try
         {
-            await dispatch(_localEvents);
+            await dispatch(localEvents);
         }
         catch (Exception ex)
         {

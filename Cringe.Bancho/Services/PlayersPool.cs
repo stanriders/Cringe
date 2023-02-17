@@ -48,6 +48,14 @@ public class PlayersPool
         }
     }
 
+    public static void Notify(int player, IEnumerable<ResponsePacket> packets)
+    {
+        foreach (var packet in packets)
+        {
+            Notify(player, packet);
+        }
+    }
+
     public async Task<bool> Connect(UserToken token)
     {
         if (Players.ContainsKey(token.PlayerId)) return false;

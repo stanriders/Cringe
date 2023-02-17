@@ -133,9 +133,14 @@ public class Match : BaseEntity, IDependant
         }
     }
 
-    private void AddMatchUpdatedEvent()
+    private void AddMatchUpdatedEvent(bool updateLobby = false)
     {
-        AddEvent(new MatchUpdatedEvent(this));
+        AddEvent(new LocalMatchUpdatedEvent(this));
+
+        if (updateLobby)
+        {
+            AddEvent(new UpdateLobbyEvent(this));
+        }
     }
 
     private Slot PlayerSlot(int playerId)
@@ -182,7 +187,7 @@ public class Match : BaseEntity, IDependant
             slot.Team = MatchTeams.Red;
         }
 
-        AddMatchUpdatedEvent();
+        AddMatchUpdatedEvent(true);
     }
 
     public void RemovePlayer(int playerId)
@@ -212,7 +217,7 @@ public class Match : BaseEntity, IDependant
             }
         }
 
-        AddMatchUpdatedEvent();
+        AddMatchUpdatedEvent(true);
     }
 
     public void SetMods(int playerId, Mods mods)
@@ -256,7 +261,7 @@ public class Match : BaseEntity, IDependant
 
             _slots[slotId] = _slots[i];
             _slots[i] = new Slot();
-            AddMatchUpdatedEvent();
+            AddMatchUpdatedEvent(true);
 
             return;
         }
@@ -326,7 +331,7 @@ public class Match : BaseEntity, IDependant
 
         WinConditions = newMatch.WinConditions;
         RoomName = newMatch.RoomName;
-        AddMatchUpdatedEvent();
+        AddMatchUpdatedEvent(true);
     }
 
     public void ChangeTeam(int playerId)
@@ -359,7 +364,7 @@ public class Match : BaseEntity, IDependant
         }
 
         AddEvent(new MatchCompletedEvent(_playersIds.ToList()));
-        AddMatchUpdatedEvent();
+        AddMatchUpdatedEvent(true);
     }
 
     private void ChangeStatus(int playerId, SlotStatus status)
@@ -416,7 +421,7 @@ public class Match : BaseEntity, IDependant
         }
 
         AddEvent(new MatchStartEvent(playingPlayers.Select(x => x.PlayerId!.Value).ToList(), this));
-        AddMatchUpdatedEvent();
+        AddMatchUpdatedEvent(true);
     }
 
     public void LoadComplete(int playerId)
@@ -439,7 +444,7 @@ public class Match : BaseEntity, IDependant
         if (_slots[slotId].Status == SlotStatus.Locked)
         {
             _slots[slotId].Status = SlotStatus.Open;
-            AddMatchUpdatedEvent();
+            AddMatchUpdatedEvent(true);
 
             return;
         }
@@ -447,7 +452,7 @@ public class Match : BaseEntity, IDependant
         if (!_slots[slotId].HasPlayer())
         {
             _slots[slotId].Status = SlotStatus.Locked;
-            AddMatchUpdatedEvent();
+            AddMatchUpdatedEvent(true);
 
             return;
         }

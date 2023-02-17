@@ -31,6 +31,7 @@ public class JoinLobbyHandler : IRequestHandler<JoinLobbyRequest>
     {
         _logger.LogInformation("{Token} | Logged in the lobby", _session.Token);
         ChatService.GetChat(ChatService.LobbyName)?.Connect(_session);
+        _lobby.JoinLobby(_session.Id);
 
         return Task.CompletedTask;
     }

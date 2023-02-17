@@ -13,14 +13,16 @@ public class PartLobbyRequest : RequestPacket, IRequest
     public override ClientPacketType Type => ClientPacketType.PartLobby;
 }
 
-public class PartLobby :  IRequestHandler<PartLobbyRequest>
+public class PartLobby : IRequestHandler<PartLobbyRequest>
 {
     private readonly ILogger<PartLobby> _logger;
+    private readonly LobbyService _lobby;
     private readonly PlayerSession _session;
 
     public PartLobby(CurrentPlayerProvider currentPlayerProvider, ILogger<PartLobby> logger, LobbyService lobby)
     {
         _logger = logger;
+        _lobby = lobby;
         _session = currentPlayerProvider.Session;
     }
 
@@ -28,6 +30,7 @@ public class PartLobby :  IRequestHandler<PartLobbyRequest>
     {
         _logger.LogInformation("{Token} | Logged out the lobby", _session.Token);
         ChatService.GetChat(ChatService.LobbyName)?.Disconnect(_session);
+        _lobby.LeaveLobby(_session.Id);
 
         return Task.CompletedTask;
     }

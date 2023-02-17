@@ -8,11 +8,11 @@ using MediatR;
 
 namespace Cringe.Bancho.Events.Multiplayer;
 
-public record MatchUpdatedEvent(Match Match) : BaseEvent;
+public record LocalMatchUpdatedEvent(Match Match) : BaseEvent;
 
-public record NotifyPlayersOnMatchUpdate : INotificationHandler<MatchUpdatedEvent>
+public record NotifyPlayersOnMatchUpdate : INotificationHandler<LocalMatchUpdatedEvent>
 {
-    public Task Handle(MatchUpdatedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(LocalMatchUpdatedEvent notification, CancellationToken cancellationToken)
     {
         PlayersPool.Notify(notification.Match.Players, new UpdateMatch(notification.Match));
 

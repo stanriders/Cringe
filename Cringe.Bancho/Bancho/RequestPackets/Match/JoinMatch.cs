@@ -29,7 +29,7 @@ public class JoinMatchHandler : IRequestHandler<JoinMatch>
     {
         try
         {
-            var match = await _lobby.JoinLobby(_session.Id, (short) request.MatchId, request.Password);
+            var match = await _lobby.JoinMatch(_session.Id, (short) request.MatchId, request.Password);
 
             _session.Queue.EnqueuePacket(new MatchJoinSuccess(match));
             _session.Queue.EnqueuePacket(new ChannelJoinSuccess(GlobalChat.Multiplayer));

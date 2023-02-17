@@ -21,7 +21,7 @@ public class PartMatchHandler : IRequestHandler<PartMatch>
     public async Task Handle(PartMatch request, CancellationToken cancellationToken)
     {
         var matchId = _lobby.FindMatch(_session.Id);
-        await _lobby.LeaveLobby(_session.Id, matchId);
+        await _lobby.LeaveMatch(_session.Id, matchId);
     }
 }
 

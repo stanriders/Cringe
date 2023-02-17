@@ -14,6 +14,6 @@ public class MatchJoinSuccess : ResponsePacket
 
     public override byte[] GetBytes()
     {
-        return PeppyConverter.Serialize(_match);
+        return PeppyConverter.Serialize(_match, true);
     }
 }

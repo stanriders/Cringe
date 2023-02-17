@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Bancho.Events;
 using Cringe.Bancho.Events.Multiplayer;
 using Cringe.Bancho.Types;
@@ -22,6 +24,8 @@ public class LobbyService
     //TODO: very unlikely that we change it but still *not good*
     private static readonly Dictionary<short, Match> _matches = new();
     private static readonly Dictionary<int, short> _playerMatches = new();
+    private static readonly HashSet<int> _connectedPlayers = new();
+    public IEnumerable<int> ConnectedPlayers => _connectedPlayers.ToList();
 
     public LobbyService(ILogger<LobbyService> logger, IPublishingStrategy publishingStrategy)
     {
@@ -29,7 +33,32 @@ public class LobbyService
         _publishingStrategy = publishingStrategy;
     }
 
-    public Match CreateLobby(Match match)
+    public void JoinLobby(int playerId)
+    {
+        _connectedPlayers.Add(playerId);
+        var matches = _matches.Select(x => new NewMatch(x.Value)).ToList();
+        PlayersPool.Notify(playerId, matches);
+    }
+
+    public void LeaveLobby(int playerId)
+    {
+        _connectedPlayers.Remove(playerId);
+    }
+
+    #region Matches
+    public async Task Transform(short matchId, Action<Match> transformer)
+    {
+        var match = AssertMatchExistence(matchId);
+        await match.Dispatch(x => transformer((Match) x),
+            events => _publishingStrategy.Publish(events));
+    }
+
+    public T GetValue<T>(short matchId, Func<Match, T> selector)
+    {
+        return selector(AssertMatchExistence(matchId));
+    }
+
+    public Match CreateMatch(Match match)
     {
         match.Id = (short) (_matches.Count + 1);
 
@@ -37,19 +66,9 @@ public class LobbyService
 
         _matches.Add(match.Id, match);
 
+        PlayersPool.Notify(_connectedPlayers, new NewMatch(match));
+
         return match;
-    }
-
-    public async Task Transform(short matchId, Action<Match> transformer)
-    {
-        var match = AssertLobbyExistence(matchId);
-        await match.Dispatch(x => transformer((Match) x),
-            events => _publishingStrategy.Publish(events));
-    }
-
-    public T GetValue<T>(short matchId, Func<Match, T> selector)
-    {
-        return selector(AssertLobbyExistence(matchId));
     }
 
     public short FindMatch(int playerId)
@@ -62,9 +81,9 @@ public class LobbyService
         throw new Exception("ty gde ;D");
     }
 
-    public async Task<Match> JoinLobby(int userId, short matchId, string password)
+    public async Task<Match> JoinMatch(int userId, short matchId, string password)
     {
-        var match = AssertLobbyExistence(matchId);
+        var match = AssertMatchExistence(matchId);
         await match.Dispatch(x => ((Match) x).AddPlayer(userId, password), x => _publishingStrategy.Publish(x));
 
         _playerMatches.Add(userId, matchId);
@@ -72,9 +91,9 @@ public class LobbyService
         return match;
     }
 
-    public async Task<Match> LeaveLobby(int userId, short matchId)
+    public async Task<Match> LeaveMatch(int userId, short matchId)
     {
-        var match = AssertLobbyExistence(matchId);
+        var match = AssertMatchExistence(matchId);
         await match.Dispatch(x => ((Match) x).RemovePlayer(userId), x => _publishingStrategy.Publish(x));
 
         _playerMatches.Remove(userId);
@@ -84,10 +103,13 @@ public class LobbyService
 
     public void RemoveMatch(short matchId)
     {
+        if (!_matches.TryGetValue(matchId, out var match)) return;
+
         _matches.Remove(matchId);
+        PlayersPool.Notify(_connectedPlayers, new DisposeMatch(match));
     }
 
-    private static Match AssertLobbyExistence(short matchId)
+    private static Match AssertMatchExistence(short matchId)
     {
         if (_matches.TryGetValue(matchId, out var match))
         {
@@ -96,6 +118,7 @@ public class LobbyService
 
         throw new Exception("Lobby doesn't exist");
     }
+    #endregion
 }
 
 public class ForceRemovePlayerFromLobbyOnPlayerLeftEventHandler : INotificationHandler<PlayerLeftEvent>
@@ -112,7 +135,7 @@ public class ForceRemovePlayerFromLobbyOnPlayerLeftEventHandler : INotificationH
         try
         {
             var matchId = _lobby.FindMatch(notification.PlayerId);
-            await _lobby.LeaveLobby(notification.PlayerId, matchId);
+            await _lobby.LeaveMatch(notification.PlayerId, matchId);
         }
         catch (Exception)
         {
@@ -123,16 +146,39 @@ public class ForceRemovePlayerFromLobbyOnPlayerLeftEventHandler : INotificationH
 
 public class RemoveMatchOnDisbandHandler : INotificationHandler<MatchDisbandedEvent>
 {
+    private readonly ILogger<RemoveMatchOnDisbandHandler> _logger;
     private readonly LobbyService _lobby;
 
-    public RemoveMatchOnDisbandHandler(LobbyService lobby)
+    public RemoveMatchOnDisbandHandler(ILogger<RemoveMatchOnDisbandHandler> logger, LobbyService lobby)
     {
+        _logger = logger;
         _lobby = lobby;
     }
 
     public Task Handle(MatchDisbandedEvent notification, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("{matchId} | Match disbanded", notification.MatchId);
         _lobby.RemoveMatch(notification.MatchId);
+
+        return Task.CompletedTask;
+    }
+}
+
+public class UpdateLobbyEventHandler : INotificationHandler<UpdateLobbyEvent>
+{
+    private readonly ILogger<UpdateLobbyEventHandler> _logger;
+    private readonly LobbyService _lobby;
+
+    public UpdateLobbyEventHandler(ILogger<UpdateLobbyEventHandler> logger, LobbyService lobby)
+    {
+        _logger = logger;
+        _lobby = lobby;
+    }
+
+    public Task Handle(UpdateLobbyEvent notification, CancellationToken cancellationToken)
+    {
+        _logger.LogDebug("{matchId} | Match requests lobby update", notification.Match.Id);
+        PlayersPool.Notify(_lobby.ConnectedPlayers, new UpdateMatch(notification.Match));
 
         return Task.CompletedTask;
     }

@@ -37,8 +37,8 @@ public class CreateMatchHandler : IRequestHandler<CreateMatchRequest>
     {
         try
         {
-            var match = _lobby.CreateLobby(request.Match);
-            await _lobby.JoinLobby(_session.Id, match.Id, match.Password);
+            var match = _lobby.CreateMatch(request.Match);
+            await _lobby.JoinMatch(_session.Id, match.Id, match.Password);
 
             _session.Queue.EnqueuePacket(new MatchJoinSuccess(match));
             _session.Queue.EnqueuePacket(new ChannelJoinSuccess(GlobalChat.Multiplayer));

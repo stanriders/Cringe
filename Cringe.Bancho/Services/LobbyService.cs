@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets.Match;
 using Cringe.Bancho.Events;
+using Cringe.Bancho.Events.Lobby;
 using Cringe.Bancho.Events.Multiplayer;
 using Cringe.Bancho.Types;
 using Cringe.Types.Common;
@@ -33,16 +34,18 @@ public class LobbyService
         _publishingStrategy = publishingStrategy;
     }
 
-    public void JoinLobby(int playerId)
+    public async Task JoinLobby(int playerId)
     {
         _connectedPlayers.Add(playerId);
         var matches = _matches.Select(x => new NewMatch(x.Value)).ToList();
         PlayersPool.Notify(playerId, matches);
+        await _publishingStrategy.Publish(new LobbyPlayerJoinedEvent(playerId));
     }
 
-    public void LeaveLobby(int playerId)
+    public async Task LeaveLobby(int playerId)
     {
         _connectedPlayers.Remove(playerId);
+        await _publishingStrategy.Publish(new LobbyPlayerLeftEvent(playerId));
     }
 
     #region Matches
@@ -58,7 +61,7 @@ public class LobbyService
         return selector(AssertMatchExistence(matchId));
     }
 
-    public Match CreateMatch(Match match)
+    public async Task<Match> CreateMatch(Match match)
     {
         match.Id = (short) (_matches.Count + 1);
 
@@ -67,6 +70,7 @@ public class LobbyService
         _matches.Add(match.Id, match);
 
         PlayersPool.Notify(_connectedPlayers, new NewMatch(match));
+        await _publishingStrategy.Publish(new MatchCreatedEvent(match));
 
         return match;
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cringe.Bancho.Bancho;
+using Cringe.Bancho.Events.Lobby;
 using Cringe.Bancho.Events.Multiplayer;
 using Cringe.Types.Common;
 using Cringe.Types.Enums;
@@ -187,6 +188,7 @@ public class Match : BaseEntity, IDependant
             slot.Team = MatchTeams.Red;
         }
 
+        AddEvent(new MatchPlayerJoinedEvent(playerId, Id));
         AddMatchUpdatedEvent(true);
     }
 
@@ -197,6 +199,8 @@ public class Match : BaseEntity, IDependant
         {
             throw new Exception($"Player {playerId} is not found");
         }
+
+        AddEvent(new MatchPlayerLeftEvent(playerId, Id));
 
         slot.Reset();
 

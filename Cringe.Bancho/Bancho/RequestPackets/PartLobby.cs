@@ -26,12 +26,10 @@ public class PartLobby : IRequestHandler<PartLobbyRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(PartLobbyRequest request, CancellationToken cancellationToken)
+    public async Task Handle(PartLobbyRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{Token} | Logged out the lobby", _session.Token);
         ChatService.GetChat(ChatService.LobbyName)?.Disconnect(_session);
-        _lobby.LeaveLobby(_session.Id);
-
-        return Task.CompletedTask;
+        await _lobby.LeaveLobby(_session.Id);
     }
 }

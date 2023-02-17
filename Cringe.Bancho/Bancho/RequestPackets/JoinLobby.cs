@@ -27,12 +27,10 @@ public class JoinLobbyHandler : IRequestHandler<JoinLobbyRequest>
         _session = currentPlayerProvider.Session;
     }
 
-    public Task Handle(JoinLobbyRequest request, CancellationToken cancellationToken)
+    public async Task Handle(JoinLobbyRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{Token} | Logged in the lobby", _session.Token);
         ChatService.GetChat(ChatService.LobbyName)?.Connect(_session);
-        _lobby.JoinLobby(_session.Id);
-
-        return Task.CompletedTask;
+        await _lobby.JoinLobby(_session.Id);
     }
 }

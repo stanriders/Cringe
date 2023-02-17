@@ -37,7 +37,7 @@ public class CreateMatchHandler : IRequestHandler<CreateMatchRequest>
     {
         try
         {
-            var match = _lobby.CreateMatch(request.Match);
+            var match = await _lobby.CreateMatch(request.Match);
             await _lobby.JoinMatch(_session.Id, match.Id, match.Password);
 
             _session.Queue.EnqueuePacket(new MatchJoinSuccess(match));

@@ -12,7 +12,7 @@
 <table class="table">
     <thead>
     <tr>
-        <th>#</th>
+        <th width="48px">#</th>
         <th>
             @Html.DisplayNameFor(model => model.Player[0].Username)
         </th>
@@ -45,7 +45,7 @@
                 @(i + 1)
             </td>
             <td>
-                <a asp-page="./Index" asp-route-id="@Model.Player[i].Id">@Html.DisplayFor(modelItem => Model.Player[i].Username)</a>
+               <a asp-page="./Index" asp-route-id="@Model.Player[i].Id"><img src="https://a.stanr.info/@Model.Player[i].Id" width="24px" /> @Html.DisplayFor(modelItem => Model.Player[i].Username)</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => Model.Player[i].Accuracy)

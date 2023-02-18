@@ -9,6 +9,10 @@
 
 <div>
     <h4><img src="https://a.stanr.info/@Model.Player.Id" width="64px"/> @Model.Player.Username</h4>
+@if ((User.Identity?.IsAuthenticated ?? false) && User.Identity.Name == Model.Player.Username)
+{
+    <a asp-page="/Account/Edit">Edit profile</a>
+}
     <hr/>
     <dl class="row">
         <dt class="col-sm-2">

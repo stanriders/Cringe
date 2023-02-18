@@ -1,0 +1,36 @@
+﻿@page
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Cringe.Web.Pages.Account.EditModel
+@{
+    ViewData["Title"] = "Edit profile";
+}
+
+<h1>Edit profile</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                
+                <label asp-for="Avatar"><img src="https://a.stanr.info/@User.Claims.First(x=> x.Type == ClaimTypes.NameIdentifier).Value" width="32px" /> Avatar</label>
+                <input type="file" asp-for="Avatar">
+                <span asp-validation-for="Avatar" class="text-danger"></span>
+                <p class="help-block">256kb max</p>
+            </div>
+            <input type="submit" class="btn btn-primary" asp-page-handler="Avatar" />
+        </form>
+        <hr/>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <input asp-for="Username" class="form-control" value="@User.Identity!.Name" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" asp-page-handler="Username" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -12,7 +12,7 @@
 <table class="table">
     <thead>
     <tr>
-        <th>#</th>
+        <th width="48px">#</th>
         <th>
             @Html.DisplayNameFor(model => model.Player[0].Username)
         </th>
@@ -28,11 +28,11 @@
         <th>
             @Html.DisplayNameFor(model => model.Player[0].Pp)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Player[0].UserRank)
-        </th>
         @if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
         {
+            <th>
+                @Html.DisplayNameFor(model => model.Player[0].UserRank)
+            </th>
             <th></th>
         }
     </tr>
@@ -45,7 +45,7 @@
                 @(i + 1)
             </td>
             <td>
-                <a asp-page="./Index" asp-route-id="@Model.Player[i].Id">@Html.DisplayFor(modelItem => Model.Player[i].Username)</a>
+               <a asp-page="./Index" asp-route-id="@Model.Player[i].Id"><img src="https://a.stanr.info/@Model.Player[i].Id" width="24px" /> @Html.DisplayFor(modelItem => Model.Player[i].Username)</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => Model.Player[i].Accuracy)
@@ -57,13 +57,13 @@
                 @Html.DisplayFor(modelItem => Model.Player[i].TotalScore)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => Model.Player[i].Pp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => Model.Player[i].UserRank)
+                <b>@Html.DisplayFor(modelItem => Model.Player[i].Pp)</b>
             </td>
             @if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
             {
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Player[i].UserRank)
+                </td>
                 <td>
                     <a asp-page="./Edit" asp-route-id="@Model.Player[i].Id">Edit</a> |
                     <a asp-page="./Delete" asp-route-id="@Model.Player[i].Id">Delete</a>

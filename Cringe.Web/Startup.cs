@@ -56,7 +56,11 @@ namespace Cringe.Web
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
             services.AddControllers();
-            services.AddRazorPages();
+            services.AddRazorPages(options =>
+            {
+                options.Conventions.AuthorizeFolder("/Account");
+                options.Conventions.AllowAnonymousToPage("/Account/Login");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

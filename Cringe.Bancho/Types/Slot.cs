@@ -1,28 +1,40 @@
 ﻿using Cringe.Types.Enums;
 using Cringe.Types.Enums.Multiplayer;
 
-namespace Cringe.Bancho.Types
+namespace Cringe.Bancho.Types;
+
+public class Slot
 {
-    public class Slot
+    public Slot()
     {
-        public PlayerSession Player { get; set; }
-        public SlotStatus Status { get; set; }
-        public MatchTeams Team { get; set; }
-        public Mods Mods { get; set; } = Mods.None;
-        public bool Loaded { get; set; } = false;
-        public bool Skipped { get; set; } = false;
+        Reset();
+    }
 
-        public void Wipe()
-        {
-            Player = null;
-            Status = SlotStatus.Open;
-            Team = MatchTeams.Neutral;
-            Mods = Mods.None;
-        }
+    public Slot(int index) : this()
+    {
+        Status = index < 8 ? SlotStatus.Open : SlotStatus.Locked;
+    }
 
-        public override string ToString()
-        {
-            return $"{Player?.Id.ToString() ?? "NO USER"}|{Status}|{Team}|{Mods}|{Loaded}|{Skipped}";
-        }
+    public void Reset()
+    {
+        PlayerId = null;
+        Status = SlotStatus.Open;
+        Mods = Mods.None;
+        Team = MatchTeams.Neutral;
+    }
+
+    public bool HasPlayer()
+    {
+        return PlayerId.HasValue;
+    }
+
+    public int? PlayerId { get; set; }
+    public SlotStatus Status { get; set; }
+    public MatchTeams Team { get; set; }
+    public Mods Mods { get; set; }
+
+    public override string ToString()
+    {
+        return $"{PlayerId?.ToString() ?? "NO USER"}|{Status}|{Team}|{Mods}";
     }
 }

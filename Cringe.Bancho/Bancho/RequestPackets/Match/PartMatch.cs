@@ -1,32 +1,31 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Microsoft.Extensions.Logging;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class PartMatchHandler : IRequestHandler<PartMatch>
 {
-    public class PartMatch : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public PartMatchHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public PartMatch(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.PartMatch;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.MatchSession is null)
-            {
-                Logger.LogCritical("{Token} | User leaves the match while not being in a match", session.Token);
-
-                return Task.CompletedTask;
-            }
-
-            session.MatchSession.Disconnect(session);
-            Logger.LogDebug("{Token} | User leaves a match", session.Token);
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public async Task Handle(PartMatch request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+        await _lobby.LeaveMatch(_session.Id, matchId);
+    }
+}
+
+public class PartMatch : RequestPacket, IRequest
+{
+    public override ClientPacketType Type => ClientPacketType.PartMatch;
 }

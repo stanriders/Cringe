@@ -1,39 +1,50 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets
+namespace Cringe.Bancho.Bancho.RequestPackets;
+
+public class UserStatsRequest : RequestPacket, IRequest
 {
-    public class UserStatsRequest : RequestPacket
+    [PeppyField]
+    public int[] Users { get; init; }
+
+    public override ClientPacketType Type => ClientPacketType.UserStatsRequest;
+}
+
+public class UserStatsRequestHandler : IRequestHandler<UserStatsRequest>
+{
+    private readonly ILogger<UserStatsRequest> _logger;
+    private readonly StatsService _stats;
+    private readonly PlayerSession _session;
+
+    public UserStatsRequestHandler(ILogger<UserStatsRequest> logger, CurrentPlayerProvider currentPlayerProvider,
+        StatsService stats)
     {
-        public UserStatsRequest(IServiceProvider serviceProvider) : base(serviceProvider)
+        _logger = logger;
+        _stats = stats;
+        _session = currentPlayerProvider.Session;
+    }
+
+    public async Task Handle(UserStatsRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogDebug("{Token} | Receive stats for these players: {Ids}", _session.Token,
+            string.Join(",", request.Users));
+
+        foreach (var playerId in request.Users)
         {
-        }
+            if (playerId == _session.Id) continue;
 
-        public override ClientPacketType Type => ClientPacketType.UserStatsRequest;
+            var stats = await _stats.GetUpdates(playerId);
 
-        public override async Task Execute(PlayerSession session, byte[] data)
-        {
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var playerIds = ReadI32(reader).ToArray();
-            Logger.LogDebug("{Token} | Receive stats for these players: {Ids}", session.Token,
-                string.Join(",", playerIds));
-            var statsService = Stats;
-            foreach (var playerId in playerIds)
-            {
-                if (playerId == session.Id) continue;
+            if (stats is null) continue;
 
-                var stats = await statsService.GetUpdates(playerId);
-
-                if (stats is null) continue;
-
-                session.Queue.EnqueuePacket(new UserStats(stats));
-            }
+            _session.Queue.EnqueuePacket(new UserStats(stats));
         }
     }
 }

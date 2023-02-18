@@ -1,30 +1,39 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets
+namespace Cringe.Bancho.Bancho.RequestPackets;
+
+public class FriendRemoveRequest : RequestPacket, IRequest
 {
-    public class FriendRemove : RequestPacket
+    [PeppyField]
+    public int FriendId { get; init; }
+
+    public override ClientPacketType Type => ClientPacketType.FriendRemove;
+}
+
+public class FriendRemoveHandler : IRequestHandler<FriendRemoveRequest>
+{
+    private readonly ILogger<FriendRemoveHandler> _logger;
+    private readonly FriendsService _friendsService;
+    private readonly PlayerSession _session;
+
+    public FriendRemoveHandler(CurrentPlayerProvider currentPlayerProvider, ILogger<FriendRemoveHandler> logger,
+        FriendsService friendsService)
     {
-        private readonly FriendsService _friendsService;
+        _logger = logger;
+        _friendsService = friendsService;
+        _session = currentPlayerProvider.Session;
+    }
 
-        public FriendRemove(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            _friendsService = (FriendsService) serviceProvider.GetService(typeof(FriendsService));
-        }
+    public async Task Handle(FriendRemoveRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("{Token} | Removing friend {Friend}...", _session.Token, request.FriendId);
 
-        public override ClientPacketType Type => ClientPacketType.FriendRemove;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            var friendId = ReadInt(data);
-
-            Logger.LogInformation("{Token} | Removing friend {Friend}...", session.Token, friendId);
-
-            return _friendsService.RemoveFriend(session.Player.Id, friendId);
-        }
+        await _friendsService.RemoveFriend(_session.Id, request.FriendId);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cringe.Bancho.Bancho;
 using Cringe.Bancho.Types;
 using Cringe.Database;
 using Cringe.Services;
@@ -10,103 +11,129 @@ using Cringe.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Services
+namespace Cringe.Bancho.Services;
+
+public class PlayersPool
 {
-    public class PlayersPool
+    private readonly PlayerDatabaseContext _database;
+    private readonly ILogger<PlayersPool> _logger;
+    private readonly PlayerTopscoreStatsCache _ppCache;
+
+    public PlayersPool(PlayerDatabaseContext database,
+        PlayerTopscoreStatsCache ppCache,
+        ILogger<PlayersPool> logger)
     {
-        private readonly PlayerDatabaseContext _database;
-        private readonly ILogger<PlayersPool> _logger;
-        private readonly PlayerTopscoreStatsCache _ppCache;
+        _database = database;
+        _ppCache = ppCache;
+        _logger = logger;
+    }
 
-        public PlayersPool(PlayerDatabaseContext database, PlayerTopscoreStatsCache ppCache,
-            ILogger<PlayersPool> logger)
+    public static ConcurrentDictionary<int, PlayerSession> Players { get; } = new();
+
+    public static void Notify(int playerId, ResponsePacket packet)
+    {
+        if (!Players.TryGetValue(playerId, out var session))
         {
-            _database = database;
-            _ppCache = ppCache;
-            _logger = logger;
+            return;
         }
 
-        public static ConcurrentDictionary<int, PlayerSession> Players { get; } = new();
+        session.Queue.EnqueuePacket(packet);
+    }
 
-        public async Task<bool> Connect(UserToken token)
+    public static void Notify(IEnumerable<int> players, ResponsePacket packet)
+    {
+        foreach (var player in players)
         {
-            if (Players.ContainsKey(token.PlayerId)) return false;
-
-            var player = await _database.Players.FirstOrDefaultAsync(x => x.Id == token.PlayerId);
-
-            await _ppCache.UpdatePlayerStats(player); //TODO: probably we shouldn't do this
-            await _database.SaveChangesAsync();
-
-            if (player is null) return false;
-
-            var session = new PlayerSession
-            {
-                Player = player,
-                Token = token,
-                LastUpdate = DateTime.Now
-            };
-
-            OnPlayerLoggedIn(session);
-            PlayerLoggedIn += session.PlayerLoggedIn;
-            PlayerLoggedOut += session.PlayerLoggedOut;
-
-            if (!Players.TryAdd(token.PlayerId, session))
-                _logger.LogCritical("{Token} | Unable to add to a concurrent dictionary of player sessions", token);
-
-            _logger.LogDebug("{Token} | Connected to PlayersPool", token);
-            _logger.LogDebug("Currently connected players:\n{Dump}", GetPlayersId());
-
-            return true;
+            Notify(player, packet);
         }
+    }
 
-        public bool Disconnect(UserToken token)
+    public static void Notify(int player, IEnumerable<ResponsePacket> packets)
+    {
+        foreach (var packet in packets)
         {
-            if (!Players.TryGetValue(token.PlayerId, out var playerSession)) return false;
-
-            PlayerLoggedIn -= playerSession.PlayerLoggedIn;
-            PlayerLoggedOut -= playerSession.PlayerLoggedOut;
-            OnPlayerLoggedOut(playerSession);
-
-            Players.Remove(token.PlayerId, out _);
-            _logger.LogDebug("{Token} | Disconnected from PlayersPool", token);
-            _logger.LogDebug("Currently connected players:\n{Dump}", string.Join("|", GetPlayersId()));
-
-            return true;
+            Notify(player, packet);
         }
+    }
 
-        public static event Action<PlayerSession> PlayerLoggedIn;
-        public static event Action<PlayerSession> PlayerLoggedOut;
+    public async Task<bool> Connect(UserToken token)
+    {
+        if (Players.ContainsKey(token.PlayerId)) return false;
 
-        public static IEnumerable<int> GetPlayersId()
+        var player = await _database.Players.FirstOrDefaultAsync(x => x.Id == token.PlayerId);
+
+        await _ppCache.UpdatePlayerStats(player); //TODO: probably we shouldn't do this
+        await _database.SaveChangesAsync();
+
+        if (player is null) return false;
+
+        var session = new PlayerSession
         {
-            return GetPlayerSessions().Select(x => x.Id);
-        }
+            Player = player,
+            Token = token,
+            LastUpdate = DateTime.Now
+        };
 
-        public static IEnumerable<PlayerSession> GetPlayerSessions()
-        {
-            return Players.Select(x => x.Value);
-        }
+        OnPlayerLoggedIn(session);
+        PlayerLoggedIn += session.PlayerLoggedIn;
+        PlayerLoggedOut += session.PlayerLoggedOut;
 
-        public static PlayerSession GetPlayer(int id)
-        {
-            Players.TryGetValue(id, out var session);
+        if (!Players.TryAdd(token.PlayerId, session))
+            _logger.LogCritical("{Token} | Unable to add to a concurrent dictionary of player sessions", token);
 
-            return session;
-        }
+        _logger.LogDebug("{Token} | Connected to PlayersPool", token);
+        _logger.LogDebug("Currently connected players:\n{Dump}", GetPlayersId());
 
-        public static PlayerSession GetPlayer(string username)
-        {
-            return Players.FirstOrDefault(x => x.Value.Player.Username == username).Value;
-        }
+        return true;
+    }
 
-        protected virtual void OnPlayerLoggedIn(PlayerSession obj)
-        {
-            PlayerLoggedIn?.Invoke(obj);
-        }
+    public bool Disconnect(UserToken token)
+    {
+        if (!Players.TryGetValue(token.PlayerId, out var playerSession)) return false;
 
-        protected virtual void OnPlayerLoggedOut(PlayerSession obj)
-        {
-            PlayerLoggedOut?.Invoke(obj);
-        }
+        PlayerLoggedIn -= playerSession.PlayerLoggedIn;
+        PlayerLoggedOut -= playerSession.PlayerLoggedOut;
+        OnPlayerLoggedOut(playerSession);
+
+        Players.Remove(token.PlayerId, out _);
+        _logger.LogDebug("{Token} | Disconnected from PlayersPool", token);
+        _logger.LogDebug("Currently connected players:\n{Dump}", string.Join("|", GetPlayersId()));
+
+        return true;
+    }
+
+    public static event Action<PlayerSession> PlayerLoggedIn;
+    public static event Action<PlayerSession> PlayerLoggedOut;
+
+    public static IEnumerable<int> GetPlayersId()
+    {
+        return GetPlayerSessions().Select(x => x.Id);
+    }
+
+    public static IEnumerable<PlayerSession> GetPlayerSessions()
+    {
+        return Players.Select(x => x.Value);
+    }
+
+    public static PlayerSession GetPlayer(int id)
+    {
+        Players.TryGetValue(id, out var session);
+
+        return session;
+    }
+
+    public static PlayerSession GetPlayer(string username)
+    {
+        return Players.FirstOrDefault(x => x.Value.Player.Username == username).Value;
+    }
+
+    protected virtual void OnPlayerLoggedIn(PlayerSession obj)
+    {
+        PlayerLoggedIn?.Invoke(obj);
+    }
+
+    protected virtual void OnPlayerLoggedOut(PlayerSession obj)
+    {
+        PlayerLoggedOut?.Invoke(obj);
     }
 }

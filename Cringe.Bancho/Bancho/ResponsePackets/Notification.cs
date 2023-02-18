@@ -1,21 +1,20 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Bancho.ResponsePackets
+namespace Cringe.Bancho.Bancho.ResponsePackets;
+
+public class Notification : ResponsePacket
 {
-    public class Notification : ResponsePacket
+    private readonly string text;
+
+    public Notification(string _text)
     {
-        private readonly string text;
+        text = _text;
+    }
 
-        public Notification(string _text)
-        {
-            text = _text;
-        }
+    public override ServerPacketType Type => ServerPacketType.Notification;
 
-        public override ServerPacketType Type => ServerPacketType.Notification;
-
-        public override byte[] GetBytes()
-        {
-            return PackData(text);
-        }
+    public override byte[] GetBytes()
+    {
+        return PackData(text);
     }
 }

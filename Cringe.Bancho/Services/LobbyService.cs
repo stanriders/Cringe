@@ -1,84 +1,189 @@
-﻿using System;
-using System.Collections.Concurrent;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Cringe.Bancho.Bancho.ResponsePackets.Match;
+using Cringe.Bancho.Events;
+using Cringe.Bancho.Events.Lobby;
+using Cringe.Bancho.Events.Multiplayer;
 using Cringe.Bancho.Types;
+using Cringe.Types.Common;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Services
+// ReSharper disable MemberCanBeMadeStatic.Global
+
+namespace Cringe.Bancho.Services;
+
+public class LobbyService
 {
-    public class LobbyService
+    private readonly ILogger<LobbyService> _logger;
+
+    private readonly IPublishingStrategy _publishingStrategy;
+
+    //TODO: very unlikely that we change it but still *not good*
+    private static readonly Dictionary<short, Match> _matches = new();
+    private static readonly Dictionary<int, short> _playerMatches = new();
+    private static readonly HashSet<int> _connectedPlayers = new();
+    public IEnumerable<int> ConnectedPlayers => _connectedPlayers.ToList();
+
+    public LobbyService(ILogger<LobbyService> logger, IPublishingStrategy publishingStrategy)
     {
-        private readonly ILogger<LobbyService> _logger;
+        _logger = logger;
+        _publishingStrategy = publishingStrategy;
+    }
 
-        public LobbyService(ILogger<LobbyService> logger)
+    public async Task JoinLobby(int playerId)
+    {
+        _connectedPlayers.Add(playerId);
+        var matches = _matches.Select(x => new NewMatch(x.Value)).ToList();
+        PlayersPool.Notify(playerId, matches);
+        await _publishingStrategy.Publish(new LobbyPlayerJoinedEvent(playerId));
+    }
+
+    public async Task LeaveLobby(int playerId)
+    {
+        _connectedPlayers.Remove(playerId);
+        await _publishingStrategy.Publish(new LobbyPlayerLeftEvent(playerId));
+    }
+
+    #region Matches
+    public async Task Transform(short matchId, Action<Match> transformer)
+    {
+        var match = AssertMatchExistence(matchId);
+        await match.Dispatch(x => transformer((Match) x),
+            events => _publishingStrategy.Publish(events));
+    }
+
+    public T GetValue<T>(short matchId, Func<Match, T> selector)
+    {
+        return selector(AssertMatchExistence(matchId));
+    }
+
+    public async Task<Match> CreateMatch(Match match)
+    {
+        match.Id = (short) (_matches.Count + 1);
+
+        _logger.LogInformation("{MatchId} | Creating multiplayer {Name}", match.Id, match.RoomName);
+
+        _matches.Add(match.Id, match);
+
+        PlayersPool.Notify(_connectedPlayers, new NewMatch(match));
+        await _publishingStrategy.Publish(new MatchCreatedEvent(match));
+
+        return match;
+    }
+
+    public short FindMatch(int playerId)
+    {
+        if (_playerMatches.TryGetValue(playerId, out var matchId))
         {
-            _logger = logger;
+            return matchId;
         }
 
-        public ConcurrentDictionary<int, MatchSession> Sessions { get; } = new();
+        throw new Exception("ty gde ;D");
+    }
 
-        public void Connect(PlayerSession player)
+    public async Task<Match> JoinMatch(int userId, short matchId, string password)
+    {
+        var match = AssertMatchExistence(matchId);
+        await match.Dispatch(x => ((Match) x).AddPlayer(userId, password), x => _publishingStrategy.Publish(x));
+
+        _playerMatches.Add(userId, matchId);
+
+        return match;
+    }
+
+    public async Task<Match> LeaveMatch(int userId, short matchId)
+    {
+        var match = AssertMatchExistence(matchId);
+        await match.Dispatch(x => ((Match) x).RemovePlayer(userId), x => _publishingStrategy.Publish(x));
+
+        _playerMatches.Remove(userId);
+
+        return match;
+    }
+
+    public void RemoveMatch(short matchId)
+    {
+        if (!_matches.TryGetValue(matchId, out var match)) return;
+
+        _matches.Remove(matchId);
+        PlayersPool.Notify(_connectedPlayers, new DisposeMatch(match));
+    }
+
+    private static Match AssertMatchExistence(short matchId)
+    {
+        if (_matches.TryGetValue(matchId, out var match))
         {
-            _newMatch += player.NewMatch;
-            _disposeMatch += player.DisposeMatch;
-            _updateMatch += player.UpdateMatch;
-            foreach (var session in Sessions.Values)
-                player.NewMatch(session.Match);
+            return match;
         }
 
-        public void Disconnect(PlayerSession player)
+        throw new Exception("Lobby doesn't exist");
+    }
+    #endregion
+}
+
+public class ForceRemovePlayerFromLobbyOnPlayerLeftEventHandler : INotificationHandler<PlayerLeftEvent>
+{
+    private readonly LobbyService _lobby;
+
+    public ForceRemovePlayerFromLobbyOnPlayerLeftEventHandler(LobbyService lobby)
+    {
+        _lobby = lobby;
+    }
+
+    public async Task Handle(PlayerLeftEvent notification, CancellationToken cancellationToken)
+    {
+        try
         {
-            _newMatch -= player.NewMatch;
-            _disposeMatch -= player.DisposeMatch;
-            _updateMatch -= player.UpdateMatch;
+            var matchId = _lobby.FindMatch(notification.PlayerId);
+            await _lobby.LeaveMatch(notification.PlayerId, matchId);
         }
-
-        public MatchSession GetSession(int id)
+        catch (Exception)
         {
-            Sessions.TryGetValue(id, out var res);
-
-            return res;
+            // ignored
         }
+    }
+}
 
-        public MatchSession CreateMatch(PlayerSession session, Match match)
-        {
-            var id = (short) (Sessions.Count + 1);
-            var matchSession = new MatchSession(id, session, match, OnDisposeMatch);
-            Sessions.TryAdd(id, matchSession);
-            matchSession.Connect(session);
-            session.Queue.EnqueuePacket(new MatchTransferHost());
-            session.MatchSession = matchSession;
+public class RemoveMatchOnDisbandHandler : INotificationHandler<MatchDisbandedEvent>
+{
+    private readonly ILogger<RemoveMatchOnDisbandHandler> _logger;
+    private readonly LobbyService _lobby;
 
-            if (matchSession.Match.Slots[0].Player != session)
-                _logger.LogCritical(
-                    "{Token} | Host doesn't been properly assigned to the first slot. Match info: {Match}",
-                    session.Token, matchSession.Match);
+    public RemoveMatchOnDisbandHandler(ILogger<RemoveMatchOnDisbandHandler> logger, LobbyService lobby)
+    {
+        _logger = logger;
+        _lobby = lobby;
+    }
 
-            OnNewMatch(matchSession.Match);
-            matchSession.LobbyUpdate += OnUpdateMatch;
+    public Task Handle(MatchDisbandedEvent notification, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("{matchId} | Match disbanded", notification.MatchId);
+        _lobby.RemoveMatch(notification.MatchId);
 
-            return matchSession;
-        }
+        return Task.CompletedTask;
+    }
+}
 
-        private event Action<Match> _newMatch;
-        private event Action<Match> _updateMatch;
-        private event Action<Match> _disposeMatch;
+public class UpdateLobbyEventHandler : INotificationHandler<UpdateLobbyEvent>
+{
+    private readonly ILogger<UpdateLobbyEventHandler> _logger;
+    private readonly LobbyService _lobby;
 
-        protected virtual void OnNewMatch(Match obj)
-        {
-            _newMatch?.Invoke(obj);
-        }
+    public UpdateLobbyEventHandler(ILogger<UpdateLobbyEventHandler> logger, LobbyService lobby)
+    {
+        _logger = logger;
+        _lobby = lobby;
+    }
 
-        protected virtual void OnDisposeMatch(Match obj)
-        {
-            Sessions.Remove(obj.Id, out _);
-            _disposeMatch?.Invoke(obj);
-        }
+    public Task Handle(UpdateLobbyEvent notification, CancellationToken cancellationToken)
+    {
+        _logger.LogDebug("{matchId} | Match requests lobby update", notification.Match.Id);
+        PlayersPool.Notify(_lobby.ConnectedPlayers, new UpdateMatch(notification.Match));
 
-        protected virtual void OnUpdateMatch(Match obj)
-        {
-            _updateMatch?.Invoke(obj);
-        }
+        return Task.CompletedTask;
     }
 }

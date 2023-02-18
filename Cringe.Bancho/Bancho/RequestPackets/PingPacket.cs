@@ -1,21 +1,19 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets
+namespace Cringe.Bancho.Bancho.RequestPackets;
+
+public class PingPacketRequest : RequestPacket, IRequest
 {
-    public class PingPacket : RequestPacket
+    public override ClientPacketType Type => ClientPacketType.Ping;
+}
+
+public class PingPacket : IRequestHandler<PingPacketRequest>
+{
+    public Task Handle(PingPacketRequest request, CancellationToken cancellationToken)
     {
-        public PingPacket(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.Ping;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

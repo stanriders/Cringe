@@ -1,28 +1,38 @@
-﻿using System;
-using System.IO;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Cringe.Bancho.Bancho.RequestPackets
+namespace Cringe.Bancho.Bancho.RequestPackets;
+
+public class ChannelJoinRequest : RequestPacket, IRequest
 {
-    public class ChannelJoin : RequestPacket
+    [PeppyField]
+    public string Chat { get; init; }
+
+    public override ClientPacketType Type => ClientPacketType.ChannelJoin;
+}
+
+public class ChannelJoinHandler : IRequestHandler<ChannelJoinRequest>
+{
+    private readonly ILogger<ChannelJoinHandler> _logger;
+    private readonly PlayerSession _session;
+
+    public ChannelJoinHandler(ILogger<ChannelJoinHandler> logger, CurrentPlayerProvider currentPlayerProvider)
     {
-        public ChannelJoin(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
+        _logger = logger;
+        _session = currentPlayerProvider.Session;
+    }
 
-        public override ClientPacketType Type => ClientPacketType.ChannelJoin;
+    public Task Handle(ChannelJoinRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("{Token} | Connecting to the {Chat} chat", _session.Token, request.Chat);
+        var chat = ChatService.GetChat(request.Chat);
+        chat?.Connect(_session);
 
-        public override async Task Execute(PlayerSession session, byte[] data)
-        {
-            await using var stream = new MemoryStream(data);
-            var str = ReadString(stream);
-            Logger.LogInformation("{Token} | Connecting to the {Chat} chat", session.Token, str);
-            var chat = ChatService.GetChat(str);
-            chat?.Connect(session);
-        }
+        return Task.CompletedTask;
     }
 }

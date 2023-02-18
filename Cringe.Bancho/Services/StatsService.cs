@@ -8,55 +8,54 @@ using Cringe.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Cringe.Bancho.Services
+namespace Cringe.Bancho.Services;
+
+public class StatsService
 {
-    public class StatsService
+    private readonly IMemoryCache _memoryCache;
+    private readonly PlayerDatabaseContext _playerDatabaseContext;
+    private readonly PlayerTopscoreStatsCache _topscoreStatsCache;
+
+    public StatsService(IMemoryCache memoryCache, PlayerDatabaseContext playerDatabaseContext, PlayerTopscoreStatsCache topscoreStatsCache)
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly PlayerDatabaseContext _playerDatabaseContext;
-        private readonly PlayerTopscoreStatsCache _topscoreStatsCache;
+        _memoryCache = memoryCache;
+        _playerDatabaseContext = playerDatabaseContext;
+        _topscoreStatsCache = topscoreStatsCache;
+    }
 
-        public StatsService(IMemoryCache memoryCache, PlayerDatabaseContext playerDatabaseContext, PlayerTopscoreStatsCache topscoreStatsCache)
+    public async Task<Stats> GetUpdates(int id)
+    {
+        if (!_memoryCache.TryGetValue(id, out Stats value))
         {
-            _memoryCache = memoryCache;
-            _playerDatabaseContext = playerDatabaseContext;
-            _topscoreStatsCache = topscoreStatsCache;
-        }
-
-        public async Task<Stats> GetUpdates(int id)
-        {
-            if (!_memoryCache.TryGetValue(id, out Stats value))
+            var player = PlayersPool.GetPlayer(id);
+            if (player != null)
             {
-                var player = PlayersPool.GetPlayer(id);
-                if (player != null)
-                {
-                    var updatedPlayer = await _playerDatabaseContext.Players.Where(x => x.Id == id).SingleOrDefaultAsync();
-                    player.Player = updatedPlayer;
+                var updatedPlayer = await _playerDatabaseContext.Players.Where(x => x.Id == id).SingleOrDefaultAsync();
+                player.Player = updatedPlayer;
 
-                    var stats = player.Stats;
-                    var topscoreStats = await _topscoreStatsCache.GetPlayerTopscoreStats(id);
-                    stats.Pp = (ushort) topscoreStats.Pp;
-                    stats.Accuracy = (float) (topscoreStats.Accuracy / 100.0f);
+                var stats = player.Stats;
+                var topscoreStats = await _topscoreStatsCache.GetPlayerTopscoreStats(id);
+                stats.Pp = (ushort) topscoreStats.Pp;
+                stats.Accuracy = (float) (topscoreStats.Accuracy / 100.0f);
 
-                    SetUpdates(id, stats);
+                SetUpdates(id, stats);
 
-                    return stats;
-                }
-
-                return null;
+                return stats;
             }
 
-            return value;
+            return null;
         }
 
-        public void SetUpdates(int id, Stats newStats)
-        {
-            _memoryCache.Set(id, newStats, TimeSpan.FromMinutes(30)); // timespan is a safeguard for stuck stats
-        }
+        return value;
+    }
 
-        public void RemoveStats(int id)
-        {
-            _memoryCache.Remove(id);
-        }
+    public void SetUpdates(int id, Stats newStats)
+    {
+        _memoryCache.Set(id, newStats, TimeSpan.FromMinutes(30)); // timespan is a safeguard for stuck stats
+    }
+
+    public void RemoveStats(int id)
+    {
+        _memoryCache.Remove(id);
     }
 }

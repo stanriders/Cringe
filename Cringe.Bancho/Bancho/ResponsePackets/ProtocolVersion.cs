@@ -1,21 +1,20 @@
 ﻿using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Bancho.ResponsePackets
+namespace Cringe.Bancho.Bancho.ResponsePackets;
+
+public class ProtocolVersion : ResponsePacket
 {
-    public class ProtocolVersion : ResponsePacket
+    private readonly uint version;
+
+    public ProtocolVersion(uint _version)
     {
-        private readonly uint version;
+        version = _version;
+    }
 
-        public ProtocolVersion(uint _version)
-        {
-            version = _version;
-        }
+    public override ServerPacketType Type => ServerPacketType.ProtocolVersion;
 
-        public override ServerPacketType Type => ServerPacketType.ProtocolVersion;
-
-        public override byte[] GetBytes()
-        {
-            return PackData(version);
-        }
+    public override byte[] GetBytes()
+    {
+        return PackData(version);
     }
 }

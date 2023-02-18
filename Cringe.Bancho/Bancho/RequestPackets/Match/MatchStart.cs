@@ -1,56 +1,31 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Cringe.Types.Enums.Multiplayer;
-using Microsoft.Extensions.Logging;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchStartHandler : IRequestHandler<MatchStart>
 {
-    public class MatchStart : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchStartHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchStart(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchStart;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.MatchSession is null)
-            {
-                Logger.LogError("{Token} | MatchStart packet while not in match", session.Token);
-
-                return Task.CompletedTask;
-            }
-
-            var match = session.MatchSession.Match;
-            if (match.Host != session.Id)
-            {
-                Logger.LogInformation("{Token} | Attempted to start match as non-host", session.Token);
-
-                return Task.CompletedTask;
-            }
-
-            match.InProgress = true;
-            foreach (var player in match.OccupiedSlots)
-            {
-                if (player.Status == SlotStatus.NoMap) continue;
-
-                player.Status = SlotStatus.Playing;
-            }
-
-            var response = new ResponsePackets.Match.MatchStart(match);
-            foreach (var player in match.OccupiedSlots)
-            {
-                if (player.Status != SlotStatus.Playing) continue;
-
-                player.Player.Queue.EnqueuePacket(response);
-            }
-
-            session.MatchSession.OnUpdateMatch(true);
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public async Task Handle(MatchStart request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+        await _lobby.Transform(matchId, x => x.Start(_session.Id));
+    }
+}
+
+public class MatchStart : RequestPacket, IRequest
+{
+    public override ClientPacketType Type => ClientPacketType.MatchStart;
 }

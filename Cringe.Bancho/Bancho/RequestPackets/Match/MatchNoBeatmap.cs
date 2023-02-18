@@ -1,35 +1,31 @@
-﻿using System;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Cringe.Types.Enums.Multiplayer;
-using Microsoft.Extensions.Logging;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchNoBeatmapHandler : IRequestHandler<MatchNoBeatmap>
 {
-    public class MatchNoBeatmap : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchNoBeatmapHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchNoBeatmap(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchNoBeatmap;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.MatchSession is null)
-            {
-                Logger.LogError("{Token} | No beatmap status while not in match", session.Token);
-
-                return Task.CompletedTask;
-            }
-
-            var match = session.MatchSession.Match;
-            var slot = match.GetPlayer(session.Id);
-            slot.Status = SlotStatus.NoMap;
-            session.MatchSession.OnUpdateMatch();
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public async Task Handle(MatchNoBeatmap request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+        await _lobby.Transform(matchId, x => x.NoBeatmap(_session.Id));
+    }
+}
+
+public class MatchNoBeatmap : RequestPacket, IRequest
+{
+    public override ClientPacketType Type => ClientPacketType.MatchNoBeatmap;
 }

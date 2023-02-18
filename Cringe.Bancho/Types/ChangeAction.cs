@@ -1,41 +1,36 @@
-﻿using System.IO;
-using Cringe.Bancho.Bancho;
+﻿using Cringe.Bancho.Bancho;
 using Cringe.Types.Enums;
 
-namespace Cringe.Bancho.Types
+namespace Cringe.Bancho.Types;
+
+public class ChangeAction
 {
-    public class ChangeAction
+    public ActionType Action
     {
-        public ActionType Action
-        {
-            get => (ActionType) ActionId;
-            set => ActionId = (byte) value;
-        }
+        get => (ActionType) ActionId;
+        set => ActionId = (byte) value;
+    }
 
-        public byte ActionId { get; set; }
-        public string ActionText { get; set; }
-        public string ActionMd5 { get; set; }
-        public uint ActionMods { get; set; }
-        public byte GameMode { get; set; }
-        public int BeatmapId { get; set; }
+    [PeppyField]
+    public byte ActionId { get; set; }
 
-        public static ChangeAction Parse(byte[] bytes)
-        {
-            var reader = new BinaryReader(new MemoryStream(bytes));
-            var action = new ChangeAction();
-            action.ActionId = reader.ReadByte();
-            action.ActionText = RequestPacket.ReadString(reader.BaseStream);
-            action.ActionMd5 = RequestPacket.ReadString(reader.BaseStream);
-            action.ActionMods = reader.ReadUInt32();
-            action.GameMode = reader.ReadByte();
-            action.BeatmapId = reader.ReadInt32();
+    [PeppyField]
+    public string ActionText { get; set; }
 
-            return action;
-        }
+    [PeppyField]
+    public string ActionMd5 { get; set; }
 
-        public override string ToString()
-        {
-            return $"Action {ActionId}|{ActionText}|{ActionMd5}|{ActionMods}|{GameMode}|{BeatmapId}";
-        }
+    [PeppyField]
+    public uint ActionMods { get; set; }
+
+    [PeppyField]
+    public byte GameMode { get; set; }
+
+    [PeppyField]
+    public int BeatmapId { get; set; }
+
+    public override string ToString()
+    {
+        return $"Action {ActionId}|{ActionText}|{ActionMd5}|{ActionMods}|{GameMode}|{BeatmapId}";
     }
 }

@@ -1,66 +1,34 @@
-﻿using System;
-using System.IO;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Cringe.Bancho.Bancho.ResponsePackets;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
-using Cringe.Types.Enums.Multiplayer;
-using Microsoft.Extensions.Logging;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchLockHandler : IRequestHandler<MatchLock>
 {
-    public class MatchLock : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchLockHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchLock(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchLock;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            if (session.MatchSession is null)
-            {
-                Logger.LogError("{Token} | User tries to lock slot while his MatchSession is null", session.Token);
-
-                return Task.CompletedTask;
-            }
-
-            if (session.MatchSession.Match.Host != session.Id)
-                Logger.LogInformation("{Token} | User tries to lock slot while not being a host", session.Token);
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var toLock = reader.ReadInt32();
-            var lockedSlot = session.MatchSession.Match.Slots[toLock];
-            if (lockedSlot.Status == SlotStatus.Locked)
-            {
-                lockedSlot.Status = SlotStatus.Open;
-            }
-            else
-            {
-                if (lockedSlot.Player is not null && lockedSlot.Player == session)
-                {
-                    Logger.LogInformation("{Token} | User tries to kill himself with a lock xd", session.Token);
-
-                    return Task.CompletedTask;
-                }
-
-                if (lockedSlot.Player is not null)
-                {
-                    Logger.LogInformation("{Token} | User kicks {KickedPlayerId} with a lock", session.Token,
-                        lockedSlot.Player.Id);
-                    lockedSlot.Player.Queue.EnqueuePacket(new Notification("You've been killed with a fucking lock"));
-
-                    session.MatchSession.Disconnect(lockedSlot.Player);
-                }
-
-                lockedSlot.Status = SlotStatus.Locked;
-            }
-
-            session.MatchSession.OnUpdateMatch(true);
-            Logger.LogDebug("{Token} | User locks a slot. Match info: {@Match}", session.Token,
-                session.MatchSession.Match);
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public async Task Handle(MatchLock request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+        await _lobby.Transform(matchId, x => x.LockSlot(_session.Id, request.SlotId));
+    }
+}
+
+public class MatchLock : RequestPacket, IRequest
+{
+    [PeppyField]
+    public int SlotId { get; init; }
+
+    public override ClientPacketType Type => ClientPacketType.MatchLock;
 }

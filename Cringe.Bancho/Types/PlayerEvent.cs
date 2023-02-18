@@ -2,46 +2,45 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cringe.Bancho.Types
+namespace Cringe.Bancho.Types;
+
+public class PlayerEvent
 {
-    public class PlayerEvent
+    public PlayerEvent()
     {
-        public PlayerEvent()
-        {
-            SessionList = new List<PlayerSession>();
-        }
+        SessionList = new List<PlayerSession>();
+    }
 
-        public List<PlayerSession> SessionList { get; }
-        public int Count => SessionList.Count;
+    public List<PlayerSession> SessionList { get; }
+    public int Count => SessionList.Count;
 
-        public void Add(PlayerSession session)
-        {
-            if (!SessionList.Contains(session))
-                SessionList.Add(session);
-        }
+    public void Add(PlayerSession session)
+    {
+        if (!SessionList.Contains(session))
+            SessionList.Add(session);
+    }
 
-        public void Remove(PlayerSession session)
-        {
-            SessionList.Remove(session);
-        }
+    public void Remove(PlayerSession session)
+    {
+        SessionList.Remove(session);
+    }
 
-        public static PlayerEvent operator +(PlayerEvent pevent, PlayerSession session)
-        {
-            pevent.Add(session);
+    public static PlayerEvent operator +(PlayerEvent pevent, PlayerSession session)
+    {
+        pevent.Add(session);
 
-            return pevent;
-        }
+        return pevent;
+    }
 
-        public static PlayerEvent operator -(PlayerEvent pevent, PlayerSession session)
-        {
-            pevent.Remove(session);
+    public static PlayerEvent operator -(PlayerEvent pevent, PlayerSession session)
+    {
+        pevent.Remove(session);
 
-            return pevent;
-        }
+        return pevent;
+    }
 
-        public void Invoke(Action<PlayerSession> invoke)
-        {
-            SessionList.ToList().ForEach(invoke); //TODO: proper thread-safety
-        }
+    public void Invoke(Action<PlayerSession> invoke)
+    {
+        SessionList.ToList().ForEach(invoke); //TODO: proper thread-safety
     }
 }

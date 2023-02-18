@@ -1,37 +1,34 @@
-﻿using System;
-using System.IO;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Cringe.Bancho.Services;
 using Cringe.Bancho.Types;
 using Cringe.Types.Enums;
+using MediatR;
 
-namespace Cringe.Bancho.Bancho.RequestPackets.Match
+namespace Cringe.Bancho.Bancho.RequestPackets.Match;
+
+public class MatchTransferHostHandler : IRequestHandler<MatchTransferHost>
 {
-    public class MatchTransferHost : RequestPacket
+    private readonly LobbyService _lobby;
+    private readonly PlayerSession _session;
+
+    public MatchTransferHostHandler(LobbyService lobby, CurrentPlayerProvider currentPlayerProvider)
     {
-        public MatchTransferHost(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-
-        public override ClientPacketType Type => ClientPacketType.MatchTransferHost;
-
-        public override Task Execute(PlayerSession session, byte[] data)
-        {
-            using var reader = new BinaryReader(new MemoryStream(data));
-            var slotId = reader.ReadInt32();
-
-            if (slotId is < 0 or > 16)
-                return Task.CompletedTask;
-
-            var slot = session.MatchSession?.Match.Slots[slotId];
-
-            if (slot?.Player is null)
-                return Task.CompletedTask;
-
-            session.MatchSession.Match.Host = slot.Player.Id;
-            slot.Player.Queue.EnqueuePacket(new ResponsePackets.Match.MatchTransferHost());
-            session.MatchSession.OnUpdateMatch(true);
-
-            return Task.CompletedTask;
-        }
+        _lobby = lobby;
+        _session = currentPlayerProvider.Session;
     }
+
+    public async Task Handle(MatchTransferHost request, CancellationToken cancellationToken)
+    {
+        var matchId = _lobby.FindMatch(_session.Id);
+        await _lobby.Transform(matchId, x => x.TransferHost(_session.Id, request.SlotId));
+    }
+}
+
+public class MatchTransferHost : RequestPacket, IRequest
+{
+    [PeppyField]
+    public int SlotId { get; set; }
+
+    public override ClientPacketType Type => ClientPacketType.MatchTransferHost;
 }

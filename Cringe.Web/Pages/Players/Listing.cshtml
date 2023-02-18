@@ -28,11 +28,11 @@
         <th>
             @Html.DisplayNameFor(model => model.Player[0].Pp)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Player[0].UserRank)
-        </th>
         @if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
         {
+            <th>
+                @Html.DisplayNameFor(model => model.Player[0].UserRank)
+            </th>
             <th></th>
         }
     </tr>
@@ -57,13 +57,13 @@
                 @Html.DisplayFor(modelItem => Model.Player[i].TotalScore)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => Model.Player[i].Pp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => Model.Player[i].UserRank)
+                <b>@Html.DisplayFor(modelItem => Model.Player[i].Pp)</b>
             </td>
             @if ((User.Identity?.IsAuthenticated ?? false) && User.IsInRole(UserRanks.Admin.ToString()))
             {
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Player[i].UserRank)
+                </td>
                 <td>
                     <a asp-page="./Edit" asp-route-id="@Model.Player[i].Id">Edit</a> |
                     <a asp-page="./Delete" asp-route-id="@Model.Player[i].Id">Delete</a>

@@ -13,12 +13,14 @@ namespace Cringe.Web.Controllers
     public class RootController : ControllerBase
     {
         private readonly BeatconnectApiWrapper _beatconnectApiWrapper;
+        private readonly BeatmapService _beatmapService;
         private readonly ILogger<RootController> _logger;
 
-        public RootController(BeatconnectApiWrapper beatconnectApiWrapper, ILogger<RootController> logger)
+        public RootController(BeatconnectApiWrapper beatconnectApiWrapper, ILogger<RootController> logger, BeatmapService beatmapService)
         {
             _beatconnectApiWrapper = beatconnectApiWrapper;
             _logger = logger;
+            _beatmapService = beatmapService;
         }
 
         [Auth]
@@ -46,6 +48,16 @@ namespace Cringe.Web.Controllers
             _logger.LogInformation("User {Username} failed to download beatmapset {Id}", username, id);
 
             return NotFound();
+        }
+
+        [HttpPost("seed")]
+        public IActionResult SeedDatabase()
+        {
+            _logger.LogInformation("Starting database seeding...");
+
+            Task.Run(() => _beatmapService.SeedDatabse());
+
+            return Ok();
         }
     }
 }

@@ -9,6 +9,7 @@ using Cringe.Types.Database;
 using Cringe.Types.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Cringe.Services
 {
@@ -18,11 +19,16 @@ namespace Cringe.Services
         private readonly IConfiguration _configuration;
         private readonly BeatmapDatabaseContext _dbContext;
 
-        public BeatmapService(OsuApiWrapper apiService, IConfiguration configuration, BeatmapDatabaseContext dbContext)
+        private readonly ILogger<BeatmapService> _logger;
+
+        private bool _seeded = false;
+
+        public BeatmapService(OsuApiWrapper apiService, IConfiguration configuration, BeatmapDatabaseContext dbContext, ILogger<BeatmapService> logger)
         {
             _apiService = apiService;
             _configuration = configuration;
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         public async Task<byte[]> GetBeatmapBytes(int beatmapId)
@@ -40,9 +46,15 @@ namespace Cringe.Services
 
         public void SeedDatabse()
         {
+            if (_seeded)
+            {
+                _logger.LogInformation("Can't seed the database - it has already been seeded in this instance");
+                return;
+            }
+
             var cachePath = _configuration["BeatmapCachePath"];
 
-            Console.WriteLine($"Started seeding {Directory.EnumerateFiles(cachePath, "*.osu").Count()} maps...");
+            _logger.LogInformation($"Started seeding {Directory.EnumerateFiles(cachePath, "*.osu").Count()} maps...");
 
             var addedMaps = 0;
 
@@ -68,7 +80,7 @@ namespace Cringe.Services
 
                     if (nans.Length > 0)
                     {
-                        Console.WriteLine($"Map {beatmapPath} contains NaN on fields: {string.Join(' ', nans)}");
+                        _logger.LogInformation($"Map {beatmapPath} contains NaN on fields: {string.Join(' ', nans)}");
 
                         continue;
                     }
@@ -85,18 +97,20 @@ namespace Cringe.Services
                 }
                 catch (DbUpdateException ioEx)
                 {
-                    Console.WriteLine($"Failed to save: {ioEx}");
+                    _logger.LogError(ioEx, "Failed to save");
 
                     return;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Beatmap seeding failed for {beatmapPath}: {e}");
+                    _logger.LogError(e, "Beatmap seeding failed for {Beatmap}", beatmapPath);
                 }
             }
 
             _dbContext.SaveChanges();
-            Console.WriteLine($"Beatmap seeding finished! Added {addedMaps} maps");
+            _logger.LogInformation($"Beatmap seeding finished! Added {addedMaps} maps");
+
+            _seeded = true;
         }
 
         private Beatmap ParseBeatmap(string beatmapPath)

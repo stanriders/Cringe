@@ -82,7 +82,7 @@ namespace Cringe.Services
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    _logger.LogError(ex, "MakeApiRequest failed");
                 }
             }
 

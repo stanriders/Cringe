@@ -1,0 +1,50 @@
+version: '3.8'
+
+networks:
+  main:
+  logs:
+    external: true
+
+services:
+  bancho:
+    build:
+      context: ./
+      dockerfile: ./Cringe.Bancho/Dockerfile
+    ports:
+      - "127.0.0.1:1337:3001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:3001
+      - DbFolder=/app/data
+      - MainMenuBanner
+      - LoginMessage
+    volumes:
+      - ./data:/app/data
+    networks:
+      - main
+      - logs
+    restart: on-failure
+
+  web:
+    build:
+      context: ./
+      dockerfile: ./Cringe.Web/Dockerfile
+    ports:
+      - "127.0.0.1:1338:3001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:3001
+      - DbFolder=/app/data
+      - BanchoApiAddress=http://bancho:1337
+      - osuAPIClientId
+      - osuAPIClientSecret
+      - BeatconnectApiKey
+    volumes:
+      - ./data:/app/data
+      - ./replays:/app/replays
+      - ./avatars:/app/avatars
+      - ./beatmapcache:/app/beatmapcache
+    networks:
+      - main
+      - logs
+    restart: on-failure

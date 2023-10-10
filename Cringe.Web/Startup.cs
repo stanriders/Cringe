@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using UAParser;
 
 namespace Cringe.Web
 {
@@ -26,6 +27,8 @@ namespace Cringe.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+
             services.AddDbContext<PlayerDatabaseContext>();
             services.AddDbContext<ScoreDatabaseContext>();
             services.AddDbContext<BeatmapDatabaseContext>();
@@ -83,6 +86,10 @@ namespace Cringe.Web
                 options.EnrichDiagnosticContext = (context, httpContext) =>
                 {
                     context.Set("UserId", httpContext.User.Identity?.Name);
+                    var parsedUserAgent = Parser.GetDefault()?.Parse(httpContext.Request.Headers.UserAgent);
+                    context.Set("Browser", parsedUserAgent?.UA.ToString());
+                    context.Set("Device", parsedUserAgent?.Device.ToString());
+                    context.Set("OS", parsedUserAgent?.OS.ToString());
                 };
             });
 

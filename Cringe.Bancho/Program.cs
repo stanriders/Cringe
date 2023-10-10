@@ -2,12 +2,9 @@ using System;
 using Destructurama;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.Datadog;
 
 namespace Cringe.Bancho
 {
@@ -24,11 +21,9 @@ namespace Cringe.Bancho
                     .MinimumLevel.Override("System.Net.Http", LogEventLevel.Warning)
                     .Destructure.UsingAttributes()
                     .Enrich.WithProperty("Application", "Cringe.Bancho")
-                    .Enrich.WithClientAgent()
-                    .Enrich.WithClientIp("CF-Connecting-IP")
                     .WriteTo.Console()
-                    .WriteTo.File("log.txt", rollingInterval: RollingInterval.Month)
-                    .WriteTo.Seq("http://127.0.0.1:5341")
+                    .WriteTo.File("./logs/log_bancho.txt", rollingInterval: RollingInterval.Month)
+                    .WriteTo.Seq("http://seq:5341")
                     .Enrich.FromLogContext()
                     .CreateBootstrapLogger();
 
@@ -57,13 +52,13 @@ namespace Cringe.Bancho
                         .ReadFrom.Services(services)
                         .Enrich.FromLogContext()
                         .Enrich.WithProperty("Application", "Cringe.Bancho")
-                        .Enrich.WithClientAgent()
                         .Enrich.WithClientIp("CF-Connecting-IP")
-                        .WriteTo.Sentry(o => o.Dsn = services.GetService<IConfiguration>()?["SentryKey"])
+                        .Enrich.WithRequestHeader("CF-IPCountry")
+                        .Enrich.WithRequestHeader("Referer")
+                        .Enrich.WithRequestHeader("User-Agent")
                         .WriteTo.Console()
-                        .WriteTo.Datadog(new DatadogConfiguration("127.0.0.1", 8125, "main", new[] {"cringe.bancho"}))
-                        .WriteTo.File("log.txt", rollingInterval: RollingInterval.Month)
-                        .WriteTo.Seq("http://127.0.0.1:5341"))
+                        .WriteTo.File("./logs/log_bancho.txt", rollingInterval: RollingInterval.Month)
+                        .WriteTo.Seq("http://seq:5341"))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

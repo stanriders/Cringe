@@ -35,7 +35,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:3001
       - DbFolder=/app/data
-      - BanchoApiAddress=http://bancho:1337
+      - BanchoApiAddress=http://bancho:3001
       - osuAPIClientId
       - osuAPIClientSecret
       - BeatconnectApiKey

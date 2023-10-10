@@ -51,11 +51,11 @@ namespace Cringe.Web.Controllers
         }
 
         [HttpPost("seed")]
-        public IActionResult SeedDatabase()
+        public async Task<IActionResult> SeedDatabase()
         {
             _logger.LogInformation("Starting database seeding...");
 
-            Task.Run(() => _beatmapService.SeedDatabse());
+            await Task.Run(() => _beatmapService.SeedDatabse());
 
             return Ok();
         }

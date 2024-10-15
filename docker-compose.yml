@@ -23,7 +23,8 @@ services:
     networks:
       - main
       - logs
-    restart: on-failure
+    restart: unless-stopped
+    pull_policy: build
 
   web:
     build:
@@ -47,4 +48,5 @@ services:
     networks:
       - main
       - logs
-    restart: on-failure
+    restart: unless-stopped
+    pull_policy: build

@@ -38,7 +38,7 @@ namespace Cringe.Web
                         .ReadFrom.Services(services)
                         .Enrich.FromLogContext()
                         .Enrich.WithProperty("Application", "Cringe.Web")
-                        .Enrich.WithClientIp("CF-Connecting-IP")
+                        .Enrich.WithClientIp()
                         .Enrich.WithRequestHeader("CF-IPCountry")
                         .Enrich.WithRequestHeader("Referer")
                         .Enrich.WithRequestHeader("User-Agent")

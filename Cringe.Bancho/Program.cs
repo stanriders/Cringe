@@ -52,7 +52,7 @@ namespace Cringe.Bancho
                         .ReadFrom.Services(services)
                         .Enrich.FromLogContext()
                         .Enrich.WithProperty("Application", "Cringe.Bancho")
-                        .Enrich.WithClientIp("CF-Connecting-IP")
+                        .Enrich.WithClientIp()
                         .Enrich.WithRequestHeader("CF-IPCountry")
                         .Enrich.WithRequestHeader("Referer")
                         .Enrich.WithRequestHeader("User-Agent")

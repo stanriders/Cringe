@@ -2,22 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Cringe.Types.Database;
 using Microsoft.Extensions.Logging;
-using osu.Framework.Audio.Track;
-using osu.Framework.Graphics.Textures;
 using osu.Game.Beatmaps;
 using osu.Game.Beatmaps.Formats;
 using osu.Game.Beatmaps.Legacy;
 using osu.Game.IO;
 using osu.Game.Rulesets.Osu;
-using osu.Game.Rulesets.Osu.Difficulty;
 using osu.Game.Rulesets.Osu.Mods;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Scoring;
-using osu.Game.Skinning;
 
 namespace Cringe.Services
 {
@@ -41,7 +36,9 @@ namespace Cringe.Services
                 await using var stream =
                     new MemoryStream(await _beatmapService.GetBeatmapBytes(score.BeatmapId), false);
 
-                var beatmap = new StreamWorkingBeatmap(stream, score.BeatmapId);
+                using var lineBufferedReader = new LineBufferedReader(stream);
+                var beatmap = Decoder.GetDecoder<osu.Game.Beatmaps.Beatmap>(lineBufferedReader).Decode(lineBufferedReader);
+                var workingBeatmap = new FlatWorkingBeatmap(beatmap);
 
                 OsuRuleset osuRuleset = new();
                 var mods = osuRuleset.ConvertFromLegacyMods((LegacyMods) (int) score.Mods).Append(new OsuModClassic());
@@ -60,7 +57,7 @@ namespace Cringe.Services
                     Mods = mods.ToArray()
                 };
 
-                var performanceAttributes = osuRuleset.CreatePerformanceCalculator().Calculate(scoreModel, beatmap);
+                var performanceAttributes = osuRuleset.CreatePerformanceCalculator().Calculate(scoreModel, workingBeatmap);
 
                 var pp = performanceAttributes.Total;
 
@@ -75,47 +72,6 @@ namespace Cringe.Services
 
                 return 0.00;
             }
-        }
-    }
-
-    class StreamWorkingBeatmap : WorkingBeatmap
-    {
-        private readonly IBeatmap _beatmap;
-        public StreamWorkingBeatmap(Stream beatmapStream, int? beatmapId) : this(readFromStream(beatmapStream))
-        {
-            if (!beatmapId.HasValue)
-                return;
-
-            _beatmap.BeatmapInfo.OnlineID = beatmapId.Value;
-        }
-
-        public StreamWorkingBeatmap(IBeatmap beatmap) : base(beatmap.BeatmapInfo, null)
-        {
-            _beatmap = beatmap;
-        }
-
-        private static IBeatmap readFromStream(Stream beatmapStream)
-        {
-            using var lineBufferedReader = new LineBufferedReader(beatmapStream);
-
-            return Decoder.GetDecoder<osu.Game.Beatmaps.Beatmap>(lineBufferedReader).Decode(lineBufferedReader);
-        }
-        protected override IBeatmap GetBeatmap() => _beatmap;
-        public override Texture GetBackground()
-        {
-            throw new NotImplementedException();
-        }
-        public override Stream GetStream(string storagePath)
-        {
-            throw new NotImplementedException();
-        }
-        protected override Track GetBeatmapTrack()
-        {
-            throw new NotImplementedException();
-        }
-        protected override ISkin GetSkin()
-        {
-            throw new NotImplementedException();
         }
     }
 }

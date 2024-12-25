@@ -1,8 +1,10 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cringe.Database;
 using Cringe.Services;
 using Cringe.Web.Attributes;
+using Cringe.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -55,7 +57,8 @@ namespace Cringe.Web.Controllers
 
         [HttpPost("recalculate-scores")]
         public async Task<IActionResult> RecalculateScores([FromQuery(Name = "securityKey")] string securityKey,
-            [FromServices] ScoreDatabaseContext databaseContext,
+            [FromServices] ScoreDatabaseContext scoreDatabaseContext,
+            [FromServices] BanchoApiWrapper banchoApiWrapper,
             [FromServices] PpService ppService,
             [FromServices] IConfiguration configuration)
         {
@@ -63,7 +66,7 @@ namespace Cringe.Web.Controllers
 
             _logger.LogWarning("Started PP recalculation");
 
-            var submittedScores = await databaseContext.RecentScores.ToListAsync();
+            var submittedScores = await scoreDatabaseContext.Scores.ToListAsync();
 
             foreach (var recentScore in submittedScores)
             {
@@ -73,7 +76,18 @@ namespace Cringe.Web.Controllers
                 recentScore.Pp = newPp;
             }
 
-            await databaseContext.SaveChangesAsync();
+            _logger.LogWarning("PP score recalculation is complete, saving...");
+            await scoreDatabaseContext.SaveChangesAsync();
+
+            _logger.LogWarning("Sending profile recalculation requests");
+
+            var playerIds = submittedScores.Select(x => x.PlayerId).Distinct().ToList();
+
+            foreach (var playerId in playerIds)
+            {
+                _logger.LogInformation("Recalculating player: {PlayerId}", playerId);
+                await banchoApiWrapper.UpdatePlayerStats(playerId);
+            }
 
             return Ok();
         }

@@ -40,6 +40,7 @@ services:
       - osuAPIClientId
       - osuAPIClientSecret
       - BeatconnectApiKey
+      - SecurityKey
     volumes:
       - ./data:/app/data
       - ./replays:/app/replays

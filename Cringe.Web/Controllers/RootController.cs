@@ -61,11 +61,16 @@ namespace Cringe.Web.Controllers
         {
             if (securityKey != configuration["SecurityKey"]) return Unauthorized();
 
+            _logger.LogWarning("Started PP recalculation");
+
             var submittedScores = await databaseContext.RecentScores.ToListAsync();
 
             foreach (var recentScore in submittedScores)
             {
-                recentScore.Pp = await ppService.CalculatePp(recentScore);
+                _logger.LogInformation("Recalculation: {ScoreId}", recentScore.Id);
+                var newPp = await ppService.CalculatePp(recentScore);
+                _logger.LogInformation("PP change {OldPp} -> {NewPp}", recentScore.Pp, newPp);
+                recentScore.Pp = newPp;
             }
 
             await databaseContext.SaveChangesAsync();

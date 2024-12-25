@@ -52,7 +52,8 @@ namespace Cringe.Bancho.Controllers
         [Route("players/all/notification")]
         public IActionResult SendGlobalNotification(string text)
         {
-            PlayersPool.GetPlayerSessions().ForAll(x => x.ReceiveNotification(text));
+            foreach (var session in PlayersPool.GetPlayerSessions())
+                session.ReceiveNotification(text);
 
             return Ok();
         }

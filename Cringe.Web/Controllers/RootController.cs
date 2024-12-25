@@ -1,9 +1,11 @@
-﻿
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
+using Cringe.Database;
 using Cringe.Services;
 using Cringe.Web.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Cringe.Web.Controllers
@@ -42,12 +44,33 @@ namespace Cringe.Web.Controllers
                 await using var outStream = new MemoryStream();
                 await inStream.CopyToAsync(outStream);
                 outStream.Seek(0, SeekOrigin.Begin);
+
                 return new FileStreamResult(outStream, "application/x-osu-archive");
             }
 
             _logger.LogInformation("User {Username} failed to download beatmapset {Id}", username, id);
 
             return NotFound();
+        }
+
+        [HttpPost("recalculate-scores")]
+        public async Task<IActionResult> RecalculateScores([FromQuery(Name = "securityKey")] string securityKey,
+            [FromServices] ScoreDatabaseContext databaseContext,
+            [FromServices] PpService ppService,
+            [FromServices] IConfiguration configuration)
+        {
+            if (securityKey != configuration["SecurityKey"]) return Unauthorized();
+
+            var submittedScores = await databaseContext.RecentScores.ToListAsync();
+
+            foreach (var recentScore in submittedScores)
+            {
+                recentScore.Pp = await ppService.CalculatePp(recentScore);
+            }
+
+            await databaseContext.SaveChangesAsync();
+
+            return Ok();
         }
 
         [HttpPost("seed")]

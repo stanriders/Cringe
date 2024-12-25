@@ -8,7 +8,6 @@
   <ItemGroup>
     <PackageReference Include="BouncyCastle.NetCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
-    <PackageReference Include="OppaiSharp" Version="3.4.0" />
   </ItemGroup>
 
   <ItemGroup>

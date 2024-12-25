@@ -27,8 +27,6 @@ namespace Cringe.Services
 
         private readonly ILogger<PpService> _logger;
 
-        //other game modes fuck you
-        private static readonly OsuRuleset _ruleset = new();
 
         public PpService(BeatmapService beatmapService, ILogger<PpService> logger)
         {
@@ -45,29 +43,24 @@ namespace Cringe.Services
 
                 var beatmap = new StreamWorkingBeatmap(stream, score.BeatmapId);
 
-                var calculator = new OsuPerformanceCalculator();
+                OsuRuleset osuRuleset = new();
+                var mods = osuRuleset.ConvertFromLegacyMods((LegacyMods) (int) score.Mods).Append(new OsuModClassic());
 
-                var mods = _ruleset.ConvertFromLegacyMods((LegacyMods) (int) score.Mods).Append(new OsuModClassic());
-
-                var difficultyAttributesCalculator = new OsuDifficultyCalculator(_ruleset.RulesetInfo, beatmap);
-                var difficultyAttributes = (OsuDifficultyAttributes) difficultyAttributesCalculator.Calculate(mods);
-
-                var scoreModel = new ScoreInfo(beatmap.BeatmapInfo, _ruleset.RulesetInfo)
+                var scoreModel = new ScoreInfo(beatmap.BeatmapInfo, osuRuleset.RulesetInfo)
                 {
                     Statistics = new Dictionary<HitResult, int>
                     {
                         [HitResult.Great] = score.Count300,
                         [HitResult.Ok] = score.Count100,
                         [HitResult.Meh] = score.Count50,
-                        [HitResult.Miss] = score.CountMiss,
-                        [HitResult.SliderTailHit] = difficultyAttributes.SliderCount,
-                        [HitResult.LargeTickMiss] = 0
+                        [HitResult.Miss] = score.CountMiss
                     },
                     MaxCombo = score.MaxCombo,
                     Accuracy = score.Accuracy,
+                    Mods = mods.ToArray()
                 };
 
-                var performanceAttributes = await calculator.CalculateAsync(scoreModel, difficultyAttributes, CancellationToken.None);
+                var performanceAttributes = osuRuleset.CreatePerformanceCalculator().Calculate(scoreModel, beatmap);
 
                 var pp = performanceAttributes.Total;
 

@@ -53,7 +53,7 @@ namespace Cringe.Services
                         [HitResult.Miss] = score.CountMiss
                     },
                     MaxCombo = score.MaxCombo,
-                    Accuracy = score.Accuracy,
+                    Accuracy = score.Accuracy / 100,
                     Mods = mods.ToArray()
                 };
 

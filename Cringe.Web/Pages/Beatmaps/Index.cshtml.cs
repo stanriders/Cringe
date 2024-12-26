@@ -34,7 +34,7 @@ namespace Cringe.Web.Pages.Beatmaps
             Scores = await _scoreContext.Scores.AsNoTracking()
                 .Where(x => x.BeatmapId == Beatmap.Id)
                 .Take(100)
-                .OrderByDescending(x => x.Score)
+                .OrderByDescending(x => x.Pp)
                 .ToArrayAsync();
 
             return Page();

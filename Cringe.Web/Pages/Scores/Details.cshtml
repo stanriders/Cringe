@@ -1,5 +1,4 @@
 ﻿@page
-@using Cringe.Types.Enums
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Cringe.Web.Pages.Scores.DetailsModel
 
@@ -62,10 +61,10 @@
             @Html.DisplayFor(model => model.SubmittedScore.CountMiss)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SubmittedScore.Score)
+            @Html.DisplayNameFor(model => model.SubmittedScore.ScoreV4)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SubmittedScore.Score)
+            @Html.DisplayFor(model => model.SubmittedScore.ScoreV4)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.SubmittedScore.MaxCombo)

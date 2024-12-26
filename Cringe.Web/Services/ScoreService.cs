@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -109,7 +108,7 @@ namespace Cringe.Web.Services
             }
 
             score.Player.Playcount++;
-            score.Player.TotalScore += (ulong) score.Score;
+            score.Player.TotalScore += (ulong) score.ScoreV4;
 
             await _playerContext.SaveChangesAsync();
             await _scoreContext.SaveChangesAsync();

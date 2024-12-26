@@ -33,6 +33,12 @@ namespace Cringe.Types.Database
         [DisplayFormat(DataFormatString = "{0:N2}")]
         public double Pp { get; set; }
 
+        [NotMapped]
+        public long ScoreV4 => (long)Math.Round(Pp * 1000);
+
+        [NotMapped]
+        public double ScoreRepresentation => ScoreV4;
+
         public int BeatmapId { get; set; }
         public int PlayerId { get; set; }
         public string PlayerUsername { get; set; }
@@ -70,7 +76,7 @@ namespace Cringe.Types.Database
         {
             //18204696(scoreId)|sendlolipls(username)|167060(score)|663(combo)|0(50)|6(100)|483(300)|0(miss)|6(katu)|79(geki)|False(fc)|216(mods)|101029(???)|4(rank)|1596985749(date)|1(??)
             return
-                $"{Id}|{PlayerUsername}|{Score}|{MaxCombo}|{Count50}|{Count100}|{Count300}|{CountMiss}|{CountKatu}|{CountGeki}|{FullCombo}|{(int) Mods}|1|{LeaderboardPosition}|{((DateTimeOffset) PlayDateTime).ToUnixTimeSeconds()}|1\n";
+                $"{Id}|{PlayerUsername}|{ScoreRepresentation}|{MaxCombo}|{Count50}|{Count100}|{Count300}|{CountMiss}|{CountKatu}|{CountGeki}|{FullCombo}|{(int) Mods}|1|{LeaderboardPosition}|{((DateTimeOffset) PlayDateTime).ToUnixTimeSeconds()}|1\n";
         }
     }
 }

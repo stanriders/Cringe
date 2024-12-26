@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Cringe.Database;
-using Cringe.Types.Database;
 using Cringe.Types.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

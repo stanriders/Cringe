@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Linq;
 using Cringe.Bancho.Types;
 using Microsoft.Extensions.Logging;
 

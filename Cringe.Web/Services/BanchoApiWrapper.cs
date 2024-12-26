@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Cringe.Types;
 using Cringe.Types.Database;
 using Cringe.Types.Enums;
-using Newtonsoft.Json;
 
 namespace Cringe.Web.Services
 {

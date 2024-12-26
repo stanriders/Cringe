@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cringe.Attributes;
@@ -150,25 +149,25 @@ namespace Cringe.Web.Controllers
                 return new OkObjectResult($"{(int) RankedStatus.NotSubmitted}|false");
 
             var scores = await _scoreDatabaseContext.Scores
-                .OrderByDescending(x => x.Score)
+                .OrderByDescending(x => x.Pp)
                 .Where(x => x.BeatmapId == beatmap.Id && x.GameMode == gameMode)
                 .ToArrayAsync();
 
-            var data = $"{(int) RankedStatus.Ranked}|false|{beatmap.Id}|{beatmapSetId}|{scores.Length}\n0\naye\n10.0\n";
+            var data = new StringBuilder($"{(int) RankedStatus.Ranked}|false|{beatmap.Id}|{beatmapSetId}|{scores.Length}\n0\naye\n10.0\n");
 
             for (var i = 0; i < scores.Length; i++)
                 scores[i].LeaderboardPosition = i + 1;
 
             var userBest = scores.FirstOrDefault(x => x.PlayerUsername == username);
             if (userBest != null)
-                data += userBest;
+                data.Append(userBest);
             else
-                data += '\n';
+                data.Append('\n');
 
             foreach (var score in scores)
-                data += score;
+                data.Append(score);
 
-            return new OkObjectResult(data);
+            return new OkObjectResult(data.ToString());
         }
 
         [Auth]

@@ -9,7 +9,6 @@ using Cringe.Types.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Linq;
 
 namespace Cringe.Web.Pages.Account

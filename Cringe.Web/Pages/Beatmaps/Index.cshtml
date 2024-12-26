@@ -112,7 +112,7 @@
                     @Html.DisplayFor(modelItem => item.Rank)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Score)
+                    @Html.DisplayFor(modelItem => item.ScoreV4)
                 </td>
                 <td>
                     <a asp-page="/Players/Index" asp-route-id="@item.PlayerId">@item.PlayerUsername</a>
@@ -135,6 +135,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Pp)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Score)
                 </td>
             </tr>
         }

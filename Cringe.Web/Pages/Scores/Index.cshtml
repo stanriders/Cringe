@@ -40,7 +40,7 @@
             @Html.DisplayNameFor(model => model.SubmittedScore[0].CountMiss)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SubmittedScore[0].Score)
+            @Html.DisplayNameFor(model => model.SubmittedScore[0].ScoreV4)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.SubmittedScore[0].MaxCombo)
@@ -65,6 +65,9 @@
         </th>
         <th>
             @Html.DisplayNameFor(model => model.SubmittedScore[0].Pp)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SubmittedScore[0].Score)
         </th>
         <th></th>
     </tr>
@@ -126,6 +129,9 @@
             </td>
             <td>
                 <b>@Html.DisplayFor(modelItem => item.Pp)</b>
+            </td>
+            <td>
+                <b>@Html.DisplayFor(modelItem => item.ScoreV4)</b>
             </td>
             <td>
                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> 

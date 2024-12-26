@@ -1,5 +1,4 @@
-﻿using System;
-using Cringe.Types.Enums;
+﻿using Cringe.Types.Enums;
 using Newtonsoft.Json;
 
 namespace Cringe.Types.BeatconnectApi

@@ -56,6 +56,7 @@ namespace Cringe.Web.Services
             if (_memoryCache.TryGetValue(scoreUniqueHash, out _))
             {
                 _logger.LogInformation("Duplicate score {Score}", scoreUniqueHash);
+
                 return null;
             }
 
@@ -90,8 +91,8 @@ namespace Cringe.Web.Services
                     .Where(x => x.PlayerId == score.PlayerId && x.BeatmapId == score.BeatmapId)
                     .FirstOrDefaultAsync();
 
-                // don't submit if previous score has bigger score
-                if (score.PreviousScore?.Score > score.Score)
+                // don't submit if previous score has bigger peepee
+                if (score.PreviousScore?.Pp > score.Pp)
                     return null;
 
                 if (score.PreviousScore is not null)

@@ -108,7 +108,7 @@ namespace Cringe.Web.Services
             }
 
             score.Player.Playcount++;
-            score.Player.TotalScore += (ulong) score.ScoreV4;
+            score.Player.TotalScore += (ulong) score.Score;
 
             await _playerContext.SaveChangesAsync();
             await _scoreContext.SaveChangesAsync();
